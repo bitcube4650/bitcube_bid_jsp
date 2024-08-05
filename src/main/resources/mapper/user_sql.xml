@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user">
+	<select id="selectUserPassword" resultType="camel">
+		SELECT	USER_ID
+		,		USER_PWD
+		FROM T_CO_USER
+		WHERE 	USER_ID = #{userId}
+		UNION
+		SELECT	USER_ID
+		,		USER_PWD
+		FROM T_CO_CUST_USER
+		WHERE 	USER_ID = #{userId}
+	</select>
+
+	<select id="selectInterrelatedList" resultType="camel">
+		/* user.selectInterrelatedList */
+		SELECT	INTERRELATED_CUST_CODE
+		,		INTERRELATED_NM
+		FROM	T_CO_INTERRELATED
+		WHERE	USE_YN = 'Y'
+		ORDER BY INTERRELATED_NM
+	</select>
+
+	<sql id="selectUserList_sql">
+		WHERE	1=1
+		<if test="interrelatedCustCode != null and interrelatedCustCode != ''">
+			AND A.INTERRELATED_CUST_CODE = #{interrelatedCustCode}
+		</if>
+		<if test="useYn != null and useYn != ''">
+			AND A.USE_YN = #{useYn}
+		</if>
+		<if test="userName != null and userName != ''">
+			AND A.USER_NAME LIKE CONCAT('%',#{userName},'%')
+		</if>
+		<if test="userId != null and userId != ''">
+			AND A.USER_ID LIKE CONCAT('%',#{userId},'%')
+		</if>
+	</sql>
+
+	<select id="selectUserList_count" resultType="int">
+		/* user.selectUserList_count */
+		SELECT	COUNT(1)
+		FROM	T_CO_USER A
+		INNER JOIN T_CO_INTERRELATED B
+		ON A.INTERRELATED_CUST_CODE = B.INTERRELATED_CUST_CODE
+		<include refid="selectUserList_sql" />
+	</select>
+
+	<select id="selectUserList" resultType="camel">
+		/* user.selectUserList */
+		SELECT	A.USER_NAME
+		,		A.USER_ID
+		,		A.USER_POSITION
+		,		A.DEPT_NAME
+		,		A.USER_TEL
+		,		A.USER_HP
+		,		CASE
+					WHEN A.USER_AUTH = '1' THEN '시스템관리자'
+					WHEN A.USER_AUTH = '2' THEN '각사관리자'
+					WHEN A.USER_AUTH = '3' THEN '일반사용자'
+					WHEN A.USER_AUTH = '4' THEN '감사사용자'
+				END AS USER_AUTH
+		,		CASE
+					WHEN A.USE_YN = 'Y' THEN '사용'
+					WHEN A.USE_YN = 'N' THEN '미사용'
+				END AS USE_YN
+		,		B.INTERRELATED_NM
+		FROM	T_CO_USER A
+		INNER JOIN T_CO_INTERRELATED B
+			ON A.INTERRELATED_CUST_CODE = B.INTERRELATED_CUST_CODE
+		<include refid="selectUserList_sql" />
+		ORDER BY A.CREATE_DATE DESC
+		LIMIT ${offset}, ${pageSize}
+	</select>
+	
+	<update id="updateUserChgPwd">
+		/* user.updateUserChgPwd */
+		UPDATE	T_CO_USER
+		SET	USER_PWD = #{userPwd}
+		,	PWD_EDIT_YN = 'Y'
+		,	PWD_EDIT_DATE = now()
+		,	UPDATE_USER = #{updateUser}
+		,	UPDATE_DATE = now()
+		WHERE USER_ID = #{userId}
+	</update>
+	
+	<select id="selectUserDetail" resultType="camel">
+		/* user.selectUserDetail */
+		SELECT	A.USER_ID
+		,	A.USER_NAME
+		,	A.USER_POSITION
+		,	A.DEPT_NAME
+		,	A.USER_TEL
+		,	A.USER_HP
+		,	A.USER_AUTH
+		,	A.USE_YN
+		,	A.INTERRELATED_CUST_CODE
+		,	IFNULL(A.OPENAUTH, '') AS OPENAUTH
+		,	IFNULL(A.BIDAUTH, '') AS BIDAUTH
+		,	A.USER_EMAIL
+		,	DATE_FORMAT(A.PWD_EDIT_DATE, '%Y-%m-%d') AS PWD_EDIT_DATE_STR
+		,	B.INTERRELATED_NM
+		 FROM T_CO_USER A
+		 INNER JOIN T_CO_INTERRELATED B
+		 	ON A.INTERRELATED_CUST_CODE = B.INTERRELATED_CUST_CODE
+		 WHERE A.USER_ID = #{userId}
+	</select>
+
+	<select id="selectInterrelatedListByUser" resultType="camel">
+		/* user.selectInterrelatedListByUser */
+		SELECT 	A.INTERRELATED_CUST_CODE
+		,	INTERRELATED_NM
+		FROM T_CO_INTERRELATED A
+		INNER JOIN T_CO_USER_INTERRELATED B
+			ON A.INTERRELATED_CUST_CODE = B.INTERRELATED_CUST_CODE
+		WHERE	A.USE_YN = 'Y'
+		AND		B.USER_ID = #{userId}
+		ORDER BY A.INTERRELATED_CUST_CODE
+	</select>
+	
+	<insert id="insertUserSave">
+		/* user.insertUserSave */
+		INSERT INTO T_CO_USER 
+		(	USER_ID, USER_PWD, USER_NAME, INTERRELATED_CUST_CODE, USER_AUTH
+		,	OPENAUTH, BIDAUTH, USER_HP, USER_TEL, USER_EMAIL
+		,	USER_POSITION, DEPT_NAME, USE_YN, CREATE_USER, CREATE_DATE
+		,	UPDATE_USER, UPDATE_DATE, PWD_EDIT_DATE, PWD_EDIT_YN) 
+		VALUES 
+		(	#{userId}, #{encodedPassword}, #{userName}, #{interrelatedCustCode}, #{userAuth}
+		,	#{openauth}, #{bidauth}, #{userHp}, #{userTel}, #{userEmail}
+		,	#{userPosition}, #{deptName}, #{useYn}, #{updateUser}, now()
+		,	#{updateUser}, now(), now(), 'N')
+	</insert>
+	
+	<update id="updateUserSave">
+		/* user.updateUserSave */
+		UPDATE T_CO_USER
+		SET	USER_NAME = #{userName}
+		,	INTERRELATED_CUST_CODE = #{interrelatedCustCode}
+		,	USER_AUTH = #{userAuth}
+		,	OPENAUTH = #{openauth}
+		,	BIDAUTH = #{bidauth}
+		,	USER_HP = #{userHp}
+		,	USER_TEL = #{userTel}
+		,	USER_EMAIL = #{userEmail}
+		,	USER_POSITION = #{userPosition}
+		,	DEPT_NAME = #{deptName}
+		,	USE_YN = #{useYn}
+		,	UPDATE_USER = #{updateUser}
+		,	UPDATE_DATE = now()
+		WHERE USER_ID = #{userId}
+	</update>
+
+	<delete id="deleteUserInterrelated">
+		/* user.deleteUserInterrelated */
+		DELETE FROM T_CO_USER_INTERRELATED WHERE USER_ID = #{userId}
+	</delete>
+
+	<insert id="insertUserInterrelated">
+		INSERT INTO T_CO_USER_INTERRELATED
+		(INTERRELATED_CUST_CODE, USER_ID)
+		VALUES
+		(#{interrelatedCustCode}, #{userId})
+	</insert>
+
+
+	<select id="selectTCoCustUserList_count" resultType="int">
+		/* user.selectTCoCustUserList_count */
+		SELECT	COUNT(1)
+		FROM	T_CO_CUST_USER
+		WHERE	CUST_CODE = #{custCode}
+		<if test="userName != null and userName != ''">
+			AND		USER_NAME LIKE CONCAT('%', #{userName}, '%')
+		</if>
+		<if test="userId != null and userId != ''">
+			AND		USER_ID LIKE CONCAT('%', #{userId}, '%')
+		</if>
+		<if test="useYn != null and useYn != ''">
+			AND		USE_YN = #{useYn}
+		</if>
+	</select>
+
+	<select id="selectTCoCustUserList" resultType="camel">
+		/* user.selectTCoCustUserList_count */
+		SELECT	USER_NAME
+		,		USER_ID
+		,		USER_BUSEO
+		,		USER_POSITION
+		,		USER_EMAIL
+		,		USER_TEL
+		,		USER_HP
+		,		USER_TYPE
+		,		USE_YN
+		FROM	T_CO_CUST_USER
+		WHERE	CUST_CODE = #{custCode}
+		<if test="userName != null and nuserName != ''">
+		AND		USER_NAME LIKE CONCAT('%', #{userName}, '%')
+		</if>
+		<if test="userId != null and userId != ''">
+		AND		USER_ID LIKE CONCAT('%', #{userId}, '%')
+		</if>
+
+		<if test="useYn != null and useYn != ''">
+		AND		USE_YN = #{useYn}
+		</if>
+		ORDER BY CREATE_DATE
+		<if test="pageSize != null and pageSize != ''">
+		LIMIT ${offset}, ${pageSize}
+		</if>
+	</select>
+
+	<select id="selectTCoCustUserDetail" resultType="camel">
+		/* user.selectTCoCustUserDetail */
+		SELECT	USER_NAME
+		,		USER_ID
+		,		USER_BUSEO
+		,		USER_POSITION
+		,		USER_EMAIL
+		,		USER_TEL
+		,		USER_HP
+		,		USER_TYPE
+		,		USE_YN
+		FROM	T_CO_CUST_USER
+		WHERE	USER_ID = #{userId}
+	</select>
+
+	<insert id="insertTCoCustUser">
+		/* user.insertTCoCustUser */
+		INSERT INTO T_CO_CUST_USER (
+					USER_ID
+		,			CUST_CODE
+		,			USER_PWD
+		,			USER_NAME
+		,			USER_TEL
+		,			USER_HP
+		,			USER_EMAIL
+		,			USER_TYPE
+		,			USER_BUSEO
+		,			USER_POSITION
+		,			CREATE_USER
+		,			CREATE_DATE
+		,			PWD_CHG_DATE
+		,			USE_YN
+		) VALUES (
+					#{userId}
+		,			#{custCode}
+		,			#{userPwd}
+		,			#{userName}
+		,			#{userTel}
+		,			#{userHp}
+		,			#{userEmail}
+		,			#{userType}
+		,			#{userBuseo}
+		,			#{userPosition}
+		,			#{updUserId}
+		,			NOW()
+		,			NOW()
+		,			#{useYn}
+		)
+	</insert>
+
+	<update id="updateTCoCustUser">
+		/* user.updateTCoCustUser */
+		UPDATE T_CO_CUST_USER
+		SET		USER_NAME		= #{userName}
+		,		USER_TEL		= #{userTel}
+		,		USER_HP			= #{userHp}
+		,		USER_EMAIL		= #{userEmail}
+		,		USER_BUSEO		= #{userBuseo}
+		,		USER_POSITION	= #{userPosition}
+		,		UPDATE_USER		= #{updUserId}
+		,		UPDATE_DATE		= NOW()
+		<if test="userPwd != null and userPwd != ''">
+		,		USER_PWD		= #{userPwd}
+		,		PWD_CHG_DATE	= NOW()
+		</if>
+		WHERE	USER_ID			= #{userId}
+	</update>
+
+	<update id="updateTCoCustUserUseYn">
+		/* user.updateTCoCustUserUseYn */
+		UPDATE T_CO_CUST_USER
+		SET	USE_YN		= #{useYn}
+		,	UPDATE_USER	= #{updUserId}
+		,	UPDATE_DATE	= NOW()
+		WHERE CUST_CODE	= #{custCode}
+		<if test="delUserId != null and delUserId != ''">
+		AND		USER_ID = #{delUserId}
+		</if>
+	</update>
+
+	<select id="selectAdminUserList" resultType="camel">
+		/* user.selectAdminUserList */
+		SELECT	USER_EMAIL
+		FROM	T_CO_USER
+		WHERE	USER_AUTH = #{userAuth}
+		AND		USE_YN = 'Y'
+		AND		INTERRELATED_CUST_CODE = #{interrelatedCustCode}
+	</select>
+
+	<delete id="deleteTCoCustUser">
+		/* user.deleteTCoCustUser */
+		DELETE FROM T_CO_CUST_USER
+		WHERE CUST_CODE = #{custCode}
+	</delete>
+	
+	<select id="selectCustAdminUserList" resultType="camel">
+		/* user.selectCustAdminUser */
+		SELECT	CUST_NAME
+		,		USER_NAME
+		,		USER_EMAIL
+		FROM	T_CO_CUST_MASTER A
+		INNER JOIN T_CO_CUST_USER B
+		ON		A.CUST_CODE = B.CUST_CODE
+		WHERE	A.CUST_CODE = #{custCode}
+		AND		B.USER_TYPE = '1'
+		ORDER BY B.CREATE_DATE
+	</select>
+</mapper>
