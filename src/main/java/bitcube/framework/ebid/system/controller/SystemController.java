@@ -1,4 +1,4 @@
-package bitcubeBid.system.controller;
+package bitcube.framework.ebid.system.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
