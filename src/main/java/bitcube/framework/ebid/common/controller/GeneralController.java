@@ -52,7 +52,9 @@ public class GeneralController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
-	@RequestMapping(value = "/{step1}/{step2}")
+	
+	@RequestMapping(value = "/{step1:^(?:(?!api$).)*}/{step2}")
+//	@RequestMapping(value = "/{step1}/{step2}")
 	public ModelAndView generalPageMove(
 			@PathVariable(value="step1") String step1,
 			@PathVariable(value="step2") String step2,
@@ -80,7 +82,8 @@ public class GeneralController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
-	@RequestMapping(value = "/{step1}/{step2}/{step3}")
+	@RequestMapping(value = "/{step1:^(?:(?!api$).)*}/{step2}/{step3}")
+//	@RequestMapping(value = "/{step1}/{step2}/{step3}")
 	public ModelAndView generalPageMove(
 			@PathVariable(value="step1") String step1,
 			@PathVariable(value="step2") String step2,

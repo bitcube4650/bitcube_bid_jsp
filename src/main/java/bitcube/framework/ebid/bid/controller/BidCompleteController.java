@@ -44,6 +44,7 @@ public class BidCompleteController {
 			resultBody = bidCompleteSvc.complateBidList(params); 
 			
 		}catch(Exception e) {
+			System.out.println(e);
 			log.error("bidComplete list error : {}", e);
 			resultBody.setCode("fail");
 			resultBody.setMsg("입찰 완료 리스트를 가져오는것을 실패하였습니다.");	

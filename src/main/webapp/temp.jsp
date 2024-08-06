@@ -15,9 +15,16 @@ function fnTest(){
 
 function fnTest2(){
 	$.post(
-		"/api/v1/test2",
+		"/api/v1/bidComplete/list",
 		{
-			'test':'test11'
+			biNo : ''						//조회조건 : 입찰번호
+		,	biName : ''						//조회조건 : 입찰명
+		,	succBi : true					//조회조건 : 완료상태 - 입찰완료
+		,	failBi : true					//조회조건 : 완료상태 - 유찰
+		,	size : 10						//10개씩 보기
+		,	page : 0						//클릭한 페이지번호
+		,   startDate : '2023-08-07'                  //조회조건 : 입찰완료 - 시작일
+		,   endDate : '2024-08-06'                 //조회조건 : 입찰완료 - 종료일
 		},
 		function(arg){
 			console.log(arg);

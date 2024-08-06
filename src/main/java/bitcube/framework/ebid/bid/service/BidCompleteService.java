@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import bitcube.framework.ebid.dao.GeneralDao;
 import bitcube.framework.ebid.dto.ResultBody;
 import bitcube.framework.ebid.etc.util.CommonUtils;
+import bitcube.framework.ebid.etc.util.consts.DB;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -45,9 +47,13 @@ public class BidCompleteService {
 //		params.put("userId", userId);
 //		params.put("interrelatedCustCode", userInterrelatedCustCode);
 //		params.put("userAuth", userAuth);
-//		
-//		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_COMPLETE_EBID_LIST, params);
-//		resultBody.setData(listPage);
+
+		params.put("userId", "ebidmast");
+		params.put("interrelatedCustCode", "11");
+		params.put("userAuth", "1");
+		
+		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_COMPLETE_EBID_LIST, params);
+		resultBody.setData(listPage);
 			
 		return resultBody;
 	}
