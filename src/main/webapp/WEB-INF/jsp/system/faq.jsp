@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>FAQ 관리</title>
-    <%-- <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/WEB-INF/css/common.css"> --%>
-    <%-- <script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
-    <script src="${pageContext.request.contextPath}/js/sweetalert2.all.min.js"></script> --%>
-    <script type="css" src="/css/common.css"></script>
+    <script src="${pageContext.request.contextPath}/resources/jquery.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/common.css">
 </head>
 <body>
     <div class="conRight">

@@ -22,6 +22,7 @@
 			http://www.springframework.org/schema/task/spring-task-3.1.xsd">
 
     <mvc:annotation-driven/>
+	<mvc:resources mapping="/resources/**" location="/resources/" />
 	
 	<!-- Anotation Scan -->
 	<context:component-scan base-package="bitcube.framework.ebid"/>
