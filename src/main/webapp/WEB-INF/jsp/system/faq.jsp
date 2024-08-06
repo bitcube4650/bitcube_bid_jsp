@@ -12,7 +12,7 @@
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
 		<div class="contentWrap">
-			<%-- <jsp:include page="/WEB-INF/jsp/layout/menu.jsp" /> --%>
+			<jsp:include page="/WEB-INF/jsp/layout/menu.jsp" />
 		    <div class="conRight">
 		        <div class="conHeader">
 		            <ul class="conHeaderCate">
@@ -107,8 +107,8 @@
 				
 		        <%-- <script src="${pageContext.request.contextPath}/js/adminFaq.js"></script> --%>
 		    </div>
-	    	<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
     	</div>
+    	<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
     </div>
 </body>
 </html>

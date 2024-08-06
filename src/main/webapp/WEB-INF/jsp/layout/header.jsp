@@ -9,15 +9,6 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/common.css">
     <!-- <script src="/resources/js/logoutPop.js"></script> LogoutPop 관련 스크립트
     <script src="/resources/js/checkPwdPop.js"></script> CheckPwdPop 관련 스크립트 -->
-    <style>
-        .header { /* 예시로 헤더 스타일을 추가합니다. 필요에 따라 수정하세요. */ }
-        .headerLeft { float: left; }
-        .headerRight { float: right; }
-        .profileDropWrap { position: relative; display: inline-block; }
-        .profileDropWrap.active .profileDropMenu { display: block; }
-        .profileDropMenu { display: none; position: absolute; right: 0; background: #fff; border: 1px solid #ccc; }
-        .profileDropMenu a { display: block; padding: 10px; }
-    </style>
     <script>
         $(document).ready(function() {
             var loginInfoString = localStorage.getItem("loginInfo"); 

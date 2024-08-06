@@ -6,12 +6,13 @@
     <% 
     	String path = ""; 
     	String userCustType = "inter";
+    	int userAuth = 1;
    	%>
     <meta charset="UTF-8">
     <title>Menu</title>
-    <link rel="stylesheet" type="text/css" href="/resources/css/common.css">
-    <script src="/resources/js/jquery.min.js"></script>
-    <script src="/resources/js/sweetalert2.all.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/jquery.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/common.css">
     <script>
     
         $(document).ready(function() {
@@ -149,7 +150,8 @@
                         <li class="<%= path.equals("/company/partner/management") ? "active" : "" %>"><a href="/company/partner/management">업체관리</a></li>
                     </ul>
                     <ul style="display: <%= userCustType.equals("cust") && userAuth == 1 ? "block" : "none" %>;">
-                        <li class="<%= path.equals("/company/partner/management/" + loginInfo.custCode) ? "active" : "" %>"><a href="/company/partner/management/<%= loginInfo.custCode %>">자사정보</a></li>
+                        <%-- <li class="<%= path.equals("/company/partner/management/" + loginInfo.custCode) ? "active" : "" %>"><a href="/company/partner/management/<%= loginInfo.custCode %>">자사정보</a></li> --%>
+                        <li class=""><a href="">자사정보</a></li>
                         <li class="<%= path.equals("/company/partner/user") ? "active" : "" %>"><a href="/company/partner/user">사용자관리</a></li>
                     </ul>
                 </div>
