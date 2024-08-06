@@ -12,8 +12,8 @@
 			<configuration>
 				<release>21</release>
 				<compilerArgs>
-		          <arg>-parameters</arg>
-		        </compilerArgs>
+					<arg>-parameters</arg>
+				</compilerArgs>
 			</configuration>
 			</plugin>
 			<plugin>
@@ -32,6 +32,13 @@
 			<version>1.18.34</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- log -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<!-- log -->
 		
 		<!-- Spring -->
 		<dependency>
@@ -54,6 +61,12 @@
 			<artifactId>spring-orm</artifactId>
 			<version>6.1.10</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+
 		<!-- Spring -->
 		
 		<!-- jdbc -->
@@ -73,5 +86,20 @@
 			<version>3.2.0</version>
 		</dependency>
 		<!-- jdbc -->
+		
+		<!-- mail -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		<!-- mail -->
+		<!-- ajax json data -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.17.0</version>
+		</dependency>
+		<!-- ajax json data -->
 	</dependencies>
 </project>

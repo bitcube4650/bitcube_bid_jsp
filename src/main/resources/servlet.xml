@@ -32,5 +32,12 @@
 		<property name="prefix" value="/WEB-INF/jsp/"/>
 		<property name="suffix" value=".jsp"/>
 	</bean>
-
+	
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+	    <property name="messageConverters">
+	        <list>
+	            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+	        </list>
+	    </property>
+	</bean>
 </beans>

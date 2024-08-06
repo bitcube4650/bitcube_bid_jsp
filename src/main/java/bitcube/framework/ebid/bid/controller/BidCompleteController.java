@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-//import iljin.framework.core.dto.ResultBody;
-//import iljin.framework.ebid.bid.service.BidCompleteService;
+import bitcube.framework.ebid.bid.service.BidCompleteService;
+import bitcube.framework.ebid.dto.ResultBody;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -23,26 +27,30 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BidCompleteController {
 	
-//	@Autowired
-//	private BidCompleteService bidCompleteSvc;
+	@Autowired
+	private BidCompleteService bidCompleteSvc;
 	
 	/**
 	 * 입찰완료 리스트
 	 * @param params
 	 * @return
 	 */
-//	@PostMapping("/list")
-//	public ResultBody complateBidList(@RequestBody Map<String, Object> params) {
-//		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = bidCompleteSvc.complateBidList(params); 
-//		}catch(Exception e) {
-//			log.error("bidComplete list error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("입찰 완료 리스트를 가져오는것을 실패하였습니다.");	
-//		}
-//		return resultBody;
-//	}
+	@PostMapping(value="/list", produces = "application/json")
+	@ResponseBody
+	public ResultBody complateBidList(HttpServletRequest request, ModelAndView modelAndView,
+			@RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			resultBody = bidCompleteSvc.complateBidList(params); 
+			
+		}catch(Exception e) {
+			log.error("bidComplete list error : {}", e);
+			resultBody.setCode("fail");
+			resultBody.setMsg("입찰 완료 리스트를 가져오는것을 실패하였습니다.");	
+		}
+		return resultBody;
+	}
+	
 //	
 //	/**
 //	 * 입찰완료 상세
