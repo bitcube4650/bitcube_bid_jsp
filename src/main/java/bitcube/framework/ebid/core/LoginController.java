@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin
 @Slf4j
+@RequestMapping("/api/v1")
 public class LoginController {
 
 	private final UserService userService;
@@ -41,17 +43,11 @@ public class LoginController {
 	@Autowired
 	public LoginController(UserService userService, CustService custService, ItemService itemService) {
 		this.userService = userService;
-//		this.sso = sso;
-//		this.tCoInterrelatedRepository = tCoInterrelatedRepository;
-//		this.tCoItemGrpRepository = tCoItemGrpRepository;
 		this.custService = custService;
 		this.itemService = itemService;
 	}
 
-	@PostMapping("/api/v1/login")
-//	public ResponseEntity<AuthToken> login(@RequestParam Map<String, Object> userDto, HttpSession session, HttpServletRequest request) {
-//		return userService.login(userDto, session, request);
-//	}
+	@PostMapping("/login")
 	public ResultBody login(@RequestParam Map<String, Object> userDto, HttpSession session, HttpServletRequest request) {
 		ResultBody resultBody = new ResultBody();
 		try {
