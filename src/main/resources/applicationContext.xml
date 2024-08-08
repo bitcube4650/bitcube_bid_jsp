@@ -18,7 +18,7 @@
     <!-- 데이터 소스 설정 -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.mariadb.jdbc.Driver" />
-        <property name="url" value="jdbc:log4jdbc:mariadb://192.168.0.5:3306/iljin" />
+        <property name="url" value="jdbc:mariadb://192.168.0.5:3306/iljin" />
         <property name="username" value="bitcube" />
         <property name="password" value="test#123" />
     </bean>
