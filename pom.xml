@@ -34,15 +34,20 @@
 		
 		<!-- log -->
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>2.0.0</version>
-		</dependency>
+	        <groupId>org.slf4j</groupId>
+	        <artifactId>slf4j-api</artifactId>
+	        <version>2.0.7</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.slf4j</groupId>
+	        <artifactId>slf4j-log4j12</artifactId>
+	        <version>2.0.7</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>log4j</groupId>
+	        <artifactId>log4j</artifactId>
+	        <version>1.2.17</version>
+	    </dependency>
 		<!-- log -->
 		
 		<!-- Spring -->
@@ -86,7 +91,7 @@
 		    <artifactId>spring-security-config</artifactId>
 		    <version>6.3.0</version>
 		</dependency>
-
+		
 		<!-- Spring -->
 		
 		<!-- jdbc -->
@@ -104,6 +109,11 @@
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>3.2.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>p6spy</groupId>
+		    <artifactId>p6spy</artifactId>
+		    <version>3.9.1</version>
 		</dependency>
 		<!-- jdbc -->
 		
