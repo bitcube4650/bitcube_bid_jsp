@@ -9,7 +9,7 @@
 <script>
 
 function fnTest(){
-	location.href="/api/v1/move?viewName=system/temp&p=1";
+	location.href="/api/v1/move?viewName=system/temp/index&p=1";
 	
 }
 

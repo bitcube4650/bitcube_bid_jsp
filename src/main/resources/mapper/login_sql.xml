@@ -101,8 +101,7 @@
 		FROM	T_CO_ITEM_GRP
 	</select>
 	
-	<!-- <select id="selectCustomUserDetails" resultType="bitcube.framework.ebid.dto.CustomUserDetails"> -->
-	<select id="selectCustomUserDetails" resultType="camel">
+	<select id="selectCustomUserDetails" resultType="bitcube.framework.ebid.core.CustomUserDetails">
 		/* login.selectCustomUserDetails */
 		SELECT	'inter' AS custType
 		,		a.INTERRELATED_CUST_CODE AS custCode
@@ -133,5 +132,19 @@
 		AND		USER_ID = #{userId}
 		AND		a.USE_YN  = 'Y'
 		AND		b.CERT_YN = 'Y'
+	</select>
+	
+	<select id="selectFindUser" resultType="bitcube.framework.ebid.dto.UserDto">
+		/* login.selectFindUser */
+		SELECT 'inter' AS cust_type
+		, interrelated_cust_code AS cust_code 
+		, (SELECT interrelated_nm FROM t_co_interrelated x WHERE x.interrelated_cust_code = a.interrelated_cust_code) AS cust_name
+		, user_name 
+		, user_id AS loginId
+		, user_pwd AS loginPw
+		, user_auth
+		, 'token' AS token 
+		FROM t_co_user a
+		WHERE user_id = #{loginId}
 	</select>
 </mapper>

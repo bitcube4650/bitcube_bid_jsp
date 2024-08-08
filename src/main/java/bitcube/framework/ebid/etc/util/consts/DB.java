@@ -12,7 +12,7 @@ public class DB {
 	public final static String QRY_SELECT_LOGIN_USER_INFO_DETAIL = "login.selectLoginUserInfoDetail";
 	public final static String QRY_SELECT_INTERRELATED_LIST = "login.selectInterrelatedList";
 	public final static String QRY_SELECT_CUSTOM_USER_DETAILS = "login.selectCustomUserDetails";
-	
+	public final static String QRY_SELECT_FIND_USER = "login.selectFindUser";
 	// 공통
 	public final static String QRY_SELECT_COMMON_CUST_USER_DETAIL = "common.selectCustUserDetail";
 	public final static String QRY_SELECT_COMMON_CO_USER_DETAIL = "common.selectCoUserDetail";

@@ -42,6 +42,32 @@ public class GeneralController {
 	}
 	
 	/**
+	 * 1단계 경로
+	 * @param step1
+	 * @param step2
+	 * @param request
+	 * @param modelAndView
+	 * @param redirectAttr
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings({"unchecked"})
+	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$).)*}")
+	public ModelAndView generalPageMove(
+			@PathVariable(value="step1") String step1,
+			HttpServletRequest request, ModelAndView modelAndView,
+			RedirectAttributes redirectAttr) throws Exception {
+		
+		System.out.println("step1");
+		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+		
+		Map<String, Object> params = inputFlashMap != null ? (Map<String, Object>) inputFlashMap.get("params") : null;
+		redirectAttr.addFlashAttribute("params", params);
+		modelAndView.setViewName(step1);
+		return modelAndView;
+	}
+	
+	/**
 	 * 2단계 견로
 	 * @param step1
 	 * @param step2
@@ -52,9 +78,7 @@ public class GeneralController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
-	
 	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$).)*}/{step2}")
-//	@RequestMapping(value = "/{step1}/{step2}")
 	public ModelAndView generalPageMove(
 			@PathVariable(value="step1") String step1,
 			@PathVariable(value="step2") String step2,
@@ -83,7 +107,6 @@ public class GeneralController {
 	 */
 	@SuppressWarnings({"unchecked"})
 	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$).)*}/{step2}/{step3}")
-//	@RequestMapping(value = "/{step1}/{step2}/{step3}")
 	public ModelAndView generalPageMove(
 			@PathVariable(value="step1") String step1,
 			@PathVariable(value="step2") String step2,
