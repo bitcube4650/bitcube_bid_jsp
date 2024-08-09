@@ -44,7 +44,6 @@ public class GeneralController {
 	/**
 	 * 1단계 경로
 	 * @param step1
-	 * @param step2
 	 * @param request
 	 * @param modelAndView
 	 * @param redirectAttr

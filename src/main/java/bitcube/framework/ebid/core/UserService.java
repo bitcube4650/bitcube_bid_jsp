@@ -42,8 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service("security.user")
 public class UserService {
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-//	@Autowired
-//	private CustomUserDetailsService customUserDetailsService;
 
 	@Autowired
 	private GeneralDao generalDao;
@@ -53,7 +51,6 @@ public class UserService {
 	private final MailService mailService;
 	private final PasswordEncoder passwordEncoder;
 	private final MessageService messageService;
-//	private final String profile = System.getProperty("spring.profiles.active");
 	
 	@SuppressWarnings({"unchecked"})
 	public ResponseEntity<AuthToken> login(Map<String, Object> params, HttpSession session, HttpServletRequest request) {
@@ -66,19 +63,7 @@ public class UserService {
 			String loginToken = "";
 			
 			Optional<UserDto> user = Optional.of(userDto);
-//
-//			// 최초 로그인시 비밀번호 변경 처리
-//			if ("tempChange".equals(userAuth)) {
-//				Optional<TCoCustUser> userOptional = tCoUserCustRepository.findById(loginId);
-//				if (userOptional.isPresent()) {
-//					TCoCustUser tCoCustUser = userOptional.get();
-//					String encodedPassword = passwordEncoder.encode(loginPw);
-//					LocalDateTime currentDate = LocalDateTime.now();
-//					tCoCustUser.setUserPwd(encodedPassword);
-//					tCoCustUser.setPwdChgDate(currentDate);
-//					tCoUserCustRepository.save(tCoCustUser);
-//				}
-//			}
+			
 			//협력사 사용자인데 아이디와 비밀번호가 일치하지만 협력사가 승인되지 않은 경우
 			try {
 				Map<String, Object> paramMap = new HashMap<String, Object>();
@@ -163,42 +148,6 @@ public class UserService {
 		}
 	}
 	
-//	@NotNull
-//	@Deprecated
-//	private AuthToken getAuthTokenForSso(final HttpSession session, final String loginId, final UserDto obj, final UsernamePasswordAuthenticationToken token, final Authentication authentication, boolean sso) {
-//		// 4. Authentication 인스턴스를 SecurityContextHolder의 SecurityContext에 설정
-//		SecurityContextHolder.getContext().setAuthentication(token);
-//		log.info("tokentokentokentokentokentokentokentokentoken={}", token);
-//		session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-//
-//		StringBuilder sb = new StringBuilder(" SELECT 'inter' AS cust_type\n" +
-//				"     , a.interrelated_cust_code AS cust_code \n" +
-//				"     , interrelated_nm AS cust_name\n" +
-//				"     , user_name \n" +
-//				"     , user_id \n" +
-//				"     , user_pwd \n" +
-//				"     , user_auth\n" +
-//				"     , 'token' AS token \n" +
-//				"  FROM t_co_user a\n" +
-//				"     , t_co_interrelated b\n" +
-//				" WHERE a.interrelated_cust_code = b.interrelated_cust_code\n" +
-//				"   AND user_id = :loginId\n" +
-//				"   AND a.use_yn  = 'Y'\n" +
-//				"   AND b.use_yn  = 'Y'");
-//		Query query = entityManager.createNativeQuery(sb.toString());
-//		query.setParameter("loginId", loginId);
-//		UserDto data = new JpaResultMapper().uniqueResult(query, UserDto.class);
-//
-//		return new AuthToken(data.getCustType(),
-//				data.getCustCode(),
-//				data.getCustName(),
-//				data.getLoginId(),
-//				data.getUserName(),
-//				data.getUserAuth(),
-//				"token",
-//				sso);
-//	}
-//	
 	private AuthToken getAuthToken(final HttpSession session, final String loginId, final UserDto obj, final UsernamePasswordAuthenticationToken token, final Authentication authentication, boolean sso) throws Exception {
 		// 4. Authentication 인스턴스를 SecurityContextHolder의 SecurityContext에 설정
 		session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
@@ -206,7 +155,11 @@ public class UserService {
 		paramMap.put("loginId", loginId);
 		UserDto data = (UserDto) generalDao.selectGernalObject(DB.QRY_SELECT_LOGIN_USER_TOKEN_INFO, paramMap);
 		token.setDetails(data);
+
+		log.info(SecurityContextHolder.getContext()+"");
 		SecurityContextHolder.getContext().setAuthentication(token);
+		log.info(SecurityContextHolder.getContext()+"");
+		log.info(SecurityContextHolder.getContext().getAuthentication()+"");
 		
 		return new AuthToken(data.getCustType(),
 				data.getCustCode(),
@@ -218,54 +171,6 @@ public class UserService {
 				sso);
 	}
 	
-//	@Deprecated
-//	public ResponseEntity<AuthToken> ssoLogin(UserDto userDto, HttpSession session, HttpServletRequest request) {
-//		try {
-//			String loginId = userDto.loginId;
-//			String loginPw = userDto.loginPw;
-//			String loginToken = userDto.token;
-//		
-//			Optional<UserDto> user = Optional.of(userDto);
-//		
-//			Optional<AuthToken> result =
-//					user.map(obj -> {
-//						CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(loginId);
-//						UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, null,  AuthorityUtils.createAuthorityList("ADMIN"));
-//						return getAuthTokenForSso(session, loginId, obj, token, null, true);
-//					});
-//		
-//			return result.map(authToken -> new ResponseEntity<>(authToken, HttpStatus.OK))
-//					.orElseGet(() -> new ResponseEntity<>(new AuthToken(
-//							null
-//							, null
-//							, null
-//							, null
-//							, null
-//							, null
-//							, null
-//							, false), HttpStatus.UNAUTHORIZED));
-//		} catch (AuthenticationException e) {
-//			return new ResponseEntity<>(new AuthToken(
-//					null
-//					, null
-//					, null
-//					, null
-//					, null
-//					, null
-//					, null
-//					, false), HttpStatus.UNAUTHORIZED);
-//		} catch(NoResultException e) {//결과가 없는 경우 > 계열사인데 전자입찰에는 계정이 생성안된 경우
-//			return new ResponseEntity<>(new AuthToken(
-//					null
-//					, null
-//					, null
-//					, null
-//					, null
-//					, null
-//					, null
-//					, false), HttpStatus.UNAUTHORIZED);
-//		}
-//	}
 	
 	public void logout(HttpSession session) {
 		session.invalidate();
