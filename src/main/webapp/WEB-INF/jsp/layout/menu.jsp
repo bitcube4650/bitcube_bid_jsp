@@ -107,7 +107,7 @@
             <div>낙찰 (12개월)<a class="myStateNum" title="전자입찰 페이지로 이동"><span id="awardedCount">0</span>건</a></div>
         </div>
         <ul class="conLeft">
-            <li class="<%= path.equals("/main") ? "active" : "" %>"><a href="/main"><span><i class="fa-light fa-desktop"></i></span>메인</a></li>
+            <li class="<%= path.equals("/dashboard") ? "active" : "" %>"><a href="/main"><span><i class="fa-light fa-desktop"></i></span>메인</a></li>
             <li class="<%= path.startsWith("/bid") ? "active" : "" %>">
                 <a id="ebid" class="menuLink"><span><i class="fa-light fa-file-contract"></i></span>전자입찰</a>
                 <div class="depth2Lnb">
