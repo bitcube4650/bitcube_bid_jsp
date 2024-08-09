@@ -1,58 +1,51 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Header</title>
-    <script src="${pageContext.request.contextPath}/resources/jquery.min.js"></script>
-    <script src="${pageContext.request.contextPath}/resources/sweetalert2.all.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/common.css">
-    <!-- <script src="/resources/js/logoutPop.js"></script> LogoutPop 관련 스크립트
-    <script src="/resources/js/checkPwdPop.js"></script> CheckPwdPop 관련 스크립트 -->
-    <script>
-        $(document).ready(function() {
-            var loginInfoString = localStorage.getItem("loginInfo"); 
-            var loginInfo = loginInfoString ? JSON.parse(loginInfoString) : null;
-            
-            if (loginInfo !== null) {
-                $('#userName').text(loginInfo.userName);
-                $('.headerRight').show();
-            } else {
-                $('.headerRight').hide();
-            }
+<!-- <script src="/resources/js/logoutPop.js"></script> LogoutPop 관련 스크립트
+<script src="/resources/js/checkPwdPop.js"></script> CheckPwdPop 관련 스크립트 -->
+<script>
+    $(document).ready(function() {
+        var loginInfoString = localStorage.getItem("loginInfo"); 
+        var loginInfo = loginInfoString ? JSON.parse(loginInfoString) : null;
+        
+        if (loginInfo !== null) {
+            $('#userName').text(loginInfo.userName);
+            $('.headerRight').show();
+        } else {
+            $('.headerRight').hide();
+        }
 
-            $('.profileDrop').on('click', function(e) {
-                e.preventDefault();
-                $('.profileDropWrap').toggleClass('active');
-            });
-
-            $('#logoutLink').on('click', function(e) {
-                e.preventDefault();
-                $('#logoutPop').show();
-            });
-
-            $('#changeInfoLink').on('click', function(e) {
-                e.preventDefault();
-                setModPop('info');
-                $('#checkPwdPop').show();
-            });
-
-            $('#changePwdLink').on('click', function(e) {
-                e.preventDefault();
-                setModPop('pwd');
-                $('#checkPwdPop').show();
-            });
-
-            function setModPop(flag) {
-                $('#modPop').val(flag);
-            }
+        $('.profileDrop').on('click', function(e) {
+            e.preventDefault();
+            $('.profileDropWrap').toggleClass('active');
         });
 
-        function fnMoveMain() {
-            window.location.href = "/";
+        $('#logoutLink').on('click', function(e) {
+            e.preventDefault();
+            $('#logoutPop').show();
+        });
+
+        $('#changeInfoLink').on('click', function(e) {
+            e.preventDefault();
+            setModPop('info');
+            $('#checkPwdPop').show();
+        });
+
+        $('#changePwdLink').on('click', function(e) {
+            e.preventDefault();
+            setModPop('pwd');
+            $('#checkPwdPop').show();
+        });
+
+        function setModPop(flag) {
+            $('#modPop').val(flag);
         }
-    </script>
-</head>
+    });
+
+    function fnMoveMain() {
+        window.location.href = "/";
+    }
+</script>
 <body>
     <div class="header">
         <div class="headerLeft">

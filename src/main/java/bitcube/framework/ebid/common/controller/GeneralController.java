@@ -52,13 +52,13 @@ public class GeneralController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
-	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$).)*}")
+	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$|favicon.ico$).)*}")
 	public ModelAndView generalPageMove(
 			@PathVariable(value="step1") String step1,
 			HttpServletRequest request, ModelAndView modelAndView,
 			RedirectAttributes redirectAttr) throws Exception {
 		
-		System.out.println("step1");
+		log.info("step1 : " + step1);
 		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
 		
 		Map<String, Object> params = inputFlashMap != null ? (Map<String, Object>) inputFlashMap.get("params") : null;
@@ -78,14 +78,14 @@ public class GeneralController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
-	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$).)*}/{step2}")
+	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$|favicon.ico$).)*}/{step2}")
 	public ModelAndView generalPageMove(
 			@PathVariable(value="step1") String step1,
 			@PathVariable(value="step2") String step2,
 			HttpServletRequest request, ModelAndView modelAndView,
 			RedirectAttributes redirectAttr) throws Exception {
 		
-		System.out.println("step2");
+		log.info("step2 : " + step1+"/"+step2);
 		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
 		
 		Map<String, Object> params = inputFlashMap != null ? (Map<String, Object>) inputFlashMap.get("params") : null;
@@ -106,7 +106,7 @@ public class GeneralController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
-	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$).)*}/{step2}/{step3}")
+	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$|favicon.ico$).)*}/{step2}/{step3}")
 	public ModelAndView generalPageMove(
 			@PathVariable(value="step1") String step1,
 			@PathVariable(value="step2") String step2,
@@ -114,7 +114,7 @@ public class GeneralController {
 			HttpServletRequest request, ModelAndView modelAndView,
 			RedirectAttributes redirectAttr) throws Exception {
 		
-		System.out.println("step3");
+		log.info("step3 : " + step1+"/"+step2+"/"+step3);
 		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
 		
 		Map<String, Object> params = inputFlashMap != null ? (Map<String, Object>) inputFlashMap.get("params") : null;

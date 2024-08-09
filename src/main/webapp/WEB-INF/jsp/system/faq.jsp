@@ -1,13 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>FAQ 관리</title>
-    <script src="${pageContext.request.contextPath}/resources/jquery.min.js"></script>
-    <script src="${pageContext.request.contextPath}/resources/sweetalert2.all.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/common.css">
-</head>
+<jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />

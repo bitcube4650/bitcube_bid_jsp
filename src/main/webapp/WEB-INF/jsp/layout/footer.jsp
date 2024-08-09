@@ -1,36 +1,29 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Footer</title>
-    <script src="${pageContext.request.contextPath}/resources/jquery.min.js"></script>
-    <script src="${pageContext.request.contextPath}/resources/sweetalert2.all.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/common.css">
-    <script>
-        $(document).ready(function() {
-            $('#enrollmentProcessLink').on('click', function(e) {
-                e.preventDefault();
-                $('#enrollmentProcessPop').show();
-            });
-
-            $('#biddingGuideLink').on('click', function(e) {
-                e.preventDefault();
-                $('#biddingGuidePop').show();
-            });
-
-            $('.closePop').on('click', function() {
-                $(this).closest('.modal').hide();
-            });
+<script>
+    $(document).ready(function() {
+        $('#enrollmentProcessLink').on('click', function(e) {
+            e.preventDefault();
+            $('#enrollmentProcessPop').show();
         });
-    </script>
-    <style>
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 500px; background: white; border: 1px solid #ccc; padding: 20px; z-index: 1000; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { margin-top: 20px; }
-    </style>
-</head>
+
+        $('#biddingGuideLink').on('click', function(e) {
+            e.preventDefault();
+            $('#biddingGuidePop').show();
+        });
+
+        $('.closePop').on('click', function() {
+            $(this).closest('.modal').hide();
+        });
+    });
+</script>
+<style>
+    .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 500px; background: white; border: 1px solid #ccc; padding: 20px; z-index: 1000; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { margin-top: 20px; }
+</style>
 <body>
     <div class="footer">
         <div class="subFooter">

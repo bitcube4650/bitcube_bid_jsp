@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-<%@ include file="/WEB-INF/jsp/common.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common.jsp" />
 <script>
 
 	$(function(){

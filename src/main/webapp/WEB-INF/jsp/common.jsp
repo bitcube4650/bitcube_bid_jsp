@@ -2,8 +2,8 @@
 	pageEncoding="UTF-8"%>
 	
 <head>
-<meta charset="UTF-8">
-<title>비트큐브 전자입찰</title>
+	<meta charset="UTF-8">
+	<title>비트큐브 전자입찰</title>
 </head>
 <%-- <script src="${pageContext.request.contextPath}/resources/jquery.min.js"></script> --%>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
