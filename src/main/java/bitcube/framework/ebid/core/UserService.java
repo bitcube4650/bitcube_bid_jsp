@@ -1,7 +1,5 @@
 package bitcube.framework.ebid.core;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,18 +18,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import bitcube.framework.ebid.dao.GeneralDao;
 import bitcube.framework.ebid.dto.ResultBody;
 import bitcube.framework.ebid.dto.UserDto;
+import bitcube.framework.ebid.etc.service.MailService;
+import bitcube.framework.ebid.etc.service.MessageService;
 import bitcube.framework.ebid.etc.util.CommonUtils;
 import bitcube.framework.ebid.etc.util.consts.DB;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,11 +50,12 @@ public class UserService {
 
 
 	private final AuthenticationManager authenticationManager;
-//	private final MailService mailService;
+	private final MailService mailService;
 	private final PasswordEncoder passwordEncoder;
-//	private final MessageService messageService;
-	private final String profile = System.getProperty("spring.profiles.active");
+	private final MessageService messageService;
+//	private final String profile = System.getProperty("spring.profiles.active");
 	
+	@SuppressWarnings({"unchecked"})
 	public ResponseEntity<AuthToken> login(Map<String, Object> params, HttpSession session, HttpServletRequest request) {
 		try {
 			UserDto userDto = new UserDto();
@@ -122,7 +121,7 @@ public class UserService {
 						logger.info("1. username, password를 조합하여 UsernamePasswordAuthenticationToken 생성");
 						UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginId, loginPw);
 						Authentication authentication = null;
-						if(!StringUtils.isEmpty(loginToken)) {
+						if(!(loginToken == null || "".equals(loginToken))) {
 							logger.info("Create Granted Authority Rules");
 							// Create Granted Authority Rules
 							Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
@@ -272,18 +271,19 @@ public class UserService {
 		session.invalidate();
 	}
 	
+	@SuppressWarnings({"unchecked"})
 	public ResultBody idSearch(Map<String, Object> paramMap) throws Exception {
 		ResultBody resultBody = new ResultBody();
 			Map<String, Object> userMap = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_LOGIN_USER_SEARCH, paramMap);
 			if(userMap != null) {
-//				mailService.saveMailInfo("[일진그룹 e-bidding] 로그인 아이디", "고객님께서 찾으시는 e-bidding 시스템 로그인 아이디는\n" +
-//						"<b style='color:red'>" + CommonUtils.getString(userMap.get("userId")) + "</b>\n" +
-//						"입니다.\n" +
-//						"\n" +
-//						"감사합니다.\n", (String) paramMap.get("userEmail"));
-//
-//				messageService.send("일진그룹", CommonUtils.getString(userMap.get("userHp")) , CommonUtils.getString(userMap.get("userName")) ,
-//						"[일진그룹 전자입찰시스템] 찾고자 하는 아이디는 " + CommonUtils.getString(userMap.get("userId")) + " 입니다.");
+				mailService.saveMailInfo("[일진그룹 e-bidding] 로그인 아이디", "고객님께서 찾으시는 e-bidding 시스템 로그인 아이디는\n" +
+						"<b style='color:red'>" + CommonUtils.getString(userMap.get("userId")) + "</b>\n" +
+						"입니다.\n" +
+						"\n" +
+						"감사합니다.\n", (String) paramMap.get("userEmail"));
+
+				messageService.send("일진그룹", CommonUtils.getString(userMap.get("userHp")) , CommonUtils.getString(userMap.get("userName")) ,
+						"[일진그룹 전자입찰시스템] 찾고자 하는 아이디는 " + CommonUtils.getString(userMap.get("userId")) + " 입니다.");
 			} else {
 				resultBody.setCode("notFound");
 			}
@@ -299,15 +299,15 @@ public class UserService {
 		int cnt = generalDao.updateGernal(DB.QRY_UPDATE_LOGIN_USER_SEARCH_PWD, paramMap);
 		if (cnt > 0) {
 			// 로그인 암호 메일 저장 처리
-//			mailService.saveMailInfo("[일진그룹 e-bidding] 로그인 암호", "e-bidding 시스템에 로그인 하기 위해 초기화된 비밀번호는\n" +
-//					"<b style='color:red'>" + userPwd + "</b>\n" +
-//					"입니다.\n" +
-//					"\n" +
-//					"감사합니다.\n", CommonUtils.getString(paramMap.get("userEmail")));
+			mailService.saveMailInfo("[일진그룹 e-bidding] 로그인 암호", "e-bidding 시스템에 로그인 하기 위해 초기화된 비밀번호는\n" +
+					"<b style='color:red'>" + userPwd + "</b>\n" +
+					"입니다.\n" +
+					"\n" +
+					"감사합니다.\n", CommonUtils.getString(paramMap.get("userEmail")));
 			
 			String userHp = CommonUtils.getString(generalDao.selectGernalObject(DB.QRY_SELECT_LOGIN_USER_SEARCH_NEW_PWD, paramMap));
 			if (!"".equals(userHp)) {
-//				messageService.send("일진그룹", userHp, CommonUtils.getString(paramMap.get("userName")), "[일진그룹 전자입찰시스템] 초기화 된 비밀번호는 " + userPwd + " 입니다.");
+				messageService.send("일진그룹", userHp, CommonUtils.getString(paramMap.get("userName")), "[일진그룹 전자입찰시스템] 초기화 된 비밀번호는 " + userPwd + " 입니다.");
 			}
 			
 		} else {
@@ -345,11 +345,13 @@ public class UserService {
 	}
 	
 	// 계열사 목록 가져오기
+	@SuppressWarnings({"rawtypes"})
 	public List interrelatedList() throws Exception{
 		return generalDao.selectGernalList(DB.QRY_SELECT_INTERRELATED_LIST, null);
 	}
 	
 	// 품목그룹 목록 가져오기
+	@SuppressWarnings({"rawtypes"})
 	public List itemGrpList() throws Exception{
 		return generalDao.selectGernalList(DB.QRY_SELECT_ITEM_GRP_LIST, null);
 	}

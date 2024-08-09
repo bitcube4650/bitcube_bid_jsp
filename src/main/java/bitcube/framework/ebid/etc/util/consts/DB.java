@@ -141,5 +141,7 @@ public class DB {
 	public final static String QRY_SELECT_BI_INFO_LIST_COUNT = "statistics.selectBiInfoList_count";
 	public final static String QRY_SELECT_BI_INFO_LIST = "statistics.selectBiInfoList";
 	
+	//mail
+	public final static String QRY_INSERT_MAIL_INFO = "etc.insertMailInfo";
 }
 
