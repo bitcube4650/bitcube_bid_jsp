@@ -11,13 +11,18 @@ import org.springframework.stereotype.Component;
 public class Constances {
 
     /*----------------------System Constances--------------------------*/
-
+	public static String SESSION_NAME;
     public static boolean COMMON_SCHEDULE_FLAG;
     public static String SYSTEM_FILEENCRYPT_KEY;
     public static String FILE_UPLOAD_DIRECTORY;
     public static String CERTIFICATE_SETTING_PATH;
     public static String CERTIFICATE_FILE_PATH;
 
+    @Value("${session.name}")
+    private void setSessionName(String sessionName) {
+        Constances.SESSION_NAME = sessionName;
+    }
+    
     @Value("${file.upload.directory}")
     private void setFileUploadDirectory(String fileUploadDirectory) {
         Constances.FILE_UPLOAD_DIRECTORY = fileUploadDirectory;

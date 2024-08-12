@@ -18,7 +18,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import bitcube.framework.ebid.core.CustomUserDetails;
 import bitcube.framework.ebid.dto.ResultBody;
+import bitcube.framework.ebid.dto.UserDto;
 import bitcube.framework.ebid.etc.notice.service.NoticeService;
+import bitcube.framework.ebid.etc.util.Constances;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -37,9 +41,16 @@ public class NoticeController {
 	 * @return
 	 */
 	@PostMapping("/noticeList")
-	public ResultBody noticeList(@RequestParam Map<String, Object> params, @AuthenticationPrincipal CustomUserDetails user) {
+	public ResultBody noticeList(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 
-		return noticeService.noticeList(params, user);
+		HttpSession		session		= request.getSession();
+		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		params.put("custCode", user.getCustCode());	// 계열사 사용자 - 소속 계열사/ 협력사 사용자 - 본인 협력사
+		params.put("custType", user.getCustType());	// 사용자 업체 타입
+		params.put("userAuth", user.getUserAuth()); // 계열사사용자 권한
+		params.put("userId", user.getUserName()); // 계열사사용자 권한
+		
+		return noticeService.noticeList(params);
 	}
 
 	/**
