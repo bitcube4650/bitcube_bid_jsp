@@ -17,7 +17,7 @@
             let menuClickBoolean = false;
 
             function fetchData() {
-                let url = userCustType === 'inter' ? "/api/v1/main/selectBidCnt" : "/api/v1/main/selectPartnerBidCnt";
+                /* let url = userCustType === 'inter' ? "/api/v1/main/selectBidCnt" : "/api/v1/main/selectPartnerBidCnt";
                 $.post(url, loginInfo, function(response) {
                     if(response.code === 'OK') {
                         $("#ingCount").text(response.data.ing);
@@ -28,7 +28,7 @@
                         $("#completedCount").text(0);
                         $("#awardedCount").text(0);
                     }
-                });
+                }); */
             }
 
             fetchData();
@@ -126,8 +126,8 @@
                 <div class="depth2Lnb">
                     <ul>
                         <li class="<%= path.equals("/notice") ? "active" : "" %>"><a href="/notice">공지사항</a></li>
-                        <li style="display: <%= userCustType.equals("inter") ? "block" : "none" %>;" class="<%= path.equals("/notice/faq/admin") ? "active" : "" %>"><a href='/notice/faq/admin'>FAQ</a></li>
-                        <li style="display: <%= userCustType.equals("cust") ? "block" : "none" %>;" class="<%= path.equals("/notice/faq/user") ? "active" : "" %>"><a href='/notice/faq/user'>FAQ-협력사</a></li>
+                        <li style="display: <%= userCustType.equals("inter") ? "block" : "none" %>;" class="<%= path.equals("/notice/faq/admin") ? "active" : "" %>"><a href='/notice/faq?type=admin'>FAQ</a></li>
+                        <li style="display: <%= userCustType.equals("cust") ? "block" : "none" %>;" class="<%= path.equals("/notice/faq/user") ? "active" : "" %>"><a href='/notice/faq'>FAQ-협력사</a></li>
                         <li style="display: <%= userCustType.equals("inter") ? "block" : "none" %>;"><a href="../../installFile/전자입찰_매뉴얼_본사.pdf" download="전자입찰_메뉴얼.pdf">메뉴얼</a></li>
                         <li style="display: <%= userCustType.equals("cust") ? "block" : "none" %>;"><a href="../../installFile/전자입찰_매뉴얼_업체.pdf" download="전자입찰_메뉴얼.pdf">메뉴얼</a></li>
                     </ul>

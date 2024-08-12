@@ -3,6 +3,43 @@
 <html>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		initPagination(0,0,0);
+		onSearch();
+	});
+	
+	function onSearch(page){
+		$.post("/api/v1/faq/faqList", {
+			"title"		: $("#title").val(),
+			"faqType"	: $("#faqType").val(),
+			"admin"		: 'Y',
+			"size"		: $("#pageSize").val(),
+			"page"		: page
+		}, function(response) {
+			if(response.code === 'OK') {
+				var list = response.data.content;
+				updatePagination(response.data.totalElements, 0);
+				$("#faqListBody").empty();
+				for(var i=0;i<list.length;i++) {
+					$("#faqListBody").append(
+						"<tr>" +
+							'<td>'+ list[i].faqTypeDescription +'</td>' +
+							'<td className="text-left"><a data-toggle="modal" className="textUnderline notiTitle" title="FAQ 자세히 보기">'+ list[i].title+'</a></td>' +
+							'<td>'+ list[i].userName +'</td>' +
+							'<td>'+ list[i].createDate +'</td>'+
+						"</tr>"
+					);
+				}
+			} else {
+				
+			}
+		},
+		"json"
+		);
+	}
+	
+	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
 		<div class="contentWrap">
@@ -31,7 +68,7 @@
 		                            <option value="3">인증서관련</option>
 		                        </select>
 		                    </div>
-		                    <a href="#" id="searchBtn" class="btnStyle btnSearch">검색</a>
+		                    <a href="#" id="searchBtn" class="btnStyle btnSearch" onclick="onSearch()">검색</a>
 		                </div>
 		            </div>
 		
@@ -66,14 +103,13 @@
 		                    </tr>
 		                </thead>
 		                <tbody id="faqListBody">
-		                    <!-- FAQ 데이터가 로드됩니다. -->
+		                    
 		                </tbody>
 		            </table>
 		
 		            <div class="row mt40">
 		                <div class="col-xs-12">
-		                    <!-- 페이지네이션을 위한 공간 -->
-		                    <div id="pagination"></div>
+		                    <jsp:include page="/WEB-INF/jsp/pagination.jsp" />
 		                </div>
 		            </div>
 		        </div>
@@ -82,9 +118,7 @@
 		        <div id="faqPop" class="modal fade" tabindex="-1" role="dialog">
 		            <div class="modal-dialog" role="document">
 		                <div class="modal-content">
-		                    <div class="modal-header">
-		                        <h5 class="modal-title">FAQ 팝업</h5>
-		                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		                    <div class="modal-header">h
 		                            <span aria-hidden="true">&times;</span>
 		                        </button>
 		                    </div>
