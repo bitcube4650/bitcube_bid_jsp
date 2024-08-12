@@ -49,13 +49,24 @@ function selectNotice() {
 		"/api/v1/notice/noticeList",
 		{ size: 7, page: 0 },
 		function(arg){
-			if (arg.data.code == "OK") {
-				console.log(arg);
+			console.log(arg);
+			if (arg.code === "OK") {
+				let data = arg.data.content;
+				
+				let text = "";
+				for(let i = 0 ; i < data.length ; i++){
+					text += '<a href="javascript:onNoticeDetail()" data-toggle="modal" data-target="#notiModal" title="해당 게시글 자세히 보기">';
+					text += 	'<span class="notiTit">' + (data[i].bco === 'ALL' ? '[공통]' : '') + data[i].btitle + '</span>';
+					text +=		'<span class="notiDate" style="width:170px;">' + data[i].bdate +'</span>';
+					text += "</a>"
+				}
+				
+				$("#notiList").html(text);
 			}
 		},
 		"json"
 	);
-};
+}
 
 function selectBidCnt() {
 	$.post(
@@ -159,7 +170,7 @@ function selectPartnerCnt() {
 							</div>
 							<div class="mainConBox" style="height: '381.41px'">
 								<h2 class="h2Tit">공지사항<a onClick="onMoveNotice()" title="공지사항 페이지로 이동" class="mainConBoxMore">더보기<i class="fa-solid fa-circle-plus"></i></a></h2>
-								<div class="notiList">
+								<div class="notiList" id="notiList">
 									<!-- {noticeList?.content?.map((notice: Notice) => <NoticeList key={notice.bno} content={notice} isMain={true} />)} -->
 								</div>
 							</div>

@@ -8,13 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import bitcube.framework.ebid.core.CustomUserDetails;
 import bitcube.framework.ebid.dao.GeneralDao;
 import bitcube.framework.ebid.dto.ResultBody;
 import bitcube.framework.ebid.etc.util.CommonUtils;
@@ -38,20 +35,12 @@ public class NoticeService {
 	// 공지사항 목록 조회 및 상세 조회
 	@SuppressWarnings("rawtypes")
 	@Transactional
-	public ResultBody noticeList(Map<String, Object> params, CustomUserDetails user){
+	public ResultBody noticeList(Map<String, Object> params){
 		ResultBody resultBody = new ResultBody();
 		
-		log.info(SecurityContextHolder.getContext()+"");
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
-		params.put("custCode", user.getCustCode());	// 계열사 사용자 - 소속 계열사/ 협력사 사용자 - 본인 협력사
-		params.put("custType", user.getCustType());	// 사용자 업체 타입
-		params.put("userAuth", user.getUserAuth()); // 계열사사용자 권한
-		params.put("userId", user.getUsername()); // 계열사사용자 권한
-		
 		try {
-//			Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_NOTICE_LIST, params);
-//			resultBody.setData(listPage);
+			Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_NOTICE_LIST, params);
+			resultBody.setData(listPage);
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultBody.setCode("ERROR");

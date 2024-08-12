@@ -13,7 +13,7 @@
 		} else {
 			Swal.fire({
 				title: '',			  // 타이틀
-				text: "입력하신 사용자에게 문자와 이메일로 e-bidding 시스템에 접속하실 아이디를 전송합니다.<br/>아이디를 전송하시겠습니까?",  // 내용
+				html: "입력하신 사용자에게 문자와 이메일로 e-bidding 시스템에 접속하실 아이디를 전송합니다.<br/>아이디를 전송하시겠습니까?",  // 내용
 				icon: 'question',						// success / error / warning / info / question
 				confirmButtonColor: '#3085d6',  // 기본옵션
 				confirmButtonText: '전송',	  // 기본옵션
@@ -30,20 +30,25 @@
 	
 	function onSearch() {
 		var params = {
-			regnum1 : $("#regnum1").val()
-		,	regnum2 : $("#regnum2").val()
-		,	regnum3 : $("#regnum3").val()
-		,	userName : $("#userName").val()
-		,	userEmail : $("#userEmail").val()
+			regnum1		: $("#regnum1").val()
+		,	regnum2		: $("#regnum2").val()
+		,	regnum3		: $("#regnum3").val()
+		,	userName	: $("#userName").val()
+		,	userEmail	: $("#userEmail").val()
 		};
 		
 		$.post(
-			"/api/v1/login", params, 
+			"/api/v1/login/idSearch", params, 
 			function(arg){
 				if (arg.status === 200) {
 					if(arg.code == "OK") {
 						Swal.fire('', '전송되었습니다.', 'success');
 						$("#modalClose").click();
+						$("#regnum1").val('');
+						$("#regnum2").val('');
+						$("#regnum3").val('');
+						$("#userName").val('');
+						$("#userEmail").val('');
 					} else {
 						Swal.fire('', '입력한 정보가 등록된 정보와 상이합니다. 다시 입력해 주십시오.', 'warning');
 					}

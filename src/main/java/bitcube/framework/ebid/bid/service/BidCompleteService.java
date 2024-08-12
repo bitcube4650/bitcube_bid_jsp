@@ -37,16 +37,6 @@ public class BidCompleteService {
 	@SuppressWarnings({ "rawtypes" })
 	public ResultBody complateBidList(Map<String, Object> params) throws Exception{
 		ResultBody resultBody = new ResultBody();
-		
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		Optional<TCoUser> userOptional = tCoUserRepository.findById(principal.getUsername());
-//		String userId = userOptional.get().getUserId();
-//		String userInterrelatedCustCode = userOptional.get().getInterrelatedCustCode();
-//		String userAuth = userOptional.get().getUserAuth();
-//		
-//		params.put("userId", userId);
-//		params.put("interrelatedCustCode", userInterrelatedCustCode);
-//		params.put("userAuth", userAuth);
 
 		params.put("userId", "ebidmast");
 		params.put("interrelatedCustCode", "11");

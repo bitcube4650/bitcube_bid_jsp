@@ -1,11 +1,9 @@
 package bitcube.framework.ebid.core;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -17,11 +15,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +27,7 @@ import bitcube.framework.ebid.dto.UserDto;
 import bitcube.framework.ebid.etc.service.MailService;
 import bitcube.framework.ebid.etc.service.MessageService;
 import bitcube.framework.ebid.etc.util.CommonUtils;
+import bitcube.framework.ebid.etc.util.Constances;
 import bitcube.framework.ebid.etc.util.consts.DB;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -45,7 +42,6 @@ public class UserService {
 
 	@Autowired
 	private GeneralDao generalDao;
-
 
 	private final AuthenticationManager authenticationManager;
 	private final MailService mailService;
@@ -105,21 +101,9 @@ public class UserService {
 						// 1. username, password를 조합하여 UsernamePasswordAuthenticationToken 생성
 						logger.info("1. username, password를 조합하여 UsernamePasswordAuthenticationToken 생성");
 						UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginId, loginPw);
-						Authentication authentication = null;
-						if(!(loginToken == null || "".equals(loginToken))) {
-							logger.info("Create Granted Authority Rules");
-							// Create Granted Authority Rules
-							Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-							token = new UsernamePasswordAuthenticationToken(loginId, null, grantedAuthorities);
-						} else {
-							logger.info("2. 검증을 위해 UsernamePasswordAuthenticationToken 을 authenticationManager 의 인스턴스로 전달");
-							// form login
-							// 2. 검증을 위해 UsernamePasswordAuthenticationToken 을 authenticationManager 의 인스턴스로 전달
-							authentication = authenticationManager.authenticate(token);// 3. 인증에 성공하면 Authentication 인스턴스 리턴
-						}
-						
+						Authentication authentication = authenticationManager.authenticate(token);// 3. 인증에 성공하면 Authentication 인스턴스 리턴
 						try {
-							return getAuthToken(session, loginId, obj, token, authentication, false);
+							return getAuthToken(session, loginId, obj, token);
 						} catch (Exception e) {
 							return null;
 						}
@@ -148,18 +132,12 @@ public class UserService {
 		}
 	}
 	
-	private AuthToken getAuthToken(final HttpSession session, final String loginId, final UserDto obj, final UsernamePasswordAuthenticationToken token, final Authentication authentication, boolean sso) throws Exception {
-		// 4. Authentication 인스턴스를 SecurityContextHolder의 SecurityContext에 설정
-		session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+	private AuthToken getAuthToken(final HttpSession session, final String loginId, final UserDto obj, final UsernamePasswordAuthenticationToken token) throws Exception {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("loginId", loginId);
 		UserDto data = (UserDto) generalDao.selectGernalObject(DB.QRY_SELECT_LOGIN_USER_TOKEN_INFO, paramMap);
 		token.setDetails(data);
-
-		log.info(SecurityContextHolder.getContext()+"");
-		SecurityContextHolder.getContext().setAuthentication(token);
-		log.info(SecurityContextHolder.getContext()+"");
-		log.info(SecurityContextHolder.getContext().getAuthentication()+"");
+		session.setAttribute(Constances.SESSION_NAME, data);
 		
 		return new AuthToken(data.getCustType(),
 				data.getCustCode(),
@@ -168,12 +146,12 @@ public class UserService {
 				data.getUserName(),
 				data.getUserAuth(),
 				"token",
-				sso);
+				false);
 	}
 	
-	
 	public void logout(HttpSession session) {
-		session.invalidate();
+		session.removeAttribute(Constances.SESSION_NAME);
+//		session.invalidate();
 	}
 	
 	@SuppressWarnings({"unchecked"})

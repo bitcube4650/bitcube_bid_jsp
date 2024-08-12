@@ -60,14 +60,22 @@ public class LoginController {
 		return resultBody;
 	}
 
-	@GetMapping("/logout")
-	public ResponseEntity<String> logout(HttpSession session) {
-		userService.logout(session);
-		return new ResponseEntity<> ("로그아웃 되었습니다.", HttpStatus.OK);
+	@PostMapping("/logout")
+	public ResultBody logout(HttpSession session) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			userService.logout(session);
+		}catch(Exception e) {
+			log.error(e.getMessage());
+			resultBody.setStatus(999);
+			resultBody.setCode("Fail");
+		}
+//		return new ResponseEntity<> ("로그아웃 되었습니다.", HttpStatus.OK);
+		return resultBody;
 	}
 
 	@PostMapping("/login/idSearch")
-	public ResultBody idSearch(@RequestBody Map<String, String> params) {
+	public ResultBody idSearch(@RequestParam Map<String, String> params) {
 		ResultBody resultBody = new ResultBody();
 		try {
 			Map<String, Object> paramMap = new HashMap<String, Object> ();
@@ -83,7 +91,7 @@ public class LoginController {
 	}
 
 	@PostMapping("/login/pwSearch")
-	public ResultBody pwSearch(@RequestBody Map<String, String> params) {
+	public ResultBody pwSearch(@RequestParam Map<String, String> params) {
 		ResultBody resultBody = new ResultBody();
 		try {
 			Map<String, Object> paramMap = new HashMap<String, Object>();
@@ -143,7 +151,7 @@ public class LoginController {
 	}
 
 	@PostMapping("/login/itemList")
-	public ResultBody itemList(@RequestBody Map<String, Object> params) {
+	public ResultBody itemList(@RequestParam Map<String, Object> params) {
 		ResultBody result = new ResultBody();
 		try {
 //			result = itemService.itemList(params);
@@ -154,7 +162,7 @@ public class LoginController {
 	}
 	
 	@PostMapping("/login/idcheck")
-	public ResultBody idcheck(@RequestBody Map<String, Object> params) {
+	public ResultBody idcheck(@RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 		try {
 //			resultBody = custService.idcheck(params);
