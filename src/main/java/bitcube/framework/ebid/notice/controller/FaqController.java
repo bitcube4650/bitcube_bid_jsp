@@ -22,14 +22,16 @@ public class FaqController {
 	@PostMapping(value="/faqList", produces = "application/json")
 	@ResponseBody
 	public ResultBody faqList(@RequestParam Map<String, Object> params) throws Exception {
-		System.err.println("faqList   ===============================================================");
 		ResultBody resultBody = new ResultBody();
-//		try {
+		try {
 			resultBody = faqService.faqList(params);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-			System.err.println("faqList   ===============================================================");	
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultBody.setCode("ERROR");
+			resultBody.setStatus(500);
+			resultBody.setMsg("An error occurred while selecting faqList.");
+			resultBody.setData(e.getMessage());
+		}	
 		return resultBody;
 	}
 

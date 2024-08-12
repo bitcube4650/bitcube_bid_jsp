@@ -5,8 +5,8 @@
 <body>
 	<script type="text/javascript">
 	$(document).ready(function() {
-		initPagination(0,0,0);
-		onSearch();
+		//initPagination(0,0,0);
+		onSearch(0);
 	});
 	
 	function onSearch(page){
@@ -19,7 +19,8 @@
 		}, function(response) {
 			if(response.code === 'OK') {
 				var list = response.data.content;
-				updatePagination(response.data.totalElements, 0);
+				updatePagination(response.data);
+				$("#total").html(response.data.totalElements)
 				$("#faqListBody").empty();
 				for(var i=0;i<list.length;i++) {
 					$("#faqListBody").append(
@@ -74,8 +75,8 @@
 		
 		            <div class="flex align-items-center justify-space-between mt40">
 		                <div class="width100">
-		                    전체 : <span id="totalElements" class="textMainColor"><strong>0</strong></span>건
-		                    <select id="pageSize" class="selectStyle maxWidth140px ml20">
+		                    전체 : <span id="totalElements" class="textMainColor"><strong id="total"></strong></span>건
+		                    <select id="pageSize" class="selectStyle maxWidth140px ml20" onchange="onSearch(0)">
 		                        <option value="10">10개씩 보기</option>
 		                        <option value="20">20개씩 보기</option>
 		                        <option value="30">30개씩 보기</option>
