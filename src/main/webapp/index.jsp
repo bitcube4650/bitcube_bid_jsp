@@ -107,8 +107,6 @@
 					</div>
 				</div>
 		
-		
-		
 				<div class="loginFooter">
 					<div class="inner">
 						<div class="loginFootCenter">
@@ -137,5 +135,7 @@
 	
 	<jsp:include page="/WEB-INF/jsp/sign/idSearchPop.jsp" />
 	<jsp:include page="/WEB-INF/jsp/sign/pwSearchPop.jsp" />
+	<jsp:include page="/WEB-INF/jsp/sign/regProcessPop.jsp" />
+	<jsp:include page="/WEB-INF/jsp/sign/biddingInfoPop.jsp" />
 </body>
 </html>
