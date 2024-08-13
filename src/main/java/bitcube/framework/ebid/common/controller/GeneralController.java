@@ -11,8 +11,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import bitcube.framework.ebid.dto.UserDto;
 import bitcube.framework.ebid.etc.util.CommonUtils;
+import bitcube.framework.ebid.etc.util.Constances;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -34,6 +37,14 @@ public class GeneralController {
 	@RequestMapping("/api/v1/move")
 	public ModelAndView movePage(HttpServletRequest request, ModelAndView modelAndView, @RequestParam Map<String, Object> params
 			, RedirectAttributes redirectAttr) throws Exception {
+		
+		HttpSession		session		= request.getSession();
+		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		if(user == null) {
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
+		
 		String viewName = CommonUtils.getString(params.get("viewName"));
 		params.remove("viewName");
 		redirectAttr.addFlashAttribute("params", params);
@@ -56,6 +67,13 @@ public class GeneralController {
 			@PathVariable(value="step1") String step1,
 			HttpServletRequest request, ModelAndView modelAndView,
 			RedirectAttributes redirectAttr) throws Exception {
+		
+		HttpSession		session		= request.getSession();
+		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		if(user == null) {
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
 		
 		log.info("step1 : " + step1);
 		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
@@ -83,6 +101,13 @@ public class GeneralController {
 			@PathVariable(value="step2") String step2,
 			HttpServletRequest request, ModelAndView modelAndView,
 			RedirectAttributes redirectAttr) throws Exception {
+		
+		HttpSession		session		= request.getSession();
+		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		if(user == null) {
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
 		
 		log.info("step2 : " + step1+"/"+step2);
 		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
@@ -112,6 +137,13 @@ public class GeneralController {
 			@PathVariable(value="step3") String step3,
 			HttpServletRequest request, ModelAndView modelAndView,
 			RedirectAttributes redirectAttr) throws Exception {
+		
+		HttpSession		session		= request.getSession();
+		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		if(user == null) {
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
 		
 		log.info("step3 : " + step1+"/"+step2+"/"+step3);
 		Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);

@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <script>
-	function validate() {
+	function pw_validate() {
 		let regnum1 = $("#pw_regnum1").val().trim();
 		let regnum2 = $("#pw_regnum2").val().trim();
 		let regnum3 = $("#pw_regnum3").val().trim();
@@ -23,13 +23,13 @@
 				cancelButtonText: '취소',	   // conrifm 에 나오는 닫기버튼 옵션
 			}).then((result) => {
 				if(result.isConfirmed){
-					onSearch();
+					pw_onSearch();
 				}
 			});
 		}
 	};
 	
-	function onSearch() {
+	function pw_onSearch() {
 		var params = {
 			regnum1		: $("#pw_regnum1").val()
 		,	regnum2		: $("#pw_regnum2").val()
@@ -42,21 +42,17 @@
 		$.post(
 			"/api/v1/login/pwSearch", params, 
 			function(arg){
-				if (arg.status === 200) {
-					if(arg.code == "OK") {
-						Swal.fire('', '전송되었습니다.', 'success');
-						$("#pw_modalClose").click();
-						$("#pw_regnum1").val('');
-						$("#pw_regnum2").val('');
-						$("#pw_regnum3").val('');
-						$("#pw_userName").val('');
-						$("#pw_userId").val('');
-						$("#pw_userEmail").val('');
-					} else {
-						Swal.fire('', '입력한 정보가 등록된 정보와 상이합니다. 다시 입력해 주십시오.', 'warning');
-					}
+				if(arg.code == "OK") {
+					Swal.fire('', '전송되었습니다.', 'success');
+					$("#pw_modalClose").click();
+					$("#pw_regnum1").val('');
+					$("#pw_regnum2").val('');
+					$("#pw_regnum3").val('');
+					$("#pw_userName").val('');
+					$("#pw_userId").val('');
+					$("#pw_userEmail").val('');
 				} else {
-					Swal.fire('', '아이디 찾기 중 오류가 발생하였습니다.', 'error');
+					Swal.fire('', '입력한 정보가 등록된 정보와 상이합니다. 다시 입력해 주십시오.', 'warning');
 				}
 			},
 			"json"
@@ -107,7 +103,7 @@
 				</div>
 				<div class="modalFooter">
 					<a href="javascript:void(0)" id="pw_modalClose" class="modalBtnClose" data-dismiss="modal" title="닫기">닫기</a>
-					<a href="javascript:validate()" class="modalBtnCheck" title="비밀번호 이메일 발송">비밀번호 이메일 발송</a>
+					<a href="javascript:pw_validate()" class="modalBtnCheck" title="비밀번호 이메일 발송">비밀번호 이메일 발송</a>
 				</div>
 			</div>
 		</div>

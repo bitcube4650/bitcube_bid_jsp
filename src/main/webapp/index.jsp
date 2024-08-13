@@ -40,20 +40,32 @@
 		$.post(
 			"/api/v1/login", params, 
 			function(arg){
-				if(arg.data.statusCodeValue === 200){
-					var loginData = arg.data.body;
-					setCookie('loginInfo', JSON.stringify(loginData));
-					localStorage.setItem("loginInfo", JSON.stringify(loginData));
-					if (chkID) {
-						setCookie('rememberUserId', id);
-					} else {
-						removeCookie('rememberUserId');
+				if(arg.code === "OK"){
+					if(arg.data.statusCodeValue === 200){
+						var loginData = arg.data.body;
+						setCookie('loginInfo', JSON.stringify(loginData));
+						localStorage.setItem("loginInfo", JSON.stringify(loginData));
+						if (chkID) {
+							setCookie('rememberUserId', id);
+						} else {
+							removeCookie('rememberUserId');
+						}
+						location.href="/api/v1/move?viewName=dashboard";
+					}else if(arg.data.statusCodeValue === 208){
+						Swal.fire({
+							title: '',			  // 타이틀
+							text: "이미 로그인 되어있습니다. 다른 계정으로 로그인을 원하실 경우 로그아웃을 먼저 진행해주세요.",  // 내용
+							icon: 'error',						// success / error / warning / info / question
+						}).then((result) => {
+							location.href="/api/v1/move?viewName=dashboard";
+						});
+					}else if(arg.data.statusCodeValue === 403){
+						Swal.fire('', '입력하신 아이디와 비밀번호는 일치하나, 아직 본사의 승인이 이루어지지 않았습니다. 본사의 승인 후 본 전자입찰/계약 시스템을 이용하실 수 있습니다. 본사승인 후 다시 로그인 해 주세요.', 'error');
+					}else{
+						Swal.fire('', '아이디 또는 비밀번호를 확인해 주십시오.', 'error');
 					}
-					location.href="/api/v1/move?viewName=dashboard";
-				}else if(arg.data.statusCodeValue === 403){
-					Swal.fire('', '입력하신 아이디와 비밀번호는 일치하나, 아직 본사의 승인이 이루어지지 않았습니다. 본사의 승인 후 본 전자입찰/계약 시스템을 이용하실 수 있습니다. 본사승인 후 다시 로그인 해 주세요.', 'error');
-				}else{
-					Swal.fire('', '아이디 또는 비밀번호를 확인해 주십시오.', 'error');
+				}else {
+					Swal.fire('', '로그인 중 오류가 발생했습니다.', 'error');
 				}
 			},
 			"json"

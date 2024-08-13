@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,16 +42,17 @@ public class NoticeController {
 	 * @return
 	 */
 	@PostMapping("/noticeList")
+	@ResponseBody
 	public ResultBody noticeList(HttpServletRequest request, @RequestParam Map<String, Object> params) {
-
-		HttpSession		session		= request.getSession();
-		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
-		params.put("custCode", user.getCustCode());	// 계열사 사용자 - 소속 계열사/ 협력사 사용자 - 본인 협력사
-		params.put("custType", user.getCustType());	// 사용자 업체 타입
-		params.put("userAuth", user.getUserAuth()); // 계열사사용자 권한
-		params.put("userId", user.getUserName()); // 계열사사용자 권한
-		
-		return noticeService.noticeList(params);
+		ResultBody resultBody = new ResultBody();
+		try {
+			resultBody = noticeService.noticeList(params);
+		}catch (Exception e) {
+			log.error(e.getMessage());
+			resultBody.setCode("Fail");
+			resultBody.setMsg("공지 리스트를 불러오는데 실패하였습니다.");
+		}
+		return resultBody;
 	}
 
 	/**

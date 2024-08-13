@@ -40,20 +40,16 @@
 		$.post(
 			"/api/v1/login/idSearch", params, 
 			function(arg){
-				if (arg.status === 200) {
-					if(arg.code == "OK") {
-						Swal.fire('', '전송되었습니다.', 'success');
-						$("#modalClose").click();
-						$("#regnum1").val('');
-						$("#regnum2").val('');
-						$("#regnum3").val('');
-						$("#userName").val('');
-						$("#userEmail").val('');
-					} else {
-						Swal.fire('', '입력한 정보가 등록된 정보와 상이합니다. 다시 입력해 주십시오.', 'warning');
-					}
+				if(arg.code == "OK") {
+					Swal.fire('', '전송되었습니다.', 'success');
+					$("#modalClose").click();
+					$("#regnum1").val('');
+					$("#regnum2").val('');
+					$("#regnum3").val('');
+					$("#userName").val('');
+					$("#userEmail").val('');
 				} else {
-					Swal.fire('', '아이디 찾기 중 오류가 발생하였습니다.', 'error');
+					Swal.fire('', '입력한 정보가 등록된 정보와 상이합니다. 다시 입력해 주십시오.', 'warning');
 				}
 			},
 			"json"

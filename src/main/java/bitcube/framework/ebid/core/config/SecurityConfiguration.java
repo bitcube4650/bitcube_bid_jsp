@@ -4,37 +4,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-//import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-//import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-//import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
-//import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
-//import org.springframework.session.web.http.CookieHttpSessionIdResolver;
-//import org.springframework.session.web.http.HttpSessionIdResolver;
 
 import bitcube.framework.ebid.core.CustomUserDetailsService;
 
-//import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
-//@EnableJdbcHttpSession(maxInactiveIntervalInSeconds = 31536000)
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class SecurityConfiguration {
 	
 	private final CustomUserDetailsService customUserDetailsService;
@@ -64,13 +56,6 @@ public class SecurityConfiguration {
 		return provider;
 	}
 	
-//	@Bean
-//	public SecurityFilterChain filterChain(AuthenticationManagerBuilder auth) throws Exception {
-//		auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-//		
-//		return auth.build();
-//	}
-//	
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http

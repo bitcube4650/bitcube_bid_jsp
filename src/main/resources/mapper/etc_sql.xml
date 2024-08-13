@@ -55,20 +55,20 @@
 			AND A.B_NO = #{bno}
 		</if>
 		<choose>
-		<when test="custType eq 'inter'.toString() and userAuth eq '1'.toString()" >
+		<when test="userDto.custType eq 'inter'.toString() and userDto.userAuth eq '1'.toString()" >
 		</when>
 		<otherwise>
 			AND (A.B_CO = 'ALL' 
 				OR (A.B_CO = 'CUST'
 				<choose>
-				<when test="custType eq 'cust'.toString()" >
-					AND B.INTERRELATED_CUST_CODE IN (SELECT INTERRELATED_CUST_CODE from T_CO_CUST_IR A1  WHERE A1.CUST_CODE = #{custCode})
+				<when test="userDto.custType eq 'cust'.toString()" >
+					AND B.INTERRELATED_CUST_CODE IN (SELECT INTERRELATED_CUST_CODE from T_CO_CUST_IR A1  WHERE A1.CUST_CODE = #{userDto.custCode})
 				</when>
-				<when test="custType eq 'inter'.toString() and userAuth eq '4'.toString()" >
-					AND B.INTERRELATED_CUST_CODE IN (SELECT INTERRELATED_CUST_CODE from T_CO_USER_INTERRELATED A1 WHERE  A1.USER_ID = #{userId})
+				<when test="userDto.custType eq 'inter'.toString() and userDto.userAuth eq '4'.toString()" >
+					AND B.INTERRELATED_CUST_CODE IN (SELECT INTERRELATED_CUST_CODE from T_CO_USER_INTERRELATED A1 WHERE  A1.USER_ID = #{userDto.userId})
 				</when>
 				<otherwise>
-					AND B.INTERRELATED_CUST_CODE = #{custCode}
+					AND B.INTERRELATED_CUST_CODE = #{userDto.custCode}
 				</otherwise>
 				</choose>
 				)

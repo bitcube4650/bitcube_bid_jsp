@@ -50,6 +50,19 @@ public class UserService {
 	
 	@SuppressWarnings({"unchecked"})
 	public ResponseEntity<AuthToken> login(Map<String, Object> params, HttpSession session, HttpServletRequest request) {
+		UserDto isLogin = (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		if(isLogin != null) {
+			return new ResponseEntity<>(new AuthToken(
+					null
+					, null
+					, null
+					, null
+					, null
+					, null
+					, null
+					, false), HttpStatus.ALREADY_REPORTED);
+		}
+		
 		try {
 			UserDto userDto = new UserDto();
 			userDto.setLoginId(CommonUtils.getString(params.get("loginId")));
@@ -149,8 +162,9 @@ public class UserService {
 				false);
 	}
 	
-	public void logout(HttpSession session) {
-		session.removeAttribute(Constances.SESSION_NAME);
+	public void logout(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+ 		session.removeAttribute(Constances.SESSION_NAME);
 //		session.invalidate();
 	}
 	

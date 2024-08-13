@@ -55,19 +55,18 @@
 	});
 
 	function fnLogout() {
-		$.post(
+		$.get(
 			"/api/v1/logout",
 			{},
 			function(arg){
 				if (arg.code === "OK") {
 					removeCookie('loginInfo');
 					localStorage.clear();
-					window.location.href = "/";
+					location.href="/";
 				}else{
 					Swal.fire('', '로그아웃 처리에 실패하였습니다.', 'error');
 				}
-			},
-			"json"
+			}
 		);
 	}
 	
@@ -92,9 +91,9 @@
 			<div class="profileDropWrap">
 				<a href="#" class="profileDrop"><i class="fa-solid fa-circle-user"> <span id="userName"></span></i>님<i class="fa-solid fa-sort-down"></i></a>
 				<div class="profileDropMenu">
-					<a href="#" id="changeInfoLink" data-toggle="modal" title="개인정보 수정"><i class="fa-light fa-gear"></i>개인정보 수정</a>
-					<a href="#" id="changePwdLink" data-toggle="modal" title="비밀번호 변경"><i class="fa-light fa-lock-keyhole"></i>비밀번호 변경</a>
-					<a href="#" id="logoutLink" data-toggle="modal" title="로그아웃"><i class="fa-light fa-arrow-right-from-bracket"></i>로그아웃</a>
+					<a href="return false" id="changeInfoLink" data-toggle="modal" title="개인정보 수정"><i class="fa-light fa-gear"></i>개인정보 수정</a>
+					<a href="return false" id="changePwdLink" data-toggle="modal" title="비밀번호 변경"><i class="fa-light fa-lock-keyhole"></i>비밀번호 변경</a>
+					<a href="return false" id="logoutLink" data-toggle="modal" title="로그아웃"><i class="fa-light fa-arrow-right-from-bracket"></i>로그아웃</a>
 				</div>
 			</div>
 		</div>

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +49,7 @@ public class LoginController {
 	}
 
 	@PostMapping("/login")
+	@ResponseBody
 	public ResultBody login(@RequestParam Map<String, Object> userDto, HttpSession session, HttpServletRequest request) {
 		ResultBody resultBody = new ResultBody();
 		try {
@@ -60,21 +62,21 @@ public class LoginController {
 		return resultBody;
 	}
 
-	@PostMapping("/logout")
-	public ResultBody logout(HttpSession session) {
+	@GetMapping("/logout")
+	@ResponseBody
+	public ResultBody logout(HttpServletRequest request) {
 		ResultBody resultBody = new ResultBody();
 		try {
-			userService.logout(session);
+			userService.logout(request);
 		}catch(Exception e) {
 			log.error(e.getMessage());
-			resultBody.setStatus(999);
 			resultBody.setCode("Fail");
 		}
-//		return new ResponseEntity<> ("로그아웃 되었습니다.", HttpStatus.OK);
 		return resultBody;
 	}
 
 	@PostMapping("/login/idSearch")
+	@ResponseBody
 	public ResultBody idSearch(@RequestParam Map<String, String> params) {
 		ResultBody resultBody = new ResultBody();
 		try {
@@ -91,6 +93,7 @@ public class LoginController {
 	}
 
 	@PostMapping("/login/pwSearch")
+	@ResponseBody
 	public ResultBody pwSearch(@RequestParam Map<String, String> params) {
 		ResultBody resultBody = new ResultBody();
 		try {
