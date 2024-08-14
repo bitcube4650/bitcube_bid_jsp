@@ -54,7 +54,7 @@
 								</select>
 							</div>
 							<div class="flex-shrink0">
-								<a title="엑셀 다운로드" class="btnStyle btnPrimary">엑셀 다운로드 <i class="fa-light fa-arrow-down-to-line ml10"></i></a>
+								<a title="엑셀 다운로드" class="btnStyle btnPrimary" onclick="fnExcelDown()">엑셀 다운로드 <i class="fa-light fa-arrow-down-to-line ml10"></i></a>
 							</div>
 						</div>
 						<table class="tblSkin1 mt10" id="listTbl">
@@ -83,7 +83,7 @@
 				</div>
 			</div>
 		</div>
-<%-- 		<jsp:include page="/WEB-INF/jsp/ebid/bidJoinCustListPop.jsp" /> --%>
+		<jsp:include page="/WEB-INF/jsp/ebid/bidJoinCustListPop.jsp" />
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
 </body>
@@ -158,7 +158,9 @@
 		 					text += "	<td class='text-right'>"+parseInt(result.content[i].bdAmt).toLocaleString()+"</td>";
 		 					text += "	<td class='text-right'>"+parseInt(result.content[i].succAmt).toLocaleString()+"</td>";
 		 					text += "	<td>"+result.content[i].custName+"</td>";
-		 					text += "	<td class='textUnderline'><a data-toggle='modal' onclick=\"fnBiddingInfoPop('"+result.content[i].biNo+"')\">"+result.content[i].joinCustCnt+"</a></td>";
+		 					text += "	<td class='textUnderline'>"
+		 					text += "		<a onclick='fnBidJoinCustListPop(\""+result.content[i].biNo+"\");' data-toggle='modal' data-target='#bidJoinCustListPop'>"+result.content[i].joinCustCnt+"</a>"
+		 					text += "	</td>"
 		 					text += "	<td>"+result.content[i].estStartDate+"</td>";
 		 					text += "	<td>"+result.content[i].estCloseDate+"</td>";
 		 					text += "	<td class='end'>"+result.content[i].userName+"</td>";
@@ -172,8 +174,120 @@
 	}
 	
 	// 참여업체수 팝업
-	function fnBiddingInfoPop(biNo){
-		console.log(biNo)
+	function fnBidJoinCustListPop(biNo){
+		$.post(
+			'/api/v1/bidComplete/joinCustList',
+			{
+				biNo : biNo
+			}
+		).done(function(arg){
+			$("#biNo").text('');
+			$("#biName").text('');
+			$("#custName").text('');
+			
+			$("#bidJoinCustListTbl tbody").empty();
+
+			let text = "";
+			if(arg.code == "ERROR") {
+				Swal.fire('', arg.msg, 'error');
+			} else {
+				let result = arg.data;
+
+				for(let i = 0; i < result.length; i++){
+					if(result.length > 0){
+						text += "<tr>"
+						
+						text += "	<td class='text-left "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+result[i].custName+"</td>"
+						text += "	<td class='text-right "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+parseInt(result[i].esmtAmt).toLocaleString()+"</td>"
+						text += "	<td class='end "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+result[i].submitDate+"</td>"
+						text += "</tr>"
+						
+						if(result[i].succYn == "Y"){
+							$("#biNo").text(result[i].biNo);
+							$("#biName").text(result[i].biName);
+							$("#custName").text(result[i].custName);
+						}
+					}
+				}
+			}
+			$("#bidJoinCustListTbl tbody").html(text);
+		});
+	}
+
+	var loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
+	
+	// 엑셀 다운로드
+	function fnExcelDown(){
+		let coInterArr = new Array();					// 조회할 계열사코드값을 담을 array
+		let srcCoInter = $("#srcCoInter").val();		// 조회조건 중 '계열사' 선택 값
+		
+		if(srcCoInter != ""){
+			coInterArr.push(srcCoInter)
+		} else {
+			$.post(
+				'/api/v1/statistics/coInterList',
+				{}
+			).done(function(arg){
+				if(arg.code == "OK"){
+					let list = arg.data;
+					if(list.length > 0){
+						for(let i = 0; i < list.length; i++){
+							coInterArr.push(list[i].interrelatedCustCode)
+						}
+					}
+				}
+			});
+		}
+		
+		var time = Ft.formatDate(new Date(), "yyyy_mm_dd");
+		var params = {
+			"startDay": $("#startDay").val(),
+			"endDay": $("#endDay").val(),
+			"fileName":"입찰_상세내역_" + time,
+			"dataJson" : [
+				{'header' : "입찰번호",	'column' : "biNo"},
+				{'header' : "입찰명",		'column' : "biName"},
+				{'header' : "예산금액",	'column' : "bdAmt"},
+				{'header' : "낙찰금액",	'column' : "succAmt"},
+				{'header' : "낙찰사",		'column' : "custName"},
+				{'header' : "참여업체수",	'column' : "custCnt"},
+				{'header' : "제출시작일",	'column' : "estStartDate"},
+				{'header' : "제출마감일",	'column' : "estCloseDate"},
+				{'header' : "입찰담당자",	'column' : "userName"}
+			],
+			"coInters" : coInterArr,
+			"excel" : "Y",
+			"userId" : loginInfo.loginId,
+			"userAuth" : loginInfo.userAuth
+		};
+		
+		$.ajax({
+			url: "/api/v1/statistics/bidDetailList/excel",
+			type: "POST",
+			data: JSON.stringify(params),
+			contentType: "application/json; charset=utf-8",
+			// 응답을 Blob으로 처리하기 위해 xhrFields 사용
+			xhrFields: {
+				responseType: 'blob'
+			},
+			success: function(response) {
+				if (response) {
+					const url = window.URL.createObjectURL(new Blob([response]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", params.fileName + ".xlsx");
+					document.body.appendChild(link);
+					link.click();
+					window.URL.revokeObjectURL(url);
+				} else {
+					Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error("Error:", error);
+				Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
+			}
+		});
 	}
 </script>
 </html>

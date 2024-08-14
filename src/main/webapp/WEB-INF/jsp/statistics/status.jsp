@@ -42,7 +42,7 @@
 							<div class="width100"></div>
 							<div class="flex flex-shrink0">
 								<p class="align-self-end mr20"></p>
-								<a title="엑셀 다운로드" class="btnStyle btnPrimary">엑셀 다운로드 <i
+								<a title="엑셀 다운로드" class="btnStyle btnPrimary" onclick="fnExcelDown()">엑셀 다운로드 <i
 									class="fa-light fa-arrow-down-to-line ml10"></i></a>
 							</div>
 						</div>
@@ -180,6 +180,81 @@
 				}
 			}
 		)
+	}
+
+	var loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
+	// 엑셀 다운로드
+	function fnExcelDown(){
+		let coInterArr = new Array();					// 조회할 계열사코드값을 담을 array
+		let srcCoInter = $("#srcCoInter").val();		// 조회조건 중 '계열사' 선택 값
+		
+		if(srcCoInter != ""){
+			coInterArr.push(srcCoInter)
+		} else {
+			$.post(
+				'/api/v1/statistics/coInterList',
+				{}
+			).done(function(arg){
+				if(arg.code == "OK"){
+					let list = arg.data;
+					if(list.length > 0){
+						for(let i = 0; i < list.length; i++){
+							coInterArr.push(list[i].interrelatedCustCode)
+						}
+					}
+				}
+			});
+		}
+		
+		var time = Ft.formatDate(new Date(), "yyyy_mm_dd");
+		var params = {
+			"startDay": $("#startDay").val(),
+			"endDay": $("#endDay").val(),
+			"fileName":"입찰현황_" + time,
+			"dataJson" : [
+				{'header' : "회사명",						'column' : "interrelatedNm"},
+				{'header' : "건수(입찰계획)",				'column' : "planCnt"},
+				{'header' : "예산금액(입찰계획)",			'column' : "planAmt"},
+				{'header' : "건수(입찰진행)",				'column' : "ingCnt"},
+				{'header' : "예산금액(입찰진행)",			'column' : "ingAmt"},
+				{'header' : "건수(입찰완료(유찰제외))",		'column' : "succCnt"},
+				{'header' : "예산금액(입찰완료(유찰제외))",	'column' : "succAmt"},
+				{'header' : "업체수/건수(입찰완료(유찰제외))",	'column' : "custCnt"},
+				{'header' : "등록 업체수",					'column' : "regCustCnt"},
+				{'header' : "기타",						'column' : "temp"}
+			],
+			"coInters" : coInterArr,
+			"userId" : loginInfo.loginId,
+			"userAuth" : loginInfo.userAuth
+		};
+		
+		$.ajax({
+			url: "/api/v1/statistics/bidPresentList/excel",
+			type: "POST",
+			data: JSON.stringify(params),
+			contentType: "application/json; charset=utf-8",
+			// 응답을 Blob으로 처리하기 위해 xhrFields 사용
+			xhrFields: {
+				responseType: 'blob'
+			},
+			success: function(response) {
+				if (response) {
+					const url = window.URL.createObjectURL(new Blob([response]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", params.fileName + ".xlsx");
+					document.body.appendChild(link);
+					link.click();
+					window.URL.revokeObjectURL(url);
+				} else {
+					Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error("Error:", error);
+				Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
+			}
+		});
 	}
 </script>
 </html>

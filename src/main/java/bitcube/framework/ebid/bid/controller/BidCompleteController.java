@@ -2,6 +2,7 @@ package bitcube.framework.ebid.bid.controller;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,23 +147,30 @@ public class BidCompleteController {
 //		return resultBody;
 //	}
 //	
-//	/**
-//	 * 낙찰이력 내 투찰업체 팝업 리스트
-//	 * @param params
-//	 * @return
-//	 */
-//	@PostMapping("/joinCustList")
-//	public ResultBody joinCustList(@RequestBody Map<String, Object> params) {
-//		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = bidCompleteSvc.joinCustList(params); 
-//		}catch(Exception e) {
-//			log.error("joinCustList list error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("투찰 정보를 가져오는것을 실패하였습니다.");
-//		}
-//		return resultBody;
-//	}
+	/**
+	 * 낙찰이력 내 투찰업체 팝업 리스트
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/joinCustList")
+	public ResultBody joinCustList(
+			@RequestParam(name="biNo",		required = true) String biNo,
+			HttpServletRequest request
+		) {
+		ResultBody resultBody = new ResultBody();
+		
+		Map<String, Object> params = new HashMap();
+		params.put("biNo", biNo);
+		try {
+			resultBody = bidCompleteSvc.joinCustList(params); 
+		}catch(Exception e) {
+			log.error("joinCustList list error : {}", e);
+			resultBody.setCode("ERROR");
+			resultBody.setStatus(500);
+			resultBody.setMsg("투찰 정보를 가져오는것을 실패하였습니다.");
+		}
+		return resultBody;
+	}
 //	
 //	/**
 //	 * 협력사 입찰완료 리스트

@@ -213,6 +213,60 @@
 		</if>
 	</select>
 	
+	<select id="bidPresentList_count" resultType="int">
+		/*statistics.bidPresentList_count*/
+		SELECT COUNT(1)
+		FROM (
+			select	IF(INTERRELATED_CUST_CODE IS NULL, '계', (SELECT INTERRELATED_NM FROM T_CO_INTERRELATED AAA WHERE AAA.INTERRELATED_CUST_CODE = BID_LIST.INTERRELATED_CUST_CODE)) AS INTERRELATED_NM
+			from (	
+				select	A.INTERRELATED_CUST_CODE
+				from t_co_interrelated A 
+				INNER JOIN (
+					select	BB.BI_NO
+					,		BB.INTERRELATED_CUST_CODE
+					from T_BI_INFO_MAT BB			-- 입찰서내용
+					where DATE(BB.UPDATE_DATE) BETWEEN #{startDay} AND #{endDay}
+					and BB.ING_TAG in ('A0', 'A1', 'A5')
+				) B
+					on A.INTERRELATED_CUST_CODE = B.INTERRELATED_CUST_CODE
+				left outer join (
+					select AA.INTERRELATED_CUST_CODE
+					,		count(1) as REG_CUST_cnt
+					from t_co_interrelated AA
+					inner join t_co_cust_master BB
+						on AA.INTERRELATED_CUST_CODE = BB.INTERRELATED_CUST_CODE
+					group by AA.INTERRELATED_CUST_CODE
+				) C
+					on a.INTERRELATED_CUST_CODE = c.INTERRELATED_CUST_CODE
+			 	left outer join (
+					select	INTERRELATED_CUST_CODE
+					,		COUNT(CD.BI_NO) as CUST_CNT
+					from T_BI_INFO_MAT CC
+					inner join t_bi_info_mat_cust CD
+						on CC.BI_NO = CD.BI_NO
+					where CC.ING_TAG = 'A5'
+					AND DATE(CC.UPDATE_DATE) BETWEEN #{startDay} AND #{endDay}
+					group by CC.INTERRELATED_CUST_CODE
+				) D
+					on D.INTERRELATED_CUST_CODE = A.INTERRELATED_CUST_CODE
+				<if test='userAuth == "4"'>
+					inner join t_co_user_interrelated tcui 
+					on A.INTERRELATED_CUST_CODE = tcui.INTERRELATED_CUST_CODE 
+					and tcui.USER_ID = #{userId} 
+				</if>
+				<if test="coInters != null and coInters.size() > 0">
+				where A.INTERRELATED_CUST_CODE IN(
+				<foreach item="coInter" collection="coInters" separator=",">
+					#{coInter}
+				</foreach>
+				)  
+				</if>
+				group by A.INTERRELATED_CUST_CODE
+			) BID_LIST
+			group by BID_LIST.INTERRELATED_CUST_CODE with rollup
+		) AA
+	</select>
+	
 	<select id="bidPresentList" resultType="camel">
 		/*statistics.bidPresentList*/
 		select	IF(INTERRELATED_CUST_CODE IS NULL, '계', (SELECT INTERRELATED_NM FROM T_CO_INTERRELATED AAA WHERE AAA.INTERRELATED_CUST_CODE = BID_LIST.INTERRELATED_CUST_CODE)) AS INTERRELATED_NM

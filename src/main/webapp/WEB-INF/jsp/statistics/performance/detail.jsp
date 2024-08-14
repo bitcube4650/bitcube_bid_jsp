@@ -86,7 +86,7 @@
 								</select>
 							</div>
 							<div class="flex-shrink0">
-								<a title="엑셀 다운로드" class="btnStyle btnPrimary">엑셀 다운로드 <i class="fa-light fa-arrow-down-to-line ml10"></i></a>
+								<a title="엑셀 다운로드" class="btnStyle btnPrimary" onclick="fnExcelDown()">엑셀 다운로드 <i class="fa-light fa-arrow-down-to-line ml10"></i></a>
 							</div>
 						</div>
 						<div class="tblScroll">
@@ -214,7 +214,85 @@
 					$("#listTbl tbody").html(text)
 				}
 			}
-	});
+		});
+	}
+	
+	// 엑셀 다운로드
+	function fnExcelDown(){
+		let coInterArr = new Array();					// 조회할 계열사코드값을 담을 array
+		let srcCoInter = $("#srcCoInter").val();		// 조회조건 중 '계열사' 선택 값
+		
+		if(srcCoInter != ""){
+			coInterArr.push(srcCoInter)
+		} else {
+			$.post(
+				'/api/v1/statistics/coInterList',
+				{}
+			).done(function(arg){
+				if(arg.code == "OK"){
+					let list = arg.data;
+					if(list.length > 0){
+						for(let i = 0; i < list.length; i++){
+							coInterArr.push(list[i].interrelatedCustCode)
+						}
+					}
+				}
+			});
+		}
+		
+		var time = Ft.formatDate(new Date(), "yyyy_mm_dd");
+		var params = {
+			"startDay": $("#startDay").val(),
+			"endDay": $("#endDay").val(),
+			"fileName":"입찰실적_상세내역_" + time,
+			"dataJson" : [
+				{'header' : "입찰번호",		'column' : "biNo"},
+				{'header' : "입찰명",			'column' : "biName"},
+				{'header' : "입찰 품명",		'column' : "itemName"},
+				{'header' : "예산금액",		'column' : "bdAmt"},
+				{'header' : "낙찰금액",		'column' : "succAmt"},
+				{'header' : "계약금액",		'column' : "realAmt"},
+				{'header' : "참여업체수",		'column' : "custCnt"},
+				{'header' : "낙찰사",			'column' : "custName"},
+				{'header' : "제출시작일",		'column' : "estStartDate"},
+				{'header' : "제출마감일",		'column' : "estCloseDate"},
+				{'header' : "투찰최고가(1)",	'column' : "esmtAmtMax"},
+				{'header' : "투찰최저가(2)",	'column' : "esmtAmtMin"},
+				{'header' : "편차(1)-(2)",	'column' : "esmtAmtDev"},
+				{'header' : "재입찰횟수",		'column' : "reBidCnt"}
+			],
+			"coInters" : coInterArr,
+			"itemCode" : $("#srcCustType").val(),
+			"excel" : "Y"
+		};
+		
+		$.ajax({
+			url: "/api/v1/statistics/biInfoDetailList/excel",
+			type: "POST",
+			data: JSON.stringify(params),
+			contentType: "application/json; charset=utf-8",
+			// 응답을 Blob으로 처리하기 위해 xhrFields 사용
+			xhrFields: {
+				responseType: 'blob'
+			},
+			success: function(response) {
+				if (response) {
+					const url = window.URL.createObjectURL(new Blob([response]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", params.fileName + ".xlsx");
+					document.body.appendChild(link);
+					link.click();
+					window.URL.revokeObjectURL(url);
+				} else {
+					Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error("Error:", error);
+				Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
+			}
+		});
 	}
 </script>
 </html>

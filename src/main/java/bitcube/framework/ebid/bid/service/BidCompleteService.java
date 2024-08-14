@@ -196,18 +196,19 @@ public class BidCompleteService {
 //		
 //	}
 //	
-//	/**
-//	 * 투찰 정보 팝업
-//	 * @param params : (String) biNo
-//	 * @return
-//	 */
-//	public ModelAndView joinCustList(Map<String, Object> params) throws Exception {
-//		
-//		List<Object> list = generalDao.selectGernalList(DB.QRY_SELECT_EBID_HISTORY_JOIN_CUST_LIST, params);
-//		ModelAndView.setData(list);
-//		
-//		return ModelAndView;
-//	}
+	/**
+	 * 투찰 정보 팝업
+	 * @param params : (String) biNo
+	 * @return
+	 */
+	public ResultBody joinCustList(Map<String, Object> params) throws Exception {
+		ResultBody resultBody = new ResultBody();
+		
+		List<Object> list = generalDao.selectGernalList(DB.QRY_SELECT_EBID_HISTORY_JOIN_CUST_LIST, params);
+		resultBody.setData(list);
+		
+		return resultBody;
+	}
 //	
 //	/**
 //	 * 협력사 입찰완료 리스트

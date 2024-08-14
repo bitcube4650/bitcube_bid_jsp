@@ -250,9 +250,15 @@
 			"startDay": $("#startDay").val(),
 			"endDay": $("#endDay").val(),
 			"fileName":"회사별_입찰실적_" + time,
-			"headers": ['회사명', '입찰건수', '예산금액(1)', '낙찰금액(2)', '차이(1)-(2)', '비고'],
-			"coInters" : coInterArr,
-			"itemCode" : ''
+			"dataJson" : [
+				{'header' : "회사명",			'column' : "interrelatedNm"},
+				{'header' : "입찰건수",		'column' : "cnt"},
+				{'header' : "예산금액(1)",		'column' : "bdAmt"},
+				{'header' : "낙찰금액(2)",		'column' : "succAmt"},
+				{'header' : "차이(1)-(2)",	'column' : "MAmt"},
+				{'header' : "비고",			'column' : "temp"}
+			],
+			"coInters" : coInterArr
 		};
 		
 		$.ajax({
