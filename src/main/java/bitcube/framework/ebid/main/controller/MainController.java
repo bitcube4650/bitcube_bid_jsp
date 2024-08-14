@@ -60,14 +60,14 @@ public class MainController {
 	@PostMapping("/selectPartnerBidCnt")
 	public ResultBody selectPartnerBidCnt(@RequestParam Map<String, Object> params) throws IOException {
 		ResultBody resultBody = new ResultBody();
-		try {
-			resultBody = mainService.selectPartnerBidCnt(params);
-		} catch (Exception e) {
-			resultBody.setCode("ERROR");
-			resultBody.setStatus(500);
-			resultBody.setMsg("전자입찰 건수 조회에 실패하였습니다.");
-			log.error("{} Error : {}", this.getClass(), e.getMessage());
-		}
+//		try {
+//			resultBody = mainService.selectPartnerBidCnt(params);
+//		} catch (Exception e) {
+//			resultBody.setCode("ERROR");
+//			resultBody.setStatus(500);
+//			resultBody.setMsg("전자입찰 건수 조회에 실패하였습니다.");
+//			log.error("{} Error : {}", this.getClass(), e.getMessage());
+//		}
 		return resultBody;
 	}
 	
@@ -75,14 +75,14 @@ public class MainController {
 	@PostMapping("/selectCompletedBidCnt")
 	public ResultBody selectCompletedBidCnt(@RequestParam Map<String, Object> params) throws IOException {
 		ResultBody resultBody = new ResultBody();
-		try {
-			resultBody = mainService.selectCompletedBidCnt(params);
-		} catch (Exception e) {
-			resultBody.setCode("ERROR");
-			resultBody.setStatus(500);
-			resultBody.setMsg("입찰완료 조회에 실패하였습니다.");
-			log.error("{} Error : {}", this.getClass(), e.getMessage());
-		}
+//		try {
+//			resultBody = mainService.selectCompletedBidCnt(params);
+//		} catch (Exception e) {
+//			resultBody.setCode("ERROR");
+//			resultBody.setStatus(500);
+//			resultBody.setMsg("입찰완료 조회에 실패하였습니다.");
+//			log.error("{} Error : {}", this.getClass(), e.getMessage());
+//		}
 		return resultBody;
 	}
 	
@@ -90,32 +90,40 @@ public class MainController {
 	@PostMapping("/checkPwd")
 	public boolean checkPwd(@RequestParam Map<String, Object> params) {
 		
-		return mainService.checkPwd(params);
+		return true;
+		//return mainService.checkPwd(params);
 		
 	}
 	
 	//비밀번호 변경
 	@PostMapping("/changePwd")
-	public boolean changePwd(@RequestParam Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody changePwd(HttpServletRequest request, @RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
 		
-		return mainService.changePwd(params);
-				
+		try {
+			mainService.changePwd(params);
+		}catch(Exception e) {
+			log.error(e.getMessage());
+			resultBody.setCode("Fail");
+		}
+		return resultBody;
 	}
 	
 	//유저 정보 조회
 	@PostMapping("/selectUserInfo")
 	public ResultBody selectUserInfo(@RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
-		try {
-			resultBody = mainService.selectUserInfo(params);
-		} catch (Exception e) {
-			resultBody.setCode("ERROR");
-			resultBody.setStatus(500);
-			resultBody.setMsg("An error occurred while selecting the user info.");
-			resultBody.setData(e.getMessage());
-			
-			log.error("{} Error : {}", this.getClass(), e.getMessage());
-		}
+//		try {
+//			resultBody = mainService.selectUserInfo(params);
+//		} catch (Exception e) {
+//			resultBody.setCode("ERROR");
+//			resultBody.setStatus(500);
+//			resultBody.setMsg("An error occurred while selecting the user info.");
+//			resultBody.setData(e.getMessage());
+//			
+//			log.error("{} Error : {}", this.getClass(), e.getMessage());
+//		}
 		return resultBody;
 	}
 	
@@ -123,16 +131,16 @@ public class MainController {
 	@PostMapping("/saveUserInfo")
 	public ResultBody saveUserInfo(@RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
-		try {
-			resultBody = mainService.saveUserInfo(params);
-		} catch (Exception e) {
-			resultBody.setCode("ERROR");
-			resultBody.setStatus(500);
-			resultBody.setMsg("An error occurred while updating the user info.");
-			resultBody.setData(e.getMessage());
-			
-			log.error("{} Error : {}", this.getClass(), e.getMessage());
-		}
+//		try {
+//			resultBody = mainService.saveUserInfo(params);
+//		} catch (Exception e) {
+//			resultBody.setCode("ERROR");
+//			resultBody.setStatus(500);
+//			resultBody.setMsg("An error occurred while updating the user info.");
+//			resultBody.setData(e.getMessage());
+//			
+//			log.error("{} Error : {}", this.getClass(), e.getMessage());
+//		}
 		return resultBody;
 	}
 	
@@ -140,14 +148,15 @@ public class MainController {
 	@Deprecated
 	@PostMapping("/selectCompInfo")
 	public ResultBody selectCompInfo(@RequestParam Map<String, Object> params) {
-		
-		return mainService.selectCompInfo(params);
-				
+		ResultBody resultBody = new ResultBody();
+		//return mainService.selectCompInfo(params);
+		return resultBody;		
 	}
 
 	//비밀번호 변경 권장 플래그
 	@PostMapping("/chkPwChangeEncourage")
-	public ResultBody chkPwChangeEncourage(@RequestParam Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody chkPwChangeEncourage(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 		
 		try {
@@ -167,7 +176,7 @@ public class MainController {
 	public void chgPwdFirst() {
 		log.info("-----------------------chgPwdFirst start----------------------");
 //		try {
-			mainService.chgPwdFirst();
+			//mainService.chgPwdFirst();
 //		}catch(Exception e) {
 //		}
 		log.info("-----------------------chgPwdFirst end----------------------");
