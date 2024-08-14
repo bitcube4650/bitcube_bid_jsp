@@ -130,7 +130,10 @@ public class NoticeController {
 	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping("/insertNotice")
-	public ResultBody insertNotice(@RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("data") String jsonData) {
+	public ResultBody insertNotice(
+			HttpServletRequest httpServletRequest, 
+			@RequestPart(value = "file", required = false) MultipartFile file, 
+			@RequestPart("data") String jsonData) {
 		ResultBody resultBody = new ResultBody();
 		
 		ObjectMapper mapper = new ObjectMapper();
