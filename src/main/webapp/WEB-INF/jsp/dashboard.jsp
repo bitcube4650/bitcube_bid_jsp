@@ -6,25 +6,22 @@
 <script>
 $(function(){
 	selectNotice();
+	selectBidCnt();
+	selectPartnerCnt();
+	
+	//fnChkPwChangeEncourage();
 })
 function fnChkPwChangeEncourage() {
-	let params = {
-		userId : loginInfo.userId,
-		isGroup : true
-	}
-	
+	let loginInfo = localStorage.getItem("loginInfo");
 	$.post(
 		"/api/v1/main/chkPwChangeEncourage",
-		params,
-		function(arg){
-			if (arg.data.code == "OK") {
-				if(arg.data.data){
-					//setPwInit(true);
-				}
-			}
-		},
-		"json"
-	);
+		{ userId : loginInfo.userId, isGroup : true }
+	)
+	.done(function(arg) {
+		if (arg.code === "OK") {
+			//setPwInit(true);
+		}
+	})
 };
 
 function moveBiddingPage(keyword) {
@@ -48,59 +45,53 @@ function selectNotice() {
 	$.post(
 		'/api/v1/notice/noticeList', 
 		{ size: '7', page: '0' }
-		)
-		.done(function(arg) {
-			if (arg.code === "OK") {
-				let data = arg.data.content;
-				
-				let text = "";
-				for(let i = 0 ; i < data.length ; i++){
-					text += '<a href="javascript:onNoticeDetail()" data-toggle="modal" data-target="#notiModal" title="해당 게시글 자세히 보기">';
-					text += 	'<span class="notiTit">' + (data[i].bco === 'ALL' ? '[공통]' : '') + data[i].btitle + '</span>';
-					text +=		'<span class="notiDate" style="width:170px;">' + data[i].bdate +'</span>';
-					text += "</a>"
-				}
-				
-				$("#notiList").html(text);
+	)
+	.done(function(arg) {
+		if (arg.code === "OK") {
+			let data = arg.data.content;
+			
+			let text = "";
+			for(let i = 0 ; i < data.length ; i++){
+				text += '<a href="javascript:onNoticeDetail()" data-toggle="modal" data-target="#notiModal" title="해당 게시글 자세히 보기">';
+				text += 	'<span class="notiTit">' + (data[i].bco === 'ALL' ? '[공통]' : '') + data[i].btitle + '</span>';
+				text +=		'<span class="notiDate" style="width:170px;">' + data[i].bdate.substring(0,10) +'</span>';
+				text += "</a>"
 			}
-		})
+			
+			$("#notiList").html(text);
+		}
+	})
 }
 
 function selectBidCnt() {
 	$.post(
 		"/api/v1/main/selectBidCnt",
-		{ size: 7, page: 0 },
-		function(arg){
-			if (arg.data.code == "OK") {
-				console.log(arg.data.data);
-				$("#planning").text();
-				$("#noticing").text();
-				$("#beforeOpening").text();
-				$("#opening").text();
-				$("#completed").text();
-				$("#unsuccessful").text();
-				
-			}
-		},
-		"json"
-	);
+		{ size: '7', page: '0' }
+	)
+	.done(function(arg) {
+		if (arg.code === "OK") {
+			$("#planning").text(arg.data.planning);
+			$("#noticing").text(arg.data.noticing);
+			$("#beforeOpening").text(arg.data.beforeOpening);
+			$("#opening").text(arg.data.opening);
+			$("#completed").text(arg.data.completed);
+			$("#unsuccessful").text(arg.data.unsuccessful);
+		}
+	})
 };
 
 function selectPartnerCnt() {
 	$.post(
 		"/api/v1/main/selectPartnerCnt",
-		{},
-		function(arg){
-			if (arg.data.code == "OK") {
-				console.log(arg.data.data);
-				$("#request").text();
-				$("#approval").text();
-				$("#deletion").text();
-				
-			}
-		},
-		"json"
-	);
+		{}
+	)
+	.done(function(arg) {
+		if (arg.code === "OK") {
+			$("#request").text(arg.data.request);
+			$("#approval").text(arg.data.approval);
+			$("#deletion").text(arg.data.deletion);
+		}
+	})
 };
 
 </script>
@@ -174,7 +165,7 @@ function selectPartnerCnt() {
 						</div>
 					</div>
 				</div>
-				 <!-- <PwInitPop pwInit={pwInit} setPwInit={setPwInit} />  -->
+				<jsp:include page="/WEB-INF/jsp/main/pwInitPop.jsp" />
 			</div>
 		</div>
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />

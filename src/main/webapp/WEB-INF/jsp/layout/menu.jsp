@@ -16,8 +16,7 @@
 		var targetId = "";
 		var menuClickBoolean = false;
 		
-		console.log(path);
-		
+		/* 
 		function fetchData() {
 			var url = userCustType === 'inter' ? "/api/v1/main/selectBidCnt" : "/api/v1/main/selectPartnerBidCnt";
 			$.post(url, loginInfo, function(response) {
@@ -34,7 +33,7 @@
 		}
 		
 		fetchData();
-		
+		 */
 		function toggleMenu(clickedId) {
 			if (targetId === clickedId) {
 				menuClickBoolean = !menuClickBoolean;
