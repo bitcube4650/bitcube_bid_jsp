@@ -21,7 +21,7 @@ function fnChkPwChangeEncourage() {
 	.done(function(arg) {
 		if (arg.code === "OK") {
 			if(arg.data){
-				//$("#pwInit").show();
+				$("#pwInit").modal('show');
 			}
 		}
 	})
@@ -107,9 +107,7 @@ function selectPartnerCnt() {
 			<div class="conRight">
 				<div class="conHeader" style="padding: '23px 30px 20px 30px';">
 					<ul class="conHeaderCate">
-						<li>메인
-						<a href="/#" data-toggle="modal" data-target="#pwInit" title="test">test</a>
-						</li>
+						<li>메인</li>
 					</ul>
 				</div>
 				<div class="contents">
