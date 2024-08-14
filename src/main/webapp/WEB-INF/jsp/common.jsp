@@ -16,3 +16,19 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="${pageContext.request.contextPath}/resources/datepicker-ko.js"></script>
 <script src="${pageContext.request.contextPath}/resources/api/filters.js"></script>
+<script src="${pageContext.request.contextPath}/resources/jquery.blockUI.js"></script>
+
+<script>
+$(document).ready(function() {
+    // AJAX 요청이 시작되기 전에 BlockUI 실행
+    $.ajaxSetup({
+        beforeSend: function() {
+        	$.blockUI();
+        },
+        complete: function() {
+            // AJAX 요청이 완료되면 BlockUI 해제
+            $.unblockUI();
+        }
+    });
+})
+</script>

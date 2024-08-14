@@ -47,7 +47,8 @@ function onMoveNotice() {
 function selectNotice() {
 	$.post(
 		'/api/v1/notice/noticeList', 
-		{ size: '7', page: '0' })
+		{ size: '7', page: '0' }
+		)
 		.done(function(arg) {
 			if (arg.code === "OK") {
 				let data = arg.data.content;
@@ -64,7 +65,7 @@ function selectNotice() {
 			}
 		})
 		.fail(function(request, status, error) {
-			let param = JSON.parse(request.responseText);
+			let param = request.responseText == undefined || request.responseText == null ? {} : JSON.parse(request.responseText);
 			Swal.fire({
 				title: '',			  // 타이틀
 				text: param.error == undefined || param.error == null ? '문제가 발생하였습니다.' : param.error,  // 내용
