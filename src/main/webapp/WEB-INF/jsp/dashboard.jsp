@@ -46,10 +46,9 @@ function onMoveNotice() {
 
 function selectNotice() {
 	$.post(
-		"/api/v1/notice/noticeList",
-		{ size: 7, page: 0 },
-		function(arg){
-			console.log(arg);
+		'/api/v1/notice/noticeList', 
+		{ size: '7', page: '0' })
+		.done(function(arg) {
 			if (arg.code === "OK") {
 				let data = arg.data.content;
 				
@@ -63,9 +62,19 @@ function selectNotice() {
 				
 				$("#notiList").html(text);
 			}
-		},
-		"json"
-	);
+		})
+		.fail(function(request, status, error) {
+			let param = JSON.parse(request.responseText);
+			Swal.fire({
+				title: '',			  // 타이틀
+				text: param.error == undefined || param.error == null ? '문제가 발생하였습니다.' : param.error,  // 내용
+				icon: 'error',						// success / error / warning / info / question
+			}).then((result) => {
+				if(request.status === 999){
+					location.href="/";
+				}
+			});
+		})
 }
 
 function selectBidCnt() {
@@ -171,7 +180,6 @@ function selectPartnerCnt() {
 							<div class="mainConBox" style="height: '381.41px'">
 								<h2 class="h2Tit">공지사항<a onClick="onMoveNotice()" title="공지사항 페이지로 이동" class="mainConBoxMore">더보기<i class="fa-solid fa-circle-plus"></i></a></h2>
 								<div class="notiList" id="notiList">
-									<!-- {noticeList?.content?.map((notice: Notice) => <NoticeList key={notice.bno} content={notice} isMain={true} />)} -->
 								</div>
 							</div>
 						</div>

@@ -7,15 +7,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.ui.Model;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import bitcube.framework.ebid.dto.UserDto;
 import bitcube.framework.ebid.etc.util.Constances;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,7 +79,7 @@ public class AspectController {
 		String method = joinPoint.getSignature().getName();
 		
 		if(!method.equals("login") && user == null) {
-			
+			throw new UserInfoEmptyException("999");
 		}else if(!method.equals("login") && user != null) {
 			//세션 마감 안됐을 때 로그인 정보 입력
 			this.joinPointArgCast(args, user);
