@@ -117,7 +117,7 @@ function selectPartnerCnt() {
 						<div class="mcl_left mainConBox" style=" height: '700px' ">
 							<h2 class="h2Tit">전자입찰</h2>
 							<div class="biddingList">
-								<a onClick="selectNotice()" class="biddingStep1">
+								<a onClick="moveBiddingPage('planning')" class="biddingStep1">
 									<div class="biddingListLeft" style="height: '70px';"><i class="fa-light fa-flag"></i>입찰계획</div><!-- 공고전 상태 -->
 									<div class="biddingListRight"><span id="planning">0</span>건<i class="fa-light fa-angle-right"></i></div>
 								</a>
