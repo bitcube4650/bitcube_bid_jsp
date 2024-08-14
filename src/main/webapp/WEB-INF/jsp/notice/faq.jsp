@@ -45,6 +45,7 @@
 		var params = {
 			"title": $("#title").val(),
 			"faqType": $("#faqType").val(),
+			"fileName":"FAQ_"+time,
 			"headers": ['구분','내용','구분명','ID','등록자ID','제목','등록자명','등록일']
 		};
 	
