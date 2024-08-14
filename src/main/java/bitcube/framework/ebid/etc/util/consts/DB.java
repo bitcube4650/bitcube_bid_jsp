@@ -137,6 +137,9 @@ public class DB {
 	public final static String QRY_SELECT_PARTNER_COMPLETE_EBID_CUST_DETAIL = "bidComp.selectPartnerCompleteEbidCustDetail";
 	public final static String QRY_UPDATE_SUCC_EBID_CONFIRM = "bidComp.updateSuccEbidConfirm";
 	
+	//BID_PROGRESS
+	public final static String QRY_SELECT_PROGRESS_LIST= "bid.selectProgressList";
+	
 	// statistics
 	public final static String QRY_SELECT_BI_INFO_LIST_COUNT = "statistics.selectBiInfoList_count";
 	public final static String QRY_SELECT_BI_INFO_LIST = "statistics.selectBiInfoList";
