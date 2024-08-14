@@ -172,31 +172,27 @@ public class MainService {
 	
 	//비밀번호 변경
 	@Transactional
-	public boolean changePwd(Map<String, Object> params) {
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		String userId = principal.getUsername();
-//		String password = (String) params.get("password");
-//		
-//		Map<String, Object> paramMap = new HashMap<String, Object>();
-//		paramMap.put("userId", userId);
-//		paramMap.put("encodedPassword", passwordEncoder.encode(password));
-//		
-//		try {
-//			int coUserCnt = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_CO_USER_CNT, paramMap));
-//			// 계열사 user 테이블에 있는경우 계열사로 확인, 없는경우 협력사로 확인
-//			if(coUserCnt > 0) { // 계열사
-//				generalDao.updateGernal(DB.QRY_UPDATE_CO_USER_PASSWORD, paramMap);
-//			} else { // 협력사 
-//				generalDao.updateGernal(DB.QRY_UPDATE_CO_CUST_USER_PASSWORD, paramMap);
-//			}
-//			
-//			return true;
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//			return false;
-//		}
+	public void changePwd(Map<String, Object> params) {
+		UserDto userDto = (UserDto) params.get("userDto");
+		String userId = userDto.getLoginId();
+		String password = CommonUtils.getString(params.get("password"));
 		
-		return true;
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("userId", userId);
+		paramMap.put("encodedPassword", passwordEncoder.encode(password));
+		
+		try {
+			int coUserCnt = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_CO_USER_CNT, paramMap));
+			// 계열사 user 테이블에 있는경우 계열사로 확인, 없는경우 협력사로 확인
+			if(coUserCnt > 0) { // 계열사
+				generalDao.updateGernal(DB.QRY_UPDATE_CO_USER_PASSWORD, paramMap);
+			} else { // 협력사 
+				generalDao.updateGernal(DB.QRY_UPDATE_CO_CUST_USER_PASSWORD, paramMap);
+			}
+			
+		} catch(Exception e) {
+			log.error(e.getMessage());
+		}
 	}
 
 	//유저정보 조회
@@ -278,38 +274,42 @@ public class MainService {
 		return resultBody;
 	}
 	
-	//비밀번호 변경 권장 플래그
+	/**
+	 * 비밀번호 변경 권장 플래그
+	 * @param params (userId, isGroup)
+	 * @return
+	 * @throws Exception
+	 */
 	public ResultBody chkPwChangeEncourage(Map<String, Object> params) throws Exception {
 		ResultBody resultBody = new ResultBody();
-//		resultBody.setData(false);
-//		
-//		LocalDateTime currentDate = LocalDateTime.now();	//현재시간
-//		LocalDateTime pwChangeDate = null;					//비밀번호 변경일
-//		
-//		String userId = CommonUtils.getString(params.get("userId"));
-//		Boolean isGroup = (Boolean) params.get("isGroup");
-//		
-//		if(isGroup) {
-//			String userOptional = CommonUtils.getString(generalDao.selectGernalObject(DB.QRY_SELECT_GROUP_PWD_EDIT_DATE, params));
-//			if (!userOptional.isEmpty()) {//계열사인 경우
-//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//				pwChangeDate = LocalDateTime.parse(userOptional, formatter);
-//			}
-//		}else {
-//			String userOptional = CommonUtils.getString(generalDao.selectGernalObject(DB.QRY_SELECT_PWD_CHG_DATE, params));
-//			if (!userOptional.isEmpty()) {//계열사인 경우
-//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//				pwChangeDate = LocalDateTime.parse(userOptional, formatter);
-//			}
-//		}
-//		
-//		//비밀번호 변경일이 null이거나 1년이상 지난경우
-//		if(pwChangeDate != null) {
-//			LocalDateTime pwChangeDatePlusYear = pwChangeDate.plusYears(1);
-//			resultBody.setData(currentDate.isAfter(pwChangeDatePlusYear));
-//		}else {
-//			resultBody.setData(true);
-//		}
+		resultBody.setData(false);
+		
+		LocalDateTime currentDate = LocalDateTime.now();	//현재시간
+		LocalDateTime pwChangeDate = null;					//비밀번호 변경일
+		
+		Boolean isGroup = Boolean.parseBoolean(CommonUtils.getString(params.get("isGroup")));
+		
+		if(isGroup) {
+			String userOptional = CommonUtils.getString(generalDao.selectGernalObject(DB.QRY_SELECT_GROUP_PWD_EDIT_DATE, params));
+			if (!userOptional.isEmpty()) {//계열사인 경우
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				pwChangeDate = LocalDateTime.parse(userOptional, formatter);
+			}
+		}else {
+			String userOptional = CommonUtils.getString(generalDao.selectGernalObject(DB.QRY_SELECT_PWD_CHG_DATE, params));
+			if (!userOptional.isEmpty()) {//계열사인 경우
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				pwChangeDate = LocalDateTime.parse(userOptional, formatter);
+			}
+		}
+		
+		//비밀번호 변경일이 null이거나 1년이상 지난경우
+		if(pwChangeDate != null) {
+			LocalDateTime pwChangeDatePlusYear = pwChangeDate.plusYears(1);
+			resultBody.setData(currentDate.isAfter(pwChangeDatePlusYear));
+		}else {
+			resultBody.setData(true);
+		}
 		
 		return resultBody;
 	}

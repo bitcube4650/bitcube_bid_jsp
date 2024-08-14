@@ -9,17 +9,20 @@ $(function(){
 	selectBidCnt();
 	selectPartnerCnt();
 	
-	//fnChkPwChangeEncourage();
+	fnChkPwChangeEncourage();
 })
 function fnChkPwChangeEncourage() {
-	let loginInfo = localStorage.getItem("loginInfo");
+	let loginInfo = localStorage.getItem("loginInfo") == null ? {} : JSON.parse(localStorage.getItem("loginInfo"));
+	
 	$.post(
 		"/api/v1/main/chkPwChangeEncourage",
 		{ userId : loginInfo.userId, isGroup : true }
 	)
 	.done(function(arg) {
 		if (arg.code === "OK") {
-			//setPwInit(true);
+			if(arg.data){
+				//$("#pwInit").show();
+			}
 		}
 	})
 };
@@ -104,7 +107,9 @@ function selectPartnerCnt() {
 			<div class="conRight">
 				<div class="conHeader" style="padding: '23px 30px 20px 30px';">
 					<ul class="conHeaderCate">
-						<li>메인</li>
+						<li>메인
+						<a href="/#" data-toggle="modal" data-target="#pwInit" title="test">test</a>
+						</li>
 					</ul>
 				</div>
 				<div class="contents">
@@ -112,7 +117,7 @@ function selectPartnerCnt() {
 						<div class="mcl_left mainConBox" style=" height: '700px' ">
 							<h2 class="h2Tit">전자입찰</h2>
 							<div class="biddingList">
-								<a onClick="selectNotice()" class="biddingStep1">
+								<a onClick="moveBiddingPage('planning')" class="biddingStep1">
 									<div class="biddingListLeft" style="height: '70px';"><i class="fa-light fa-flag"></i>입찰계획</div><!-- 공고전 상태 -->
 									<div class="biddingListRight"><span id="planning">0</span>건<i class="fa-light fa-angle-right"></i></div>
 								</a>
@@ -165,10 +170,10 @@ function selectPartnerCnt() {
 						</div>
 					</div>
 				</div>
-				<jsp:include page="/WEB-INF/jsp/main/pwInitPop.jsp" />
 			</div>
 		</div>
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
+	<jsp:include page="/WEB-INF/jsp/main/pwInitPop.jsp" />
 </body>
 </html>
