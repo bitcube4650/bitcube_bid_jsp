@@ -18,12 +18,6 @@
         });
     });
 </script>
-<style>
-    .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 500px; background: white; border: 1px solid #ccc; padding: 20px; z-index: 1000; }
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; }
-    .modal-body { margin-top: 20px; }
-</style>
 <body>
     <div class="footer">
         <div class="subFooter">
