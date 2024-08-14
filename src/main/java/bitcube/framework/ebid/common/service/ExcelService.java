@@ -37,36 +37,33 @@ public class ExcelService {
 		// 파일명
 		String fileName = (String) params.get("fileName");
 		
-		// 헤더 작성
-		List<String> headers = (List<String>) params.get("headers");
-		if (!dataList.isEmpty()) {
-			if(headers != null) {
-				Row headerRow = sheet.createRow(0);
-				for (int i = 0; i < headers.size(); i++) {
-					Cell cell = headerRow.createCell(i);
-					cell.setCellValue(headers.get(i));
-				}
-			} else {
-				Map<String, Object> firstRow = dataList.get(0);
-				Row headerRow = sheet.createRow(0);
-				int headerCellIndex = 0;
-				for (String key : firstRow.keySet()) {
-					Cell cell = headerRow.createCell(headerCellIndex++);
-					cell.setCellValue(key);
-				}
-			}
-		}
+		// 헤더, 컬럼
+		List<Map<String, String>> dataJson = (List<Map<String, String>>) params.get("dataJson");
 		
-		// 데이터 작성
-		int rowIndex = 1;
-		for (Map<String, Object> rowData : dataList) {
-			Row row = sheet.createRow(rowIndex++);
-			int cellIndex = 0;
-			for (Object value : rowData.values()) {
-				Cell cell = row.createCell(cellIndex++);
-				cell.setCellValue(value != null ? value.toString() : "");
+		if (dataJson != null && !dataJson.isEmpty()) {
+			// 헤더 작성
+			Row headerRow = sheet.createRow(0);
+			for (int i = 0; i < dataJson.size(); i++) {
+				Map<String, String> columnMapping = dataJson.get(i);
+				String header = columnMapping.get("header");
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(header);
+			}
+			
+			// 데이터 작성
+			int rowIndex = 1;
+			for (Map<String, Object> rowData : dataList) {
+				Row row = sheet.createRow(rowIndex++);
+				int cellIndex = 0;
+				for (Map<String, String> columnMapping : dataJson) {
+					String columnName = columnMapping.get("column");
+					Object value = rowData.get(columnName);
+					Cell cell = row.createCell(cellIndex++);
+					cell.setCellValue(value != null ? value.toString() : "");
+				}
 			}
 		}
+
 		
 		// 엑셀 파일을 HTTP 응답으로 반환
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
