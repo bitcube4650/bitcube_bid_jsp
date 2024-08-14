@@ -64,18 +64,6 @@ function selectNotice() {
 				$("#notiList").html(text);
 			}
 		})
-		.fail(function(request, status, error) {
-			let param = request.responseText == undefined || request.responseText == null ? {} : JSON.parse(request.responseText);
-			Swal.fire({
-				title: '',			  // 타이틀
-				text: param.error == undefined || param.error == null ? '문제가 발생하였습니다.' : param.error,  // 내용
-				icon: 'error',						// success / error / warning / info / question
-			}).then((result) => {
-				if(request.status === 999){
-					location.href="/";
-				}
-			});
-		})
 }
 
 function selectBidCnt() {
@@ -133,7 +121,7 @@ function selectPartnerCnt() {
 						<div class="mcl_left mainConBox" style=" height: '700px' ">
 							<h2 class="h2Tit">전자입찰</h2>
 							<div class="biddingList">
-								<a onClick="moveBiddingPage('planning')" class="biddingStep1">
+								<a onClick="selectNotice()" class="biddingStep1">
 									<div class="biddingListLeft" style="height: '70px';"><i class="fa-light fa-flag"></i>입찰계획</div><!-- 공고전 상태 -->
 									<div class="biddingListRight"><span id="planning">0</span>건<i class="fa-light fa-angle-right"></i></div>
 								</a>

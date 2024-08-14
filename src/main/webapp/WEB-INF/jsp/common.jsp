@@ -28,7 +28,24 @@ $(document).ready(function() {
         complete: function() {
             // AJAX 요청이 완료되면 BlockUI 해제
             $.unblockUI();
-        }
+        },
+        error: function(request, status, error) {
+        	let param = {}
+        	try{
+        		param = JSON.parse(request.responseText);
+        	}catch(error){
+        		console.log("json parse error");
+        	}
+			Swal.fire({
+				title: '',			  // 타이틀
+				text: param.error == undefined || param.error == null ? '문제가 발생하였습니다.' : param.error,  // 내용
+				icon: 'error',						// success / error / warning / info / question
+			}).then((result) => {
+				if(request.status === 999){
+					location.href="/";
+				}
+			});
+		}
     });
 })
 </script>
