@@ -15,3 +15,4 @@
 <link href="${pageContext.request.contextPath}/resources/fontawesome-pro-6.1.1-web/css/all.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="${pageContext.request.contextPath}/resources/datepicker-ko.js"></script>
+<script src="${pageContext.request.contextPath}/resources/api/filters.js"></script>

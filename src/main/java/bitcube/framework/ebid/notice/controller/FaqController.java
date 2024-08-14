@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import bitcube.framework.ebid.dto.ResultBody;
 import bitcube.framework.ebid.notice.service.FaqService;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/api/v1/faq")
@@ -21,7 +22,7 @@ public class FaqController {
 	
 	@PostMapping(value="/faqList", produces = "application/json")
 	@ResponseBody
-	public ResultBody faqList(@RequestParam Map<String, Object> params) throws Exception {
+	public ResultBody faqList(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) throws Exception {
 		ResultBody resultBody = new ResultBody();
 		try {
 			resultBody = faqService.faqList(params);

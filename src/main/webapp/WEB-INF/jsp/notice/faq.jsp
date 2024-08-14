@@ -40,6 +40,43 @@
 		);
 	}
 	
+	function fnFaqExcelDown() {
+		var time = Ft.formatDate(new Date(), "yyyy_mm_dd");
+		var params = {
+			"title": $("#title").val(),
+			"faqType": $("#faqType").val(),
+			"headers": ['구분','내용','구분명','ID','등록자ID','제목','등록자명','등록일']
+		};
+	
+		$.ajax({
+			url: "/api/v1/etc/selectFaqList/excel",
+			type: "POST",
+			data: JSON.stringify(params),
+			contentType: "application/json; charset=utf-8",
+			// 응답을 Blob으로 처리하기 위해 xhrFields 사용
+			xhrFields: {
+				responseType: 'blob'
+			},
+			success: function(response) {
+				if (response) {
+					const url = window.URL.createObjectURL(new Blob([response]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", params.fileName + ".xlsx");
+					document.body.appendChild(link);
+					link.click();
+					window.URL.revokeObjectURL(url);
+				} else {
+					Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error("Error:", error);
+				Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
+			}
+		});
+	}
+
 	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
@@ -84,6 +121,7 @@
 		                    </select>
 		                </div>
 		                <div class="flex-shrink0">
+		                    <a href="#" id="fnFaqExcelDown" class="btnStyle btnPrimary" onclick="fnFaqExcelDown()" title="엑셀 다운">엑셀 다운</a>
 		                    <a href="#" id="addFaqBtn" class="btnStyle btnPrimary" data-toggle="modal" data-target="#faqReg" title="FAQ 등록">FAQ 등록</a>
 		                </div>
 		            </div>
