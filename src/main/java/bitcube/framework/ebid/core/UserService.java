@@ -165,7 +165,6 @@ public class UserService {
 	public void logout(HttpServletRequest request) {
 		HttpSession session = request.getSession();
  		session.removeAttribute(Constances.SESSION_NAME);
-//		session.invalidate();
 	}
 	
 	@SuppressWarnings({"unchecked"})
