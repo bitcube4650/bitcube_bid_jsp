@@ -136,11 +136,7 @@ function saveNotice(){
     	formData.append('file', file);
     }
 
-	formData.append('data', params);
-	
-	console.log('params',params)
-	
-	console.log()
+	formData.append('data', JSON.stringify(params));
 	
 	    $.ajax({
         url: '/api/v1/notice/insertNotice',
