@@ -8,7 +8,17 @@
   	int userAuth = 1;
 %>
 <script>
+	var path = window.location.pathname;
+	var loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
+	var userCustType = loginInfo.custType;
+	var userAuth = loginInfo.userAuth;
+	var targetId = "";
+	var menuClickBoolean = false;
+	
+	var modalType = "";
+	
 	$(document).ready(function() {
+
 		var path = window.location.pathname;
 		var loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
 		var userCustType = loginInfo.custType;
@@ -60,37 +70,73 @@
 			toggleMenu($(this).attr("id"));
 		});
 		
-		$("#logoutConfirm").on("click", function() {
-			$("#logoutPop").show();
+		// 로그아웃
+		$('#logoutConfirm').on('click', function(e) {
+			Swal.fire({
+				title: '',			  // 타이틀
+				text: "로그아웃 하시겠습니까?",  // 내용
+				icon: 'question',						// success / error / warning / info / question
+				confirmButtonColor: '#3085d6',  // 기본옵션
+				confirmButtonText: '확인',	  // 기본옵션
+				showCancelButton: true,		 // conrifm 으로 하고싶을떄
+				cancelButtonColor: '#d33',	  // conrifm 에 나오는 닫기버튼 옵션
+				cancelButtonText: '취소',	   // conrifm 에 나오는 닫기버튼 옵션
+			}).then((result) => {
+				if(result.isConfirmed){
+					fnLogout();
+				}
+			});
 		});
-		
-		$(".closePop").on("click", function() {
-			$(this).closest('.modal').hide();
-		});
-		
-		$("#checkPwdConfirm").on("click", function() {
-			$("#checkPwdPop").show();
-		});
-		
-		$("#changeStatusInfo").on("click", function() {
-			$("#modPop").val('info');
-			$("#checkPwdPop").show();
-		});
-		
-		$("#changeStatusPwd").on("click", function() {
-			$("#modPop").val('pwd');
-			$("#checkPwdPop").show();
-		});
+// 		// 개인정보변경
+// 		$('#changeStatusInfo').on('click', function(e) {
+// 			console.log("Info");
+// 			e.preventDefault();
+// 			//modalType = 'info';
+// // 			$('#checkPwdPop').show();
+// 		});
+		// 비밀번호변경
+// 		$('#changeStatusPwd').on('click', function(e) {
+// 			console.log("Pwd");
+// 			e.preventDefault();
+// 			//modalType = 'pwd';
+// // 			$('#checkPwdPop').show();
+// 		});
 	});
+	
+	// 입찰 진행 건수 호출
+	function fetchData() {
+		var userCustType = 'inter';
+		var loginInfo = null;
+		//var url = (userCustType === 'inter') ? "/api/v1/main/selectBidCnt" : "/api/v1/main/selectPartnerBidCnt";
+		$.post("/api/v1/main/selectBidCnt", 
+			{}, 
+			function(response) {
+			console.log(response);
+				if(response.code === 'OK') {
+					$("#ingCount").text(response.data.ing);
+					$("#completedCount").text(response.data.completed);
+					$("#awardedCount").text(response.data.awarded);
+				} else {
+					$("#ingCount").text(0);
+					$("#completedCount").text(0);
+					$("#awardedCount").text(0);
+				}
+			}
+		);
+	}
+	
+	
 </script>
 
 <body>
 	<div class="conLeftWrap">
+	<a onclick="fetchData()" class="">테스트버튼<i class="fa-solid fa-sort-down"></i></a>
 		<div class="profileDropWrap2">
+			
 			<a class="profileDrop2">테스트 님<i class="fa-solid fa-sort-down"></i></a>
 			<div class="profileDropMenu2">
-				<a id="changeStatusInfo" data-toggle="modal" title="개인정보 수정"><i class="fa-light fa-gear"></i>개인정보 수정</a>
-				<a id="changeStatusPwd" data-toggle="modal" title="비밀번호 변경"><i class="fa-light fa-lock-keyhole"></i>비밀번호 변경</a>
+				<a id="changeStatusInfo" data-toggle="modal" data-target="#checkPwdPop" title="개인정보 수정"><i class="fa-light fa-gear"></i>개인정보 수정</a>
+				<a id="changeStatusPwd" data-toggle="modal" data-target="#checkPwdPop" title="비밀번호 변경"><i class="fa-light fa-lock-keyhole"></i>비밀번호 변경</a>
 				<a id="logoutConfirm" data-toggle="modal" data-target="#logout" title="로그아웃"><i class="fa-light fa-arrow-right-from-bracket"></i>로그아웃</a>
 			</div>
 		</div>
@@ -103,7 +149,7 @@
 			<div>낙찰 (12개월)<a class="myStateNum" title="전자입찰 페이지로 이동"><span id="awardedCount">0</span>건</a></div>
 		</div>
 		<ul class="conLeft">
-			<li class="<%= path.equals("/dashboard") ? "active" : "" %>"><a href="/main"><span><i class="fa-light fa-desktop"></i></span>메인</a></li>
+			<li class="<%= path.equals("/dashboard") ? "active" : "" %>"><a href="/dashboard"><span><i class="fa-light fa-desktop"></i></span>메인</a></li>
 			<li class="<%= path.startsWith("/bid") ? "active" : "" %>">
 				<a id="ebid" class="menuLink"><span><i class="fa-light fa-file-contract"></i></span>전자입찰</a>
 				<div class="depth2Lnb">
@@ -167,27 +213,6 @@
 			</li>
 		</ul>
 	</div>
-	<div id="logoutPop" class="modal">
-		<div class="modal-header">
-			<h2>로그아웃</h2>
-			<button class="closePop">X</button>
-		</div>
-		<div class="modal-body">
-			<p>정말 로그아웃 하시겠습니까?</p>
-			<button>예</button>
-			<button class="closePop">아니오</button>
-		</div>
-	</div>
-	<div id="checkPwdPop" class="modal">
-		<div class="modal-header">
-			<h2>비밀번호 확인</h2>
-			<button class="closePop">X</button>
-		</div>
-		<div class="modal-body">
-			<input type="password" placeholder="비밀번호 입력">
-			<button id="checkPwdConfirm">확인</button>
-		</div>
-	</div>
-	<input type="hidden" id="modPop" value="">
+	
 </body>
 </html>
