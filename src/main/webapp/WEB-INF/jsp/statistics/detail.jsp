@@ -83,7 +83,7 @@
 				</div>
 			</div>
 		</div>
-		<jsp:include page="/WEB-INF/jsp/ebid/bidJoinCustListPop.jsp" />
+		<jsp:include page="/WEB-INF/jsp/bid/bidJoinCustListPop.jsp" />
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
 </body>

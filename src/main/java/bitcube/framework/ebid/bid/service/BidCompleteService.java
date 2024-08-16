@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import bitcube.framework.ebid.dao.GeneralDao;
 import bitcube.framework.ebid.dto.ResultBody;
+import bitcube.framework.ebid.dto.UserDto;
 import bitcube.framework.ebid.etc.util.CommonUtils;
 import bitcube.framework.ebid.etc.util.consts.DB;
 import lombok.extern.slf4j.Slf4j;
@@ -209,97 +210,92 @@ public class BidCompleteService {
 		
 		return resultBody;
 	}
-//	
-//	/**
-//	 * 협력사 입찰완료 리스트
-//	 * @param params : (String) biNo, (String) biName, (String) succYn_Y, (String) succYn_N, (String) startDate, (String) endDate 
-//	 * @return
-//	 */
-//	@SuppressWarnings({ "rawtypes" })
-//	public ModelAndView complateBidPartnerList(Map<String, Object> params) throws Exception {
-//		
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		Optional<TCoCustUser> userOptional = tCoCustUserRepository.findById(principal.getUsername());
-//		int custCode = userOptional.get().getCustCode();
-//		
-//		params.put("custCode", custCode);
-//		
-//		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_PARTNER_COMPLETE_EBID_LIST, params);
-//		ModelAndView.setData(listPage);
-//		
-//		return ModelAndView;
-//	}
-//	
-//	/**
-//  	 * 협력사 입찰완료 상세
-//  	 * @param params : (String) biNo
-//  	 * @return
-//  	 */
-//	@SuppressWarnings({ "unchecked" })
-//	public ModelAndView complateBidPartnerDetail(Map<String, Object> params) throws Exception{
-//		
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		Optional<TCoCustUser> userOptional = tCoCustUserRepository.findById(principal.getUsername());
-//		int custCode = userOptional.get().getCustCode();
-//		
-//		params.put("custCode", custCode);
-//		
-//		Map<String, Object> detailMap = new HashMap<String, Object>();
-//		
-//		// ************ 데이터 검색 -- 입찰참가업체, 세부내역, 첨부파일 제외 ************
-//		detailMap = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_PARTNER_COMPLETE_EBID_DETAIL, params);
-//		
-//		// ************ 데이터 검색 -- 입찰참가업체 ************
-//		List<Object> custData = generalDao.selectGernalList(DB.QRY_SELECT_PARTNER_COMPLETE_EBID_CUST_DETAIL, params);
-//		
-//		//내역방식이 직접등록일 경우
-//		if(CommonUtils.getString(detailMap.get("insMode")).equals("2")) {
-//			for(Object obj : custData) {
-//				Map<String, Object> custDto = (Map<String, Object>) obj;
-//				Map<String, Object> innerParams = new HashMap<String, Object>();
-//				innerParams.put("biNo", params.get("biNo"));
-//				innerParams.put("custCode", custDto.get("custCode"));
-//				
-//				List<Object> specDto = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_JOIN_CUST_SPEC, innerParams);
-//				custDto.put("bid_Spec",specDto);
-//			}
-//		}
-//		
-//		detailMap.put("cust_List", custData);
-//		
-//		// ************ 데이터 검색 -- 세부내역 ************
-//		if(CommonUtils.getString(detailMap.get("insMode")).equals("1")) {		//내역방식이 파일등록일 경우
-//			ArrayList<String> fileFlagArr = new ArrayList<String>();
-//			fileFlagArr.add("K");
-//			
-//			Map<String, Object> innerParams = new HashMap<String, Object>();
-//			innerParams.put("biNo", params.get("biNo"));
-//			innerParams.put("fileFlag", fileFlagArr);
-//			
-//			List<Object> specfile = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
-//			detailMap.put("spec_File", specfile);
-//			
-//		}else if(CommonUtils.getString(detailMap.get("insMode")).equals("2")) {		//내역방식이 직접입력일 경우
-//			List<Object> specInput = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_SPEC, params);
-//			detailMap.put("spec_Input", specInput);
-//		}
-//		
-//		// ************ 데이터 검색 -- 첨부파일 ************
-//		ArrayList<String> fileFlagArr = new ArrayList<String>();
-//		fileFlagArr.add("1");
-//		
-//		Map<String, Object> innerParams = new HashMap<String, Object>();
-//		innerParams.put("biNo", params.get("biNo"));
-//		innerParams.put("fileFlag", fileFlagArr);
-//		
-//		List<Object> fileData = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
-//		detailMap.put("file_List", fileData);
-//		
-//		ModelAndView.setData(detailMap);
-//		
-//		return ModelAndView;
-//	
-//	}
+	
+	/**
+	 * 협력사 입찰완료 리스트
+	 * @param params : (String) biNo, (String) biName, (String) succYn_Y, (String) succYn_N, (String) startDate, (String) endDate 
+	 * @param user 
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes" })
+	public ResultBody complateBidPartnerList(Map<String, Object> params, UserDto user) throws Exception {
+		ResultBody resultBody = new ResultBody();
+		params.put("custCode", user.getCustCode());
+		
+		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_PARTNER_COMPLETE_EBID_LIST, params);
+		resultBody.setData(listPage);
+		
+		return resultBody;
+	}
+	
+	/**
+  	 * 협력사 입찰완료 상세
+  	 * @param params : (String) biNo
+	 * @param user 
+  	 * @return
+  	 */
+	@SuppressWarnings({ "unchecked" })
+	public ResultBody complateBidPartnerDetail(Map<String, Object> params, UserDto user) throws Exception{
+		ResultBody resultBody = new ResultBody();
+		
+		params.put("custCode", user.getCustCode());
+		
+		Map<String, Object> detailMap = new HashMap<String, Object>();
+		
+		// ************ 데이터 검색 -- 입찰참가업체, 세부내역, 첨부파일 제외 ************
+		detailMap = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_PARTNER_COMPLETE_EBID_DETAIL, params);
+		
+		// ************ 데이터 검색 -- 입찰참가업체 ************
+		List<Object> custData = generalDao.selectGernalList(DB.QRY_SELECT_PARTNER_COMPLETE_EBID_CUST_DETAIL, params);
+		
+		//내역방식이 직접등록일 경우
+		if(CommonUtils.getString(detailMap.get("insMode")).equals("2")) {
+			for(Object obj : custData) {
+				Map<String, Object> custDto = (Map<String, Object>) obj;
+				Map<String, Object> innerParams = new HashMap<String, Object>();
+				innerParams.put("biNo", params.get("biNo"));
+				innerParams.put("custCode", custDto.get("custCode"));
+				
+				List<Object> specDto = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_JOIN_CUST_SPEC, innerParams);
+				custDto.put("bid_Spec",specDto);
+			}
+		}
+		
+		detailMap.put("cust_List", custData);
+		
+		// ************ 데이터 검색 -- 세부내역 ************
+		if(CommonUtils.getString(detailMap.get("insMode")).equals("1")) {		//내역방식이 파일등록일 경우
+			ArrayList<String> fileFlagArr = new ArrayList<String>();
+			fileFlagArr.add("K");
+			
+			Map<String, Object> innerParams = new HashMap<String, Object>();
+			innerParams.put("biNo", params.get("biNo"));
+			innerParams.put("fileFlag", fileFlagArr);
+			
+			List<Object> specfile = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
+			detailMap.put("spec_File", specfile);
+			
+		}else if(CommonUtils.getString(detailMap.get("insMode")).equals("2")) {		//내역방식이 직접입력일 경우
+			List<Object> specInput = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_SPEC, params);
+			detailMap.put("spec_Input", specInput);
+		}
+		
+		// ************ 데이터 검색 -- 첨부파일 ************
+		ArrayList<String> fileFlagArr = new ArrayList<String>();
+		fileFlagArr.add("1");
+		
+		Map<String, Object> innerParams = new HashMap<String, Object>();
+		innerParams.put("biNo", params.get("biNo"));
+		innerParams.put("fileFlag", fileFlagArr);
+		
+		List<Object> fileData = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
+		detailMap.put("file_List", fileData);
+		
+		resultBody.setData(detailMap);
+		
+		return resultBody;
+	
+	}
 //	
 //	/**
 //	 * 협력사 낙찰승인
