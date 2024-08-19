@@ -11,7 +11,6 @@
 					<div class="modalBoxSt mt10">
 						<div class="flex align-items-center">
 							<div class="formTit flex-shrink0 width120px">입찰번호</div>
-<!-- 							<div class="width100"><span id="biNo"></span></div> -->
 							<div class="width100" id="biNo"></div>
 						</div>
 						<div class="flex align-items-center mt10">

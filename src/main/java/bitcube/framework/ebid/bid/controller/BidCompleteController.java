@@ -19,7 +19,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import bitcube.framework.ebid.bid.service.BidCompleteService;
 import bitcube.framework.ebid.dto.ResultBody;
+import bitcube.framework.ebid.dto.UserDto;
+import bitcube.framework.ebid.etc.util.Constances;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -171,42 +174,75 @@ public class BidCompleteController {
 		}
 		return resultBody;
 	}
-//	
-//	/**
-//	 * 협력사 입찰완료 리스트
-//	 * @param params
-//	 * @return
-//	 */
-//	@PostMapping("/partnerList")
-//	public ResultBody complateBidPartnerList(@RequestBody Map<String, Object> params) {
-//		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = bidCompleteSvc.complateBidPartnerList(params); 
-//		}catch(Exception e) {
-//			log.error("complateBidPartnerList list error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("입찰 완료 리스트를 가져오는것을 실패하였습니다.");	
-//		}
-//		return resultBody;
-//	}
-//	
-//	/**
-//	 * 협력사 입찰완료 상세
-//	 * @param params
-//	 * @return
-//	 */
-//	@PostMapping("/partnerDetail")
-//	public ResultBody complateBidPartnerDetail(@RequestBody Map<String, Object> params) {
-//		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = bidCompleteSvc.complateBidPartnerDetail(params); 
-//		}catch(Exception e) {
-//			log.error("complateBidPartnerDetail error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("입찰완료 상세 데이터를 가져오는것을 실패하였습니다.");
-//		}
-//		return resultBody;
-//	}
+	
+	/**
+	 * 협력사 입찰완료 리스트
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/partnerList")
+	public ResultBody complateBidPartnerList(
+			@RequestParam(name="page",			defaultValue="0") int page,
+			@RequestParam(name="size",			defaultValue="10") int size,
+			@RequestParam(name="startDate",		defaultValue="") String startDate,
+			@RequestParam(name="endDate",		defaultValue="") String endDate,
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			@RequestParam(name="biName",		defaultValue="") String biName,
+			@RequestParam(name="succYn_Y",		required = false) boolean succYn_Y,
+			@RequestParam(name="succYn_N",		required = false) boolean succYn_N,
+			HttpServletRequest request) {
+		ResultBody resultBody = new ResultBody();
+
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("page",		page);
+		params.put("size",		size);
+		params.put("startDate",	startDate);
+		params.put("endDate",	endDate);
+		params.put("biNo",		biNo);
+		params.put("biName",	biName);
+		params.put("succYn_Y",	succYn_Y);
+		params.put("succYn_N",	succYn_N);
+		
+		try {
+			resultBody = bidCompleteSvc.complateBidPartnerList(params, user); 
+		}catch(Exception e) {
+			log.error("complateBidPartnerList list error : {}", e);
+			resultBody.setCode("fail");
+			resultBody.setMsg("입찰 완료 리스트를 가져오는것을 실패하였습니다.");	
+		}
+		return resultBody;
+	}
+	
+	/**
+	 * 협력사 입찰완료 상세
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/partnerDetail")
+	public ResultBody complateBidPartnerDetail(
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			HttpServletRequest request) {
+		ResultBody resultBody = new ResultBody();
+
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("biNo", biNo);
+		try {
+			resultBody = bidCompleteSvc.complateBidPartnerDetail(params, user); 
+		}catch(Exception e) {
+			log.error("complateBidPartnerDetail error : {}", e);
+			resultBody.setCode("fail");
+			resultBody.setMsg("입찰완료 상세 데이터를 가져오는것을 실패하였습니다.");
+		}
+		return resultBody;
+	}
 //	
 //	/**
 //	 * 협력사 낙찰확인 업데이트

@@ -61,7 +61,8 @@ public class NoticeController {
 	 * @return
 	 */
 	@PostMapping("/updateClickNum")
-	public ResultBody updateClickNum(@RequestParam Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody updateClickNum(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 
 		try {
