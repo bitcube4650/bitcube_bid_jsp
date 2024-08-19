@@ -77,7 +77,22 @@
 		
 		function onClickBidDetail(biNo) {
 			localStorage.setItem("biNo", biNo);
-			location.href = '/bid/partnerCompleteDetail';
+			
+			const form = document.createElement('form');
+			form.setAttribute('action', "/api/v1/bidComplete/partnerDetail");
+			form.setAttribute('method', 'post');
+			
+			// 선택한 회사명
+			const input = document.createElement('input');
+			input.setAttribute('type', 'hidden');
+			input.setAttribute('name', 'biNo');
+			input.setAttribute('value', biNo);
+			
+			// input태그를 form태그의 자식요소로 만듦
+			form.appendChild(input);
+			
+			document.body.appendChild(form) // form태그를 body태그의 자식요소로 만듦
+			form.submit();
 		}
 		
 		function isPastDate(date){
