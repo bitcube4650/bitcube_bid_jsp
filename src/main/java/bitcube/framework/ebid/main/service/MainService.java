@@ -7,15 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import bitcube.framework.ebid.core.UserService;
 import bitcube.framework.ebid.dao.GeneralDao;
@@ -106,25 +101,25 @@ public class MainService {
 	}
 
 	//협력사 전자입찰 건수 조회(협력사메인)
-	@Transactional
 	public ResultBody selectPartnerBidCnt(Map<String, Object> params) throws Exception {
 		ResultBody resultBody = new ResultBody();
 		
-//		Map<String, Object> paramMap = new HashMap<String, Object>();
-//		paramMap.put("custCode", this.getCustCode());
-//		
-//		int noticing = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_BID_NOTICING_CNT, paramMap));			// 미투찰
-//		int submitted = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_BID_SUBMITTED_CNT, paramMap));		// 투찰
-//		int awarded = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_BID_AWARDED_CNT, paramMap));			// 낙찰
-//		int unsuccessful = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_BID_UNSUCCESSFUL_CNT, paramMap));	// 비선정
-//		
-//		Map<String, Object> resultMap = new HashMap<String, Object>();
-//		resultMap.put("noticing", noticing);
-//		resultMap.put("submitted", submitted);
-//		resultMap.put("awarded", awarded);
-//		resultMap.put("unsuccessful", unsuccessful);
-//		resultMap.put("ing", noticing + submitted);
-//		resultBody.setData(resultMap);
+		UserDto userDto = (UserDto) params.get("userDto");
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("custCode", userDto.getCustCode());
+		
+		int noticing = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_BID_NOTICING_CNT, paramMap));			// 미투찰
+		int submitted = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_BID_SUBMITTED_CNT, paramMap));		// 투찰
+		int awarded = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_BID_AWARDED_CNT, paramMap));			// 낙찰
+		int unsuccessful = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_BID_UNSUCCESSFUL_CNT, paramMap));	// 비선정
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("noticing", noticing);
+		resultMap.put("submitted", submitted);
+		resultMap.put("awarded", awarded);
+		resultMap.put("unsuccessful", unsuccessful);
+		resultMap.put("ing", noticing + submitted);
+		resultBody.setData(resultMap);
 
 		return resultBody;
 	}
@@ -134,18 +129,19 @@ public class MainService {
 	public ResultBody selectCompletedBidCnt(Map<String, Object> params) throws Exception {
 		ResultBody resultBody = new ResultBody();
 		
-//		Map<String, Object> paramMap = new HashMap<String, Object>();
-//		paramMap.put("custCode", this.getCustCode());
-//		
-//		int posted = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_COMPLETE_POSTED_CNT, paramMap));			// 공고되었던 입찰
-//		int submitted = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_COMPLETE_SUBMITTED_CNT, paramMap));	// 투찰했던 입찰
-//		int awarded = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_COMPLETE_AWARDED_CNT, paramMap));		// 낙찰된 입찰
-//		
-//		Map<String, Object> resultMap = new HashMap<String, Object>();
-//		resultMap.put("posted", posted);
-//		resultMap.put("submitted", submitted);
-//		resultMap.put("awarded", awarded);
-//		resultBody.setData(resultMap);
+		UserDto userDto = (UserDto) params.get("userDto");
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("custCode", userDto.getCustCode());
+		
+		int posted = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_COMPLETE_POSTED_CNT, paramMap));			// 공고되었던 입찰
+		int submitted = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_COMPLETE_SUBMITTED_CNT, paramMap));	// 투찰했던 입찰
+		int awarded = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_COMPLETE_AWARDED_CNT, paramMap));		// 낙찰된 입찰
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("posted", posted);
+		resultMap.put("submitted", submitted);
+		resultMap.put("awarded", awarded);
+		resultBody.setData(resultMap);
 
 		return resultBody;
 	}
@@ -219,7 +215,6 @@ public class MainService {
 
 	//유저 정보 변경
 	@Transactional
-	@SuppressWarnings({"unchecked"})
 	public ResultBody saveUserInfo(Map<String, Object> params) throws Exception {
 		ResultBody resultBody = new ResultBody();
 		UserDto userDto = (UserDto) params.get("userDto");
@@ -249,28 +244,6 @@ public class MainService {
 		return resultBody;
 	}
 
-	//계열사 정보 조회
-	public ResultBody selectCompInfo(Map<String, Object> params) {
-		ResultBody resultBody = new ResultBody();
-//		String custCode = "";
-//		 
-//		try {
-//			if (!StringUtils.isEmpty(params.get("custCode"))) {
-//				custCode = (String) params.get("custCode");
-//			}
-//			Optional<TCoInterrelated> tCoInterrelated = tCoInterrelatedRepository.findById(custCode);
-//			
-//			resultBody.setData(tCoInterrelated.get());
-//			
-//		}catch(Exception e) {
-//			resultBody.setCode("ERROR");
-//	        resultBody.setStatus(500);
-//	        resultBody.setMsg("An error occurred while selecting the company info.");
-//	        resultBody.setData(e.getMessage());
-//		}
-		
-		return resultBody;
-	}
 	
 	/**
 	 * 비밀번호 변경 권장 플래그
@@ -310,73 +283,6 @@ public class MainService {
 		}
 		
 		return resultBody;
-	}
-	
-	// 초기 계열사 사용자 비밀번호 변경 처리
-    @SuppressWarnings("rawtypes")
-	@Transactional
-	public void chgPwdFirst() {
-		log.info("-----------------------chgPwdFirst service start----------------------");
-		// 계열사 사용자 리스트 조회
-    	// 새로 쿼리를 짜면 dto를 하나 더 생성해야해서 기존 쿼리에서 쓰던 dto를 사용하기위해 쿼리가 길어짐
-//		StringBuilder sbList = new StringBuilder(" select "
-//				+ "user_name"
-//				+ ", user_id"
-//				+ ", user_position"
-//				+ ", dept_name"
-//				+ ", user_tel"
-//				+ ", user_hp"
-//				+ ", user_auth"
-//				+ ", use_yn"
-//				+ ", interrelated_cust_code as interrelated_cust_nm "
-//				+ "from t_co_user a "
-//				+ "where 1=1 "
-////				+ "and user_id = 'gaksa01' "
-//				+ " ");
-//        Query queryList = entityManager.createNativeQuery(sbList.toString());
-//        List list = new JpaResultMapper().list(queryList, TCoUserDto.class);
-//        
-//        for(int i = 0; i < list.size(); i++) {
-//        	TCoUserDto userInfo = (TCoUserDto) list.get(i);
-//        	String userId = userInfo.getUserId();
-//        	// 패스워드 규칙 사용자 아이디 + !@# 
-//    		String chgPwd = userId + "!@#";
-//    		// 비밀번호 암호화
-//    		String encodedPassword = passwordEncoder.encode(chgPwd);
-//    		// 업데이트
-//    		StringBuilder sbQuery = new StringBuilder(
-//    	            " update t_co_user "
-//    	            + " set user_pwd = :userPwd "
-////    	            + ", pwd_edit_yn = 'Y'"
-////    	            + ", pwd_edit_date = now()"
-////    	            + ", update_user = :updateUser"
-////    	            + ", update_date = now() "
-//    	            + " where user_id = :userId ");
-//            Query query = entityManager.createNativeQuery(sbQuery.toString());
-//            query.setParameter("userId", userId);
-//            query.setParameter("userPwd", encodedPassword);
-//            query.executeUpdate();
-//        }
-//        log.info("-----------------------chgPwdFirst service end----------------------");
-	}
-	
-	private int getCustCode() throws Exception {
-//		Map<String, Object> paramMap = new HashMap<String, Object>();
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		paramMap.put("userId", principal.getUsername());
-//		Map<String, Object> custMap = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_COMMON_CUST_USER_DETAIL, paramMap);
-//		return CommonUtils.getInt(custMap.get("custCode"));
-		return 1;
-	}
-	
-	private Map<String, Object> getCoUser() throws Exception {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		paramMap.put("userId", principal.getUsername());
-//		Map<String, Object> userMap = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_COMMON_CO_USER_DETAIL, paramMap);
-//		return userMap;
-		
-		return paramMap;
 	}
 
 }

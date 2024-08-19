@@ -1,14 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ page import="bitcube.framework.ebid.etc.util.Constances" %>
+<%@ page import="bitcube.framework.ebid.dto.UserDto" %>
+<%
+	UserDto userDto = (UserDto)(request.getSession()).getAttribute(Constances.SESSION_NAME);
+	String custType = userDto.getCustType();
+%>
 <!DOCTYPE html>
 <html>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <script>
 $(function(){
-	selectNotice();
-	selectBidCnt();
-	selectPartnerCnt();
+	let loginInfo = localStorage.getItem("loginInfo") == null ? {} : JSON.parse(localStorage.getItem("loginInfo"));
 	
+	if(loginInfo.custType == 'inter'){
+		selectBidCnt();
+		selectPartnerCnt();
+	}else{
+		selectPartnerBidCnt();
+		selectCompletedBidCnt();
+	}
+	selectNotice();
 	fnChkPwChangeEncourage();
 })
 function fnChkPwChangeEncourage() {
@@ -55,7 +67,7 @@ function selectNotice() {
 			
 			let text = "";
 			for(let i = 0 ; i < data.length ; i++){
-				text += '<a href="javascript:onNoticeDetail()" data-toggle="modal" data-target="#notiModal" title="해당 게시글 자세히 보기">';
+				text += '<a href="javascript:fnNoticeDetail('+data[i].bno+')" title="해당 게시글 자세히 보기">';
 				text += 	'<span class="notiTit">' + (data[i].bco === 'ALL' ? '[공통]' : '') + data[i].btitle + '</span>';
 				text +=		'<span class="notiDate" style="width:170px;">' + data[i].bdate.substring(0,10) +'</span>';
 				text += "</a>"
@@ -97,6 +109,39 @@ function selectPartnerCnt() {
 	})
 };
 
+function selectPartnerBidCnt() {
+	
+	$.post(
+		"/api/v1/main/selectPartnerBidCnt",
+		{}
+	)
+	.done(function(arg) {
+		if (arg.code === "OK") {
+			$("#partner_noticing").text(arg.data.noticing);
+			$("#partner_submitted").text(arg.data.submitted);
+			$("#partner_awarded").text(arg.data.awarded);
+			$("#partner_unsuccessful").text(arg.data.unsuccessful);
+		}
+	})
+		
+}
+
+function selectCompletedBidCnt() {
+	
+	$.post(
+		"/api/v1/main/selectCompletedBidCnt",
+		{}
+	)
+	.done(function(arg) {
+		if (arg.code === "OK") {
+			$("#partner_complete_posted").text(arg.data.posted);
+			$("#partner_complete_submitted").text(arg.data.submitted);
+			$("#partner_complete_awarded").text(arg.data.awarded);
+		}
+	})
+	
+}
+
 </script>
 <body>
 	<div id="wrap">
@@ -104,6 +149,7 @@ function selectPartnerCnt() {
 		<div class="contentWrap">
 			<jsp:include page="/WEB-INF/jsp/layout/menu.jsp" />
 			
+<%	if(custType.equals("inter")){ %>
 			<div class="conRight">
 				<div class="conHeader" style="padding: '23px 30px 20px 30px';">
 					<ul class="conHeaderCate">
@@ -169,9 +215,77 @@ function selectPartnerCnt() {
 					</div>
 				</div>
 			</div>
+<%	}else { %>
+			<div class="conRight">
+				<div class="conHeader" style="padding: 23px 30px 20px 30px;">
+					<ul class="conHeaderCate">
+						<li>메인</li>
+					</ul>
+				</div>
+				<div class="contents">
+					<div class="mainConLayout" style="margin-top:10px;">
+						<div class="mcl_left mainConBox">
+							<h2 class="h2Tit">전자입찰</h2>
+							<div class="biddingList" style="margin-top:70px;">
+								<a href="javascript:moveBiddingPage('noticing')" class="biddingStep1">
+									<div class="biddingListLeft"><i class="fa-light fa-flag"></i>미투찰(재입찰 포함)</div>
+									<div class="biddingListRight"><span id="partner_noticing">0</span>건<i class="fa-light fa-angle-right"></i></div>
+								</a>
+								<a href="javascript:moveBiddingPage('submitted')" class="biddingStep2">
+									<div class="biddingListLeft"><i class="fa-light fa-check-to-slot"></i>투찰한 입찰</div>
+									<div class="biddingListRight"><span id="partner_submitted">0</span>건<i class="fa-light fa-angle-right"></i></div>
+								</a>
+								<a href="javascript:moveBiddingPage('awarded')" class="biddingStep4">
+									<div class="biddingListLeft"><i class="fa-light fa-file-check"></i>낙찰(12개월)</div>
+									<div class="biddingListRight"><span id="partner_awarded">0</span>건<i class="fa-light fa-angle-right"></i></div>
+								</a>
+								<a href="javascript:moveBiddingPage('unsuccessful')" class="biddingStep5">
+									<div class="biddingListLeft"><i class="fa-light fa-puzzle-piece"></i>비선정(12개월)</div>
+									<div class="biddingListRight"><span id="partner_unsuccessful">0</span>건<i class="fa-light fa-angle-right"></i></div>
+								</a>
+							</div>
+						</div>
+						<div class="mcl_right">
+							<div class="mainConBox">
+								<h2 class="h2Tit">입찰완료 (12개월)<a href="/bid/partnerComplete" title="입찰 페이지로 이동" class="mainConBoxMore">더보기<i class="fa-solid fa-circle-plus"></i></a></h2>
+								<div class="biddingCompleted">
+									<a class="bcStep1" title="공고되었던 입찰 페이지로 이동" style="cursor:default;">
+										<i class="fa-light fa-file-lines"></i>
+										<div class="bcTitWrap">
+											<div class="bcTit">공고되었던 입찰</div>
+											<div class="bcNum"><span id="partner_complete_posted">0</span>건</div>
+										</div>
+									</a>
+									<a href="javascript:moveBiddingPage('awardedAll')" class="bcStep2" title="투찰했던 입찰 페이지로 이동">
+										<i class="fa-light fa-message-check"></i>
+										<div class="bcTitWrap">
+											<div class="bcTit">투찰했던 입찰</div>
+											<div class="bcNum"><span id="partner_complete_submitted">0</span>건</div>
+										</div>
+									</a>
+									<a href="javascript:moveBiddingPage('awarded')" class="bcStep3" title="낙찰된 입찰 페이지로 이동">
+										<i class="fa-light fa-clipboard-check"></i>
+										<div class="bcTitWrap">
+											<div class="bcTit">낙찰된 입찰</div>
+											<div class="bcNum"><span id="partner_complete_awarded">0</span>건</div>
+										</div>
+									</a>
+								</div>
+							</div>
+							<div class="mainConBox" style="height: '381.41px'">
+								<h2 class="h2Tit">공지사항<a onClick="onMoveNotice()" title="공지사항 페이지로 이동" class="mainConBoxMore">더보기<i class="fa-solid fa-circle-plus"></i></a></h2>
+								<div class="notiList" id="notiList">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+<%	} %>
 		</div>
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
 	<jsp:include page="/WEB-INF/jsp/main/pwInitPop.jsp" />
+	<jsp:include page="/WEB-INF/jsp/main/noticePop.jsp" />
 </body>
 </html>
