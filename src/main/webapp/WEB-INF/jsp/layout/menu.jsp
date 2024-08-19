@@ -1,7 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html>
-<html>
-<jsp:include page="/WEB-INF/jsp/common.jsp" />
 <% 
   	String path = ""; 
   	String userCustType = "inter";
@@ -87,57 +84,18 @@
 				}
 			});
 		});
-// 		// 개인정보변경
-// 		$('#changeStatusInfo').on('click', function(e) {
-// 			console.log("Info");
-// 			e.preventDefault();
-// 			//modalType = 'info';
-// // 			$('#checkPwdPop').show();
-// 		});
-		// 비밀번호변경
-// 		$('#changeStatusPwd').on('click', function(e) {
-// 			console.log("Pwd");
-// 			e.preventDefault();
-// 			//modalType = 'pwd';
-// // 			$('#checkPwdPop').show();
-// 		});
-	});
-	
-	// 입찰 진행 건수 호출
-	function fetchData() {
-		var userCustType = 'inter';
-		var loginInfo = null;
-		//var url = (userCustType === 'inter') ? "/api/v1/main/selectBidCnt" : "/api/v1/main/selectPartnerBidCnt";
-		$.post("/api/v1/main/selectBidCnt", 
-			{}, 
-			function(response) {
-			console.log(response);
-				if(response.code === 'OK') {
-					$("#ingCount").text(response.data.ing);
-					$("#completedCount").text(response.data.completed);
-					$("#awardedCount").text(response.data.awarded);
-				} else {
-					$("#ingCount").text(0);
-					$("#completedCount").text(0);
-					$("#awardedCount").text(0);
-				}
-			}
-		);
-	}
-	
+	})
 	
 </script>
 
-<body>
 	<div class="conLeftWrap">
-	<a onclick="fetchData()" class="">테스트버튼<i class="fa-solid fa-sort-down"></i></a>
 		<div class="profileDropWrap2">
 			
 			<a class="profileDrop2">테스트 님<i class="fa-solid fa-sort-down"></i></a>
 			<div class="profileDropMenu2">
-				<a id="changeStatusInfo" data-toggle="modal" data-target="#checkPwdPop" title="개인정보 수정"><i class="fa-light fa-gear"></i>개인정보 수정</a>
-				<a id="changeStatusPwd" data-toggle="modal" data-target="#checkPwdPop" title="비밀번호 변경"><i class="fa-light fa-lock-keyhole"></i>비밀번호 변경</a>
-				<a id="logoutConfirm" data-toggle="modal" data-target="#logout" title="로그아웃"><i class="fa-light fa-arrow-right-from-bracket"></i>로그아웃</a>
+				<a href="javascript:changeInfoLink()" id="changeStatusInfo" title="개인정보 수정"><i class="fa-light fa-gear"></i>개인정보 수정</a>
+				<a href="javascript:changePwdLink()" id="changeStatusPwd" title="비밀번호 변경"><i class="fa-light fa-lock-keyhole"></i>비밀번호 변경</a>
+				<a href="javascript:void(0);" id="logoutConfirm" title="로그아웃"><i class="fa-light fa-arrow-right-from-bracket"></i>로그아웃</a>
 			</div>
 		</div>
 		<div class="myState" id="myStateInter" style="display: none;">
@@ -214,5 +172,3 @@
 		</ul>
 	</div>
 	
-</body>
-</html>

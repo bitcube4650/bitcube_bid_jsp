@@ -88,11 +88,15 @@ public class MainController {
 	
 	//비밀번호 확인
 	@PostMapping("/checkPwd")
-	public boolean checkPwd(@RequestParam Map<String, Object> params) {
-		
-		return true;
-		//return mainService.checkPwd(params);
-		
+	@ResponseBody
+	public ResultBody checkPwd(HttpServletRequest request, @RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			resultBody = mainService.checkPwd(params);
+		} catch(Exception e) {
+			resultBody.setCode("Fail");
+		}
+		return resultBody;
 	}
 	
 	//비밀번호 변경
@@ -112,35 +116,37 @@ public class MainController {
 	
 	//유저 정보 조회
 	@PostMapping("/selectUserInfo")
-	public ResultBody selectUserInfo(@RequestParam Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody selectUserInfo(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = mainService.selectUserInfo(params);
-//		} catch (Exception e) {
-//			resultBody.setCode("ERROR");
-//			resultBody.setStatus(500);
-//			resultBody.setMsg("An error occurred while selecting the user info.");
-//			resultBody.setData(e.getMessage());
-//			
-//			log.error("{} Error : {}", this.getClass(), e.getMessage());
-//		}
+		try {
+			resultBody = mainService.selectUserInfo(params);
+		} catch (Exception e) {
+			resultBody.setCode("ERROR");
+			resultBody.setStatus(500);
+			resultBody.setMsg("An error occurred while selecting the user info.");
+			resultBody.setData(e.getMessage());
+			
+			log.error("{} Error : {}", this.getClass(), e.getMessage());
+		}
 		return resultBody;
 	}
 	
 	//유저 정보 변경
 	@PostMapping("/saveUserInfo")
-	public ResultBody saveUserInfo(@RequestParam Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody saveUserInfo(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = mainService.saveUserInfo(params);
-//		} catch (Exception e) {
-//			resultBody.setCode("ERROR");
-//			resultBody.setStatus(500);
-//			resultBody.setMsg("An error occurred while updating the user info.");
-//			resultBody.setData(e.getMessage());
-//			
-//			log.error("{} Error : {}", this.getClass(), e.getMessage());
-//		}
+		try {
+			resultBody = mainService.saveUserInfo(params);
+		} catch (Exception e) {
+			resultBody.setCode("ERROR");
+			resultBody.setStatus(500);
+			resultBody.setMsg("An error occurred while updating the user info.");
+			resultBody.setData(e.getMessage());
+			
+			log.error("{} Error : {}", this.getClass(), e.getMessage());
+		}
 		return resultBody;
 	}
 	

@@ -2,27 +2,7 @@
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <script>
-function savePwd() {
-	if(checkValid()){
-		$.post(
-			"/api/v1/main/changePwd",
-			{}
-		)
-		.done(function(arg) {
-			$("#editPw").val('');
-			$("#editConfirmPw").val('');
-			
-			if (arg.code === "OK") {
-				Swal.fire('', '비밀번호를 저장하였습니다.', 'info');
-				$("#pwInitModalClose").click();
-			}else{
-				Swal.fire('', '비밀번호 변경에 실패하였습니다.', 'warning');
-			}
-		})
-	}  
-}
-
-function checkValid() {
+function fnPwInitSave() {
 	const password = $("#editPw").val();
 	const passwordChk = $("#editConfirmPw").val();
 	const hasUpperCase = /[A-Z]/.test(password);//대문자
@@ -44,8 +24,24 @@ function checkValid() {
 		Swal.fire('', '비밀번호 확인이 일치하지 않습니다.', 'warning');
 		return false;
 	}
-	return true;
+	
+	$.post(
+		"/api/v1/main/changePwd",
+		{}
+	)
+	.done(function(arg) {
+		$("#editPw").val('');
+		$("#editConfirmPw").val('');
+		
+		if (arg.code === "OK") {
+			Swal.fire('', '비밀번호를 저장하였습니다.', 'info');
+			$("#pwInitModalClose").click();
+		}else{
+			Swal.fire('', '비밀번호 변경에 실패하였습니다.', 'warning');
+		}
+	})
 }
+
 </script>
 <div class="modal fade modalStyle" id="pwInit" tabindex="-1" role="dialog">
 	<div class="modal-dialog" style="width:100%; max-width:510px">
@@ -74,7 +70,7 @@ function checkValid() {
 				</div>
 				<div class="modalFooter">
 					<a href="javascript:void(0)" id="pwInitModalClose" class="modalBtnClose" data-dismiss="modal" title="닫기">닫기</a>
-					<a href="javascript:savePwd()" class="modalBtnCheck" title="저장">저장</a>
+					<a href="javascript:fnPwInitSave()" class="modalBtnCheck" title="저장">저장</a>
 				</div>
 			</div>
 		</div>

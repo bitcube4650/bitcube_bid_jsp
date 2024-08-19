@@ -151,23 +151,23 @@ public class MainService {
 	}
 
 	//비밀번호 확인
-	@Transactional
-	public boolean checkPwd(Map<String, Object> params) {
+	public ResultBody checkPwd(Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
+		resultBody.setData(false);
+		String password = CommonUtils.getString(params.get("password"));
+		UserDto userDto = (UserDto) params.get("userDto");
+		String userId = userDto.getLoginId();
 		
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		String userId = principal.getUsername();
-//		String password = (String) params.get("password");
-//		
-//		try {
-//			
-//			return userService.checkPassword(userId, password);
-//		
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			return false;
-//		}
+		try {
+			
+			Boolean check = userService.checkPassword(userId, password);
+			resultBody.setData(check);
+			
+		}catch(Exception e){
+			log.error(e.getMessage());
+		}
 		
-		return true;
+		return resultBody;
 	}
 	
 	//비밀번호 변경
@@ -196,58 +196,56 @@ public class MainService {
 	}
 
 	//유저정보 조회
-	@Transactional
+	@SuppressWarnings({"unchecked"})
 	public ResultBody selectUserInfo(Map<String, Object> params) throws Exception {
 		ResultBody resultBody = new ResultBody();
 		
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		String userId = principal.getUsername();
-//		
-//		Map<String, Object> paramMap = new HashMap<String, Object>();
-//		paramMap.put("userId", userId);
-//		int coUserCnt = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_CO_USER_CNT, paramMap));
-//		
-//		Map<String,Object> userInfo = new HashMap<>();
-//		if(coUserCnt > 0) {
-//			userInfo = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_CO_USER_DETAIL, paramMap);
-//		} else {
-//			userInfo = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_CO_CUST_USER_DETAIL, paramMap);
-//		}
-//		
-//		resultBody.setData(userInfo);
+		UserDto userDto = (UserDto) params.get("userDto");
+		
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("userId", userDto.getLoginId());
+		int coUserCnt = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_CO_USER_CNT, paramMap));
+		
+		Map<String,Object> userInfo = new HashMap<>();
+		if(coUserCnt > 0) {
+			userInfo = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_CO_USER_DETAIL, paramMap);
+		} else {
+			userInfo = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_CO_CUST_USER_DETAIL, paramMap);
+		}
+		
+		resultBody.setData(userInfo);
 		return resultBody;
 	}
 
 	//유저 정보 변경
 	@Transactional
+	@SuppressWarnings({"unchecked"})
 	public ResultBody saveUserInfo(Map<String, Object> params) throws Exception {
 		ResultBody resultBody = new ResultBody();
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		String userId = principal.getUsername();
-//		
-//		Map<String, Object> paramMap = new HashMap<String, Object>();
-//		paramMap.put("userId", userId);
-//		int coUserCnt = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_CO_USER_CNT, paramMap));
-//		
-//		Map<String, Object> userInfoMap = (Map<String, Object>) params.get("userInfo");
-//		if(coUserCnt > 0) {
-//			paramMap.put("deptName"		, CommonUtils.getString(userInfoMap.get("deptName")));
-//			paramMap.put("userEmail"	, CommonUtils.getString(userInfoMap.get("userEmail")));
-//			paramMap.put("userHp"		, CommonUtils.getString(userInfoMap.get("userHp")));
-//			paramMap.put("userPosition"	, CommonUtils.getString(userInfoMap.get("userPosition")));
-//			paramMap.put("userTel"		, CommonUtils.getString(userInfoMap.get("userTel")));
-//			
-//			generalDao.updateGernal(DB.QRY_UPDATE_CO_USER_DETAIL, paramMap);
-//		} else {
-//			paramMap.put("userTel"		, CommonUtils.getString(userInfoMap.get("userTel")));
-//			paramMap.put("userHp"		, CommonUtils.getString(userInfoMap.get("userHp")));
-//			paramMap.put("userEmail"	, CommonUtils.getString(userInfoMap.get("userEmail")));
-//			paramMap.put("userBuseo"	, CommonUtils.getString(userInfoMap.get("userBuseo")));
-//			paramMap.put("userPosition"	, CommonUtils.getString(userInfoMap.get("userPosition")));
-//			
-//			generalDao.updateGernal(DB.QRY_UPDATE_CO_CUST_USER_DETAIL, paramMap);
-//		}
-//		
+		UserDto userDto = (UserDto) params.get("userDto");
+		
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("userId", userDto.getLoginId());
+		int coUserCnt = CommonUtils.getInt(generalDao.selectGernalCount(DB.QRY_SELECT_CO_USER_CNT, paramMap));
+		
+		if(coUserCnt > 0) {
+			paramMap.put("deptName"		, CommonUtils.getString(params.get("deptName")));
+			paramMap.put("userEmail"	, CommonUtils.getString(params.get("userEmail")));
+			paramMap.put("userHp"		, CommonUtils.getString(params.get("userHp")));
+			paramMap.put("userPosition"	, CommonUtils.getString(params.get("userPosition")));
+			paramMap.put("userTel"		, CommonUtils.getString(params.get("userTel")));
+			
+			generalDao.updateGernal(DB.QRY_UPDATE_CO_USER_DETAIL, paramMap);
+		} else {
+			paramMap.put("userTel"		, CommonUtils.getString(params.get("userTel")));
+			paramMap.put("userHp"		, CommonUtils.getString(params.get("userHp")));
+			paramMap.put("userEmail"	, CommonUtils.getString(params.get("userEmail")));
+			paramMap.put("userBuseo"	, CommonUtils.getString(params.get("userBuseo")));
+			paramMap.put("userPosition"	, CommonUtils.getString(params.get("userPosition")));
+			
+			generalDao.updateGernal(DB.QRY_UPDATE_CO_CUST_USER_DETAIL, paramMap);
+		}
+		
 		return resultBody;
 	}
 
