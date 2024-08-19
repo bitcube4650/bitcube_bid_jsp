@@ -26,9 +26,13 @@ $(function(){
 function fnChkPwChangeEncourage() {
 	let loginInfo = localStorage.getItem("loginInfo") == null ? {} : JSON.parse(localStorage.getItem("loginInfo"));
 	
+	let params = {
+		'userId' : loginInfo.userId
+	,	'isGroup' : loginInfo.custType === 'inter' ? true : false
+	}
 	$.post(
 		"/api/v1/main/chkPwChangeEncourage",
-		{ userId : loginInfo.userId, isGroup : true }
+		params
 	)
 	.done(function(arg) {
 		if (arg.code === "OK") {
@@ -43,13 +47,25 @@ function moveBiddingPage(keyword) {
 	let params = {
 		'keyword' : keyword
 	}
-	if (keyword === 'planning') {
-		location.href="/api/v1/move?viewName=bid/progress";
-	} else if (keyword === 'completed' || keyword === 'unsuccessful') {
-		location.href="/api/v1/move?viewName=bid/complete&keyword="+keyword;
-	} else {
-		location.href="/api/v1/move?viewName=bid/status&keyword="+keyword;
+	
+	let loginInfo = localStorage.getItem("loginInfo") == null ? {} : JSON.parse(localStorage.getItem("loginInfo"));
+	
+	if(loginInfo.custType === 'inter'){
+		if (keyword === 'planning') {
+			location.href="/api/v1/move?viewName=bid/progress";
+		} else if (keyword === 'completed' || keyword === 'unsuccessful') {
+			location.href="/api/v1/move?viewName=bid/complete&keyword="+keyword;
+		} else {
+			location.href="/api/v1/move?viewName=bid/status&keyword="+keyword;
+		}
+	}else if(loginInfo.custType === 'cust'){
+		if(keyword == 'awarded' || keyword == 'awardedAll' || keyword == 'unsuccessful'){//입찰완료로 이동
+			location.href="/api/v1/move?viewName=bid/partnerComplete&keyword="+keyword;
+		}else{//입찰진행 이동
+			location.href="/api/v1/move?viewName=bid/partnerStatus&keyword="+keyword;
+		}
 	}
+	
 };
 
 function onMoveNotice() {
@@ -247,7 +263,7 @@ function selectCompletedBidCnt() {
 						</div>
 						<div class="mcl_right">
 							<div class="mainConBox">
-								<h2 class="h2Tit">입찰완료 (12개월)<a href="/bid/partnerComplete" title="입찰 페이지로 이동" class="mainConBoxMore">더보기<i class="fa-solid fa-circle-plus"></i></a></h2>
+								<h2 class="h2Tit">입찰완료 (12개월)<a href="/api/v1/move?viewName=bid/partnerComplete" title="입찰 페이지로 이동" class="mainConBoxMore">더보기<i class="fa-solid fa-circle-plus"></i></a></h2>
 								<div class="biddingCompleted">
 									<a class="bcStep1" title="공고되었던 입찰 페이지로 이동" style="cursor:default;">
 										<i class="fa-light fa-file-lines"></i>
