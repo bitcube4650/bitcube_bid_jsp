@@ -69,7 +69,7 @@ function moveBiddingPage(keyword) {
 };
 
 function onMoveNotice() {
-	location.href="/api/v1/move?viewName=system/notice";
+	location.href="/api/v1/move?viewName=notice/noticeList";
 }
 
 function selectNotice() {
