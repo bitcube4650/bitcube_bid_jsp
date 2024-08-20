@@ -21,7 +21,7 @@ var fnNoticeDetail = async function(bno){
 			$("#notiPop_Count").text(data.bcount);
 			$("#notiPop_Content").text(data.bcontent);
 			$("#notiPop_File").text(data.bfile);
-			$("#notiPop_FilePath").text(data.bfilePath);
+			$("#notiPop_FilePath").val(data.bfilePath);
 			
 			
 			$("#notiModal").modal('show');
@@ -29,11 +29,39 @@ var fnNoticeDetail = async function(bno){
 	})
 }
 
-function fnNotiFileDown(){
-	let fileNm = $("#notiPop_File").text();
+var fnNotiFileDown = async function() {
+	let fileName = $("#notiPop_File").text();
 	let filePath = $("#notiPop_FilePath").val();
+	let params = {
+			fileId : filePath
+	}
 	
-	
+	$.ajax({
+		url: '/api/v1/notice/downloadFile',
+		data: params,
+		type: 'POST',
+		xhrFields: {
+			responseType: "blob",
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			Swal.fire('', '파일 다운로드를 실패했습니다.', 'error');
+		},
+		success: function(data, status, xhr) {
+			var blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+
+			// 링크 생성
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = fileName;
+
+			// 링크를 클릭하여 다운로드를 실행
+			document.body.appendChild(link);
+			link.click();
+
+			// 링크 제거
+			document.body.removeChild(link);
+		}
+	});
 }
 </script>
 
@@ -67,7 +95,7 @@ function fnNotiFileDown(){
 					<div class="width100">
 						<a href="javascript:fnNotiFileDown()" class="textUnderline">
 							<span id="notiPop_File"></span>
-							<input type="text" id="notiPop_FilePath" style="display:none;" />
+							<input type="text" id="notiPop_FilePath" class="inputStyle" style="display:none;" />
 						</a>
 					</div>
 				</div>

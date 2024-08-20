@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -160,8 +162,15 @@ public class NoticeController {
 	 * @throws IOException
 	 */
 	@PostMapping("/downloadFile")
-	public ByteArrayResource downloadFile(@RequestParam Map<String, Object> params) throws IOException {
-		return noticeService.downloadFile(params);
+	public ResponseEntity<ByteArrayResource> downloadFile(HttpServletRequest request, @RequestParam Map<String, Object> params) throws IOException {
+		
+		ByteArrayResource byteArrRsc = noticeService.downloadFile(params);
+		
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;")
+				.contentType(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM)
+				.contentLength(byteArrRsc.contentLength())
+				.body(byteArrRsc);
 	}
 
 }
