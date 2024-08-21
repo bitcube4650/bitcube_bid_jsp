@@ -38,15 +38,16 @@ public class GeneralController {
 	public ModelAndView movePage(HttpServletRequest request, ModelAndView modelAndView, @RequestParam Map<String, Object> params
 			, RedirectAttributes redirectAttr) throws Exception {
 		
+		String viewName = CommonUtils.getString(params.get("viewName"));
+		params.remove("viewName");
+		
 		HttpSession		session		= request.getSession();
 		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
-		if(user == null) {
+		if(viewName.indexOf("join") < 0 && user == null) {
 			modelAndView.setViewName("redirect:/");
 			return modelAndView;
 		}
 		
-		String viewName = CommonUtils.getString(params.get("viewName"));
-		params.remove("viewName");
 		redirectAttr.addFlashAttribute("params", params);
 		modelAndView.setViewName("redirect:/" + viewName);
 		return modelAndView;
@@ -70,7 +71,7 @@ public class GeneralController {
 		
 		HttpSession		session		= request.getSession();
 		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
-		if(user == null) {
+		if(!step1.equals("join") && user == null) {
 			modelAndView.setViewName("redirect:/");
 			return modelAndView;
 		}
@@ -104,7 +105,7 @@ public class GeneralController {
 		
 		HttpSession		session		= request.getSession();
 		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
-		if(user == null) {
+		if(!step1.equals("join") && user == null) {
 			modelAndView.setViewName("redirect:/");
 			return modelAndView;
 		}
@@ -140,7 +141,7 @@ public class GeneralController {
 		
 		HttpSession		session		= request.getSession();
 		UserDto user = (UserDto) session.getAttribute(Constances.SESSION_NAME);
-		if(user == null) {
+		if(!step1.equals("join") && user == null) {
 			modelAndView.setViewName("redirect:/");
 			return modelAndView;
 		}
