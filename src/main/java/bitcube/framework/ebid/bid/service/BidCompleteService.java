@@ -227,17 +227,14 @@ public class BidCompleteService {
 		
 		return resultBody;
 	}
-	
+
 	/**
   	 * 협력사 입찰완료 상세
   	 * @param params : (String) biNo
-	 * @param user 
   	 * @return
   	 */
 	@SuppressWarnings({ "unchecked" })
-	public ResultBody complateBidPartnerDetail(Map<String, Object> params, UserDto user) throws Exception{
-		ResultBody resultBody = new ResultBody();
-		
+	public Map<String, Object> complateBidPartnerDetail(Map<String, Object> params, UserDto user) throws Exception{
 		params.put("custCode", user.getCustCode());
 		
 		Map<String, Object> detailMap = new HashMap<String, Object>();
@@ -291,45 +288,37 @@ public class BidCompleteService {
 		List<Object> fileData = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
 		detailMap.put("file_List", fileData);
 		
-		resultBody.setData(detailMap);
+		return detailMap;
+	}
+	
+	/**
+	 * 협력사 낙찰승인
+	 * @param params : (String) esmtYn, (String) biNo
+	 * @param user 
+	 * @return
+	 */
+	@Transactional
+	public ResultBody updBiCustFlag(Map<String, Object> params, UserDto user) throws Exception {
+		ResultBody resultBody = new ResultBody();
+		params.put("custCode", user.getCustCode());
+		params.put("userId", user.getLoginId());
+		
+		//상태값 업데이트
+		generalDao.updateGernal(DB.QRY_UPDATE_SUCC_EBID_CONFIRM, params);
+			
+		//log insert
+		try {
+			Map<String, Object> logParams = new HashMap<String, Object>();
+			logParams.put("msg", "[업체]낙찰확인");
+			logParams.put("biNo", params.get("biNo"));
+			logParams.put("userId", user.getLoginId());
+			generalDao.insertGernal(DB.QRY_BID_STATUS_INSERT_T_BI_LOG, logParams);
+			
+		}catch(Exception e) {
+			log.error("updBiCustFlag insert log error : {}", e);
+		}
 		
 		return resultBody;
-	
 	}
-//	
-//	/**
-//	 * 협력사 낙찰승인
-//	 * @param params : (String) esmtYn, (String) biNo
-//	 * @return
-//	 */
-//	@Transactional
-//	public ModelAndView updBiCustFlag(Map<String, Object> params) throws Exception {
-//		
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		Optional<TCoCustUser> userOptional = tCoCustUserRepository.findById(principal.getUsername());
-//		int custCode = userOptional.get().getCustCode();
-//		String userId = userOptional.get().getUserId();
-//		
-//		params.put("custCode", custCode);
-//		params.put("userId", userId);
-//		
-//		//상태값 업데이트
-//		generalDao.updateGernal(DB.QRY_UPDATE_SUCC_EBID_CONFIRM, params);
-//			
-//		//log insert
-//		try {
-//			
-//			Map<String, Object> logParams = new HashMap<String, Object>();
-//			logParams.put("msg", "[업체]낙찰확인");
-//			logParams.put("biNo", params.get("biNo"));
-//			logParams.put("userId", userId);
-//			generalDao.insertGernal(DB.QRY_BID_STATUS_INSERT_T_BI_LOG, logParams);
-//			
-//		}catch(Exception e) {
-//			log.error("updBiCustFlag insert log error : {}", e);
-//		}
-//		
-//		return ModelAndView;
-//	}
 }
 

@@ -9,14 +9,12 @@
 			<a href="/#" title="공동인증서">공동인증서</a>
 			<a href="/#" data-toggle="modal" data-target="#regProcess" title="업체등록절차">업체등록절차</a>
 			<a href="/#" data-toggle="modal" data-target="#biddingInfo" title="입찰업무안내">입찰업무안내</a>
-			<!-- <a href="#" id="enrollmentProcessLink" title="업체등록절차">업체등록절차</a>
-			<a href="#" id="biddingGuideLink" title="입찰업무안내">입찰업무안내</a> -->
 		</div>
 	</div>
 </div>
 
 <!-- 업체등록절차 팝업 -->
-<jsp:include page="/WEB-INF/jsp/sign/regProcessPop.jsp" />
+<jsp:include page="/WEB-INF/jsp/layout/regProcessPop.jsp" />
 
 <!-- 입찰업무안내 팝업 -->
-<jsp:include page="/WEB-INF/jsp/sign/biddingInfoPop.jsp" />
+<jsp:include page="/WEB-INF/jsp/layout/biddingInfoPop.jsp" />

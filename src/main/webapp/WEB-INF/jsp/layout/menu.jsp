@@ -1,8 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<% 
-  	String path = ""; 
-  	String userCustType = "inter";
-  	int userAuth = 1;
+<%@ page import="bitcube.framework.ebid.etc.util.Constances" %>
+<%@ page import="bitcube.framework.ebid.etc.util.CommonUtils" %>
+<%@ page import="bitcube.framework.ebid.dto.UserDto" %>
+<%
+	UserDto userDto = (UserDto)(request.getSession()).getAttribute(Constances.SESSION_NAME);
+	String userCustType = userDto.getCustType();
+	int userAuth = CommonUtils.getInt(userDto.getUserAuth());
+	String path = request.getRequestURI(); 
+	path = (path.replace("/WEB-INF/jsp", "")).replace(".jsp", "");
+	
 %>
 <script>
 	var path = window.location.pathname;

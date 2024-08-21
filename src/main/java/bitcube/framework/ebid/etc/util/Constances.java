@@ -18,34 +18,34 @@ public class Constances {
     public static String CERTIFICATE_SETTING_PATH;
     public static String CERTIFICATE_FILE_PATH;
 
-    @Value("${session.name}")
+    @Value("#{cubeFrameworkConfig['session.name']}")
     private void setSessionName(String sessionName) {
         Constances.SESSION_NAME = sessionName;
     }
     
-    @Value("${file.upload.directory}")
+    @Value("#{cubeFrameworkConfig['file.upload.directory']}")
     private void setFileUploadDirectory(String fileUploadDirectory) {
         Constances.FILE_UPLOAD_DIRECTORY = fileUploadDirectory;
     }
     
-    @Value("${certificate.setting.path}")
+    @Value("#{cubeFrameworkConfig['certificate.setting.path']}")
     private void setCertSettingDirectory(String certSettingDirectory) {
         Constances.CERTIFICATE_SETTING_PATH = certSettingDirectory;
     }
     
-    @Value("${certificate.file.path}")
+    @Value("#{cubeFrameworkConfig['certificate.file.path']}")
     private void setCertFileDirectory(String certFileDirectory) {
         Constances.CERTIFICATE_FILE_PATH = certFileDirectory;
     }
 
 
     //스케줄러 실행여부
-    @Value("${common.schedule.flag}")
+    @Value("#{cubeFrameworkConfig['common.schedule.flag']}")
     private void setIsRealServer(String commonScheduleFlag) {
         Constances.COMMON_SCHEDULE_FLAG = Boolean.parseBoolean(commonScheduleFlag);
     }
     //암호화(AES 첨부파일) 키
-    @Value("${file.encrypted.key}")
+    @Value("#{cubeFrameworkConfig['file.encrypted.key']}")
     private void setSystemFileencryptKey(String systemFileencryptKey) {
         Constances.SYSTEM_FILEENCRYPT_KEY = systemFileencryptKey;
     }
@@ -60,28 +60,28 @@ public class Constances {
     public static String MAIL_LINK_URL;
 
     //메일호스트정보
-    @Value("${mail.host}")
+    @Value("#{cubeFrameworkConfig['mail.host']}")
     private void setMailHost(String mailHost) {
         Constances.MAIL_HOST = mailHost;
     }
     
   //메일호스트정보
-    @Value("${mail.port}")
+    @Value("#{cubeFrameworkConfig['mail.port']}")
     private void setMailPort(String mailPort) {
         Constances.MAIL_PORT = mailPort;
     }
 
-    @Value("${mail.sender.address}")
+    @Value("#{cubeFrameworkConfig['mail.sender.address']}")
     private void setMailSenderAddress(String MailSenderAddress) {
         Constances.MAIL_SENDER_ADDRESS = MailSenderAddress;
     }
     //반송메일주소
-    @Value("${mail.replyto.address}")
+    @Value("#{cubeFrameworkConfig['mail.replyto.address']}")
     private void setMailReplytoAddress(String mailReplytoAddress) {
         Constances.MAIL_REPLYTO_ADDRESS = mailReplytoAddress;
     }
     //메일링크 URL
-    @Value("${mail.replyto.address}")
+    @Value("#{cubeFrameworkConfig['mail.replyto.address']}")
     private void setMailLinkUrl(String mailLinkUrl) {
         Constances.MAIL_LINK_URL = mailLinkUrl;
     }

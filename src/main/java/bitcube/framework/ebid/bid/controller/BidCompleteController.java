@@ -1,16 +1,12 @@
 package bitcube.framework.ebid.bid.controller;
 
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -221,12 +217,12 @@ public class BidCompleteController {
 	 * 협력사 입찰완료 상세
 	 * @param params
 	 * @return
+	 * @throws Exception 
 	 */
 	@PostMapping("/partnerDetail")
-	public ResultBody complateBidPartnerDetail(
+	public ModelAndView complateBidPartnerDetail(
 			@RequestParam(name="biNo",			defaultValue="") String biNo,
-			HttpServletRequest request) {
-		ResultBody resultBody = new ResultBody();
+			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
 
 		// 로그인 세션정보
 		HttpSession session	= request.getSession();
@@ -234,31 +230,39 @@ public class BidCompleteController {
 		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("biNo", biNo);
+		
+		// 입찰정보 setting
+		modelAndView.addObject("biInfo", bidCompleteSvc.complateBidPartnerDetail(params, user));
+		
+		modelAndView.setViewName("bid/partnerCompleteDetail");
+		return modelAndView;
+	}
+	
+	/**
+	 * 협력사 낙찰확인 업데이트
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/updBiCustFlag")
+	public ResultBody updBiCustFlag(
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			@RequestParam(name="esmtYn",		defaultValue="3") String esmtYn,
+			HttpServletRequest request) {
+		ResultBody resultBody = new ResultBody();
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("biNo",		biNo);
+		params.put("esmtYn",	esmtYn);
 		try {
-			resultBody = bidCompleteSvc.complateBidPartnerDetail(params, user); 
+			resultBody = bidCompleteSvc.updBiCustFlag(params, user); 
 		}catch(Exception e) {
-			log.error("complateBidPartnerDetail error : {}", e);
+			log.error("updBiCustFlag error : {}", e);
 			resultBody.setCode("fail");
-			resultBody.setMsg("입찰완료 상세 데이터를 가져오는것을 실패하였습니다.");
+			resultBody.setMsg("낙찰승인 저장을 실패하였습니다.");
 		}
 		return resultBody;
 	}
-//	
-//	/**
-//	 * 협력사 낙찰확인 업데이트
-//	 * @param params
-//	 * @return
-//	 */
-//	@PostMapping("/updBiCustFlag")
-//	public ResultBody updBiCustFlag(@RequestBody Map<String, Object> params) {
-//		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = bidCompleteSvc.updBiCustFlag(params); 
-//		}catch(Exception e) {
-//			log.error("updBiCustFlag error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("낙찰승인 저장을 실패하였습니다.");
-//		}
-//		return resultBody;
-//	}
 }

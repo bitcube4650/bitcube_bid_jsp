@@ -73,7 +73,7 @@
 	};
 	
 	function onSignUp() {
-		location.href="/api/v1/move?viewName=sign/signUp";
+		location.href="/join/sign";
 	};
 	
 	function setCookie(name, value) {
@@ -145,9 +145,9 @@
 		</div>
 	</div>
 	
-	<jsp:include page="/WEB-INF/jsp/sign/idSearchPop.jsp" />
-	<jsp:include page="/WEB-INF/jsp/sign/pwSearchPop.jsp" />
-	<jsp:include page="/WEB-INF/jsp/sign/regProcessPop.jsp" />
-	<jsp:include page="/WEB-INF/jsp/sign/biddingInfoPop.jsp" />
+	<jsp:include page="/WEB-INF/jsp/join/idSearchPop.jsp" />
+	<jsp:include page="/WEB-INF/jsp/join/pwSearchPop.jsp" />
+	<jsp:include page="/WEB-INF/jsp/layout/regProcessPop.jsp" />
+	<jsp:include page="/WEB-INF/jsp/layout/biddingInfoPop.jsp" />
 </body>
 </html>
