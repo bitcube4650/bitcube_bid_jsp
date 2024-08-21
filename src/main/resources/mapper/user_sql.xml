@@ -130,8 +130,8 @@
 		VALUES 
 		(	#{userId}, #{encodedPassword}, #{userName}, #{interrelatedCustCode}, #{userAuth}
 		,	#{openauth}, #{bidauth}, #{userHp}, #{userTel}, #{userEmail}
-		,	#{userPosition}, #{deptName}, #{useYn}, #{updateUser}, now()
-		,	#{updateUser}, now(), now(), 'N')
+		,	#{userPosition}, #{deptName}, #{useYn}, #{createUser}, now()
+		,	#{createUser}, now(), now(), 'N')
 	</insert>
 	
 	<update id="updateUserSave">
@@ -140,8 +140,8 @@
 		SET	USER_NAME = #{userName}
 		,	INTERRELATED_CUST_CODE = #{interrelatedCustCode}
 		,	USER_AUTH = #{userAuth}
-		,	OPENAUTH = #{openauth}
-		,	BIDAUTH = #{bidauth}
+		,	OPENAUTH = #{openAuth}
+		,	BIDAUTH = #{bidAuth}
 		,	USER_HP = #{userHp}
 		,	USER_TEL = #{userTel}
 		,	USER_EMAIL = #{userEmail}

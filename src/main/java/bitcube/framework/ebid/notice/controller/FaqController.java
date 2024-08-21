@@ -46,7 +46,8 @@ public class FaqController {
 	 * @return
 	 */
 	@PostMapping("/save")
-	public ResultBody save(@RequestParam Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody save(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 		
 		try {
@@ -66,7 +67,8 @@ public class FaqController {
 	 * @return
 	 */
 	@PostMapping("/delete")
-	public ResultBody delete(@RequestBody Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody delete(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 
 		try {

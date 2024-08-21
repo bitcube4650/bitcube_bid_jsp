@@ -5,14 +5,20 @@
 <body>
 	<script type="text/javascript">
 	$(document).ready(function() {
-		//initPagination(0,0,0);
 		onSearch(0);
+		
+        $('#srcTitle').keypress(function(event) {
+            if (event.which === 13) {
+                event.preventDefault();
+                onSearch(0);
+            }
+        });
 	});
 	
 	function onSearch(page){
 		$.post("/api/v1/faq/faqList", {
-			"title"		: $("#title").val(),
-			"faqType"	: $("#faqType").val(),
+			"title"		: $("#srcTitle").val(),
+			"faqType"	: $("#srcFaqType").val(),
 			"admin"		: 'Y',
 			"size"		: $("#pageSize").val(),
 			"page"		: page
@@ -26,14 +32,14 @@
 					$("#faqListBody").append(
 						"<tr>" +
 							'<td>'+ list[i].faqTypeDescription +'</td>' +
-							'<td className="text-left"><a data-toggle="modal" className="textUnderline notiTitle" title="FAQ 자세히 보기">'+ list[i].title+'</a></td>' +
+							'<td class="text-left"><a data-toggle="modal" class="textUnderline notiTitle" title="FAQ 자세히 보기" onClick="faqEdit(\'' + encodeURIComponent(JSON.stringify(list[i])) + '\')">' + list[i].title + '</a></td>' +
 							'<td>'+ list[i].userName +'</td>' +
 							'<td>'+ list[i].createDate +'</td>'+
 						"</tr>"
 					);
 				}
 			} else {
-				
+				Swal.fire('', response.msg, 'warning')
 			}
 		},
 		"json"
@@ -47,7 +53,12 @@
 		$('#faqReg').modal('show')
 	}
 	
-	function onFaqEditModal(){
+	function faqEdit(data){
+		const rowData = JSON.parse(decodeURIComponent(data))
+		$('#editTitle').val(rowData.title)
+		$('#editAnswer').val(rowData.answer)
+		+ $('input[name="editFaqType"][value="' + rowData.faqType + '"]').prop('checked', true)
+		$('#rowData').val(JSON.stringify(rowData))
 		$('#faqEdit').modal('show')
 	}
 	
@@ -57,25 +68,27 @@
 		if(saveType === 'insert'){
 			
 			if(!$('#regTitle').val().trim()){
-				alert('FAQ 제목을 입력해 주세요.')
+				Swal.fire('', 'FAQ 제목을 입력해 주세요.', 'warning')
 				$('#regTitle').val('')
 				return
 			}
 			
 			if(!$('#regAnswer').val().trim()){
-				alert('FAQ 내용을 입력해 주세요.')
+				Swal.fire('', 'FAQ 내용을 입력해 주세요.', 'warning')
 				$('#regAnswer').val('')
 				return
 			}
 		}else{
 			
 			if(!$('#editTitle').val().trim()){
-				alert('FAQ 제목을 입력해 주세요.')
+				Swal.fire('', 'FAQ 제목을 입력해 주세요.', 'warning')
+				$('#editTitle').val('')
 				return
 			}
 			
 			if(!$('#editAnswer').val().trim()){
-				alert('FAQ 내용을 입력해 주세요.')
+				Swal.fire('', 'FAQ 내용을 입력해 주세요.', 'warning')
+				$('#editAnswer').val('')
 				return
 			}
 			
@@ -86,90 +99,74 @@
 	
 	function onFaqSave(){
 
-		const saveType = $('#saveType').val()		
+		const saveType = $('#saveType').val()	
+		const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 		const params ={
 			title : saveType === 'insert' ? $('#regTitle').val().trim() : $('#editTitle').val().trim(),
 			answer : saveType === 'insert' ? $('#regAnswer').val().trim(): $('#editAnswer').val().trim(),
 			faqType : saveType === 'insert' ? $('input[name="regFaqType"]:checked').val() : $('input[name="editFaqType"]:checked').val(),
-			updateInsert :  saveType 
+			updateInsert :  saveType,
+			userId : loginInfo.userId
 		}
-			
+		
+		if(saveType === 'update'){
+			const rowData = JSON.parse($('#rowData').val())
+			params.faqId = rowData.faqId
+		}	
+		
+		$.post(
+			"/api/v1/faq/save",
+			params
+		)
+		.done(function(arg) {
+			if (arg.code === "OK") {
+	            $('#faqSaveConfirm').modal('hide');
+	            onSearch(0);
+				Swal.fire('', 'FAQ가 저장되었습니다.', 'info');
+	            if(saveType === 'insert'){
+	                $('#faqReg').modal('hide');
+	            } else {
+	                $('#faqEdit').modal('hide');
+	            }
+			}else{
+				Swal.fire('', 'FAQ 저장을 실패하였습니다.', 'warning');
+			}
+		})
+		
+						
+	}
+	function onFaqDelConfirm(){
+		$('#faqDelConfirm').modal('show')
+	}
+	
+	function onFaqDel(){
+		const rowData = JSON.parse($('#rowData').val())
+		
+		const params = {
+			faqId : rowData.faqId
+		}
+		
 		console.log(params)
 		
-		/*
-		
-		$.ajax({
-		    url: "/api/v1/faq/save",
-		    type: "POST",
-		    contentType: "application/json",  
-		    data: JSON.stringify(params),      
-		    dataType: "json",               
-		    success: function(response) {
-		        if(response.code === 'OK') {
-		            $('#faqSaveConfirm').modal('hide');
-		            onSearch();
-		            if(saveType === 'insert'){
-		                $('#faqReg').modal('hide');
-		            } else {
-		                $('#editReg').modal('hide');
-		            }
-		        } else {
-		          
-		        }
-		    },
-		    error: function(xhr, status, error) {
-		        console.error("Error:", status, error);
-		    }
-		});
-		*/
-		
-		
-		$.ajax({
-		    url: '/api/v1/faq/save',
-		    type: 'POST',
-		    data: params, 
-		    success: function(response) {
-		        if (response.code === 'OK') {
-		            $('#faqSaveConfirm').modal('hide');
-		            onSearch();
-		            if (saveType === 'insert') {
-		                $('#faqReg').modal('hide');
-		            } else {
-		                $('#editReg').modal('hide');
-		            }
-		        } else {
-		            console.error('Server returned an error:', response);
-		        }
-		    },
-		    error: function(xhr, status, error) {
-		        console.error('AJAX Error:', status, error);
-		    }
-		});
-	    
-	    
-
-		
-		/*
-		$.post("/api/v1/faq/save", params, 
-				function(response) {
-			if(response.code === 'OK') {
-				$('#faqSaveConfirm').modal('hide')
-				onSearch()
-				if(saveType === 'insert'){
-					$('#faqReg').modal('hide')
-				}else{
-					$('#editReg').modal('hide')
-				}
-				
-			} else {
-				
+		$.post(
+			"/api/v1/faq/delete",
+			params
+		)
+		.done(function(arg) {
+			console.log(arg)
+			if (arg.code === "OK") {
+	            $('#faqDelConfirm').modal('hide');
+	            onSearch(0);
+				Swal.fire('', 'FAQ가 삭제되었습니다.', 'info');
+	            $('#faqEdit').modal('hide');
+	            
+			}else{
+				Swal.fire('', 'FAQ 삭제를 실패하였습니다.', 'warning');
 			}
-		},
-		"json"
-		); 
-		*/
+		})
 	}
 
+	
 	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
@@ -192,7 +189,7 @@
 		                    </div>
 		                    <div class="sbTit mr30 ml50">구분</div>
 		                    <div class="width200px">
-		                        <select id="faqType" class="selectStyle">
+		                        <select id="srcFaqType" class="selectStyle">
 		                            <option value="">전체</option>
 		                            <option value="1">가입관련</option>
 		                            <option value="2">입찰관련</option>
@@ -270,7 +267,7 @@
     	<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
     	
     	<!-- faq confirm -->
-		<div class="modal fade modalStyle" id="faqSaveConfirm" tabindex="-1" role="dialog" aria-hidden="true" style="z-index : 10000">
+		<div class="modal fade modalStyle" id="faqSaveConfirm" tabindex="-1" role="dialog" aria-hidden="true" style="z-index : 1050">
 			<div class="modal-dialog" style="width:100%; max-width:420px">
 				<div class="modal-content">
 					<div class="modal-body">
@@ -287,7 +284,7 @@
 		<!-- //faq confirm -->
 		
 		    	<!-- faq confirm -->
-		<div class="modal fade modalStyle" id="faqDelConfirm" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal fade modalStyle" id="faqDelConfirm" tabindex="-1" role="dialog" aria-hidden="true" style="z-index : 1050">
 			<div class="modal-dialog" style="width:100%; max-width:420px">
 				<div class="modal-content">
 					<div class="modal-body">
@@ -295,7 +292,7 @@
                         <div class="alertText2">FAQ를 삭제합니다.<br>삭제 하시겠습니까?</div>
 						<div class="modalFooter">
 							<a class="modalBtnClose" data-dismiss="modal" title="취소">취소</a>
-							<a class="modalBtnCheck">삭제</a>
+							<a onclick="onFaqDel()" class="modalBtnCheck">삭제</a>
 						</div>
 					</div>				
 				</div>
@@ -340,6 +337,7 @@
         </div>
         <!-- //FAQ 등록 -->
         <input type="text" id="saveType" class="inputStyle" hidden="">
+         <input type="text" id="rowData" class="inputStyle" hidden="">
         
         <!-- FAQ 수정 -->
         <div class="modal fade modalStyle" id="faqEdit" tabindex="-1" role="dialog" aria-hidden="true">
@@ -357,21 +355,21 @@
                         <div class="flex align-items-center mt20">
                             <div class="formTit flex-shrink0 width150px">FAQ 구분 <span class="star">*</span></div>
                             <div class="flex align-items-center width100">
-                                <input type="radio" name="editFaqType" value="1" id="bm2_1" class="radioStyle" checked="checked"><label for="bm2_1">가입관련</label>
-                                <input type="radio" name="editFaqType" value="2" id="bm2_2" class="radioStyle"><label for="bm2_2">입찰관련</label>
-                                <input type="radio" name="editFaqType" value="3" id="bm2_3" class="radioStyle"><label for="bm2_3">인증서관련</label>
+                                <input type="radio" name="editFaqType" value="1" id="ebm2_1" class="radioStyle" checked="checked"><label for="ebm2_1">가입관련</label>
+                                <input type="radio" name="editFaqType" value="2" id="ebm2_2" class="radioStyle"><label for="ebm2_2">입찰관련</label>
+                                <input type="radio" name="editFaqType" value="3" id="ebm2_3" class="radioStyle"><label for="ebm2_3">인증서관련</label>
                             </div>
                         </div>
                         <div class="flex mt20">
                             <div class="formTit flex-shrink0 width150px">FAQ 내용 <span class="star">*</span></div>
                             <div class="width100">
-                                <textarea id="regAnswer" class="textareaStyle overflow-y-scroll height150px" placeholder=""></textarea>
+                                <textarea id="editAnswer" class="textareaStyle overflow-y-scroll height150px" placeholder=""></textarea>
                             </div>
                         </div>
                         <div class="modalFooter">
                             <a  class="modalBtnClose" data-dismiss="modal" title="닫기">닫기</a>
-                            <a class="deleteBtn" title="삭제">삭제</a>
-                            <a class="modalBtnCheck" onClick="onFaqSaveCheck('edit')" title="저장">저장</a>
+                            <a class="modalBtnDelete" onClick="onFaqDelConfirm()" title="삭제">삭제</a>
+                            <a class="modalBtnCheck" onClick="onFaqSaveCheck('update')" title="저장">저장</a>
                         </div>
                     </div>				
                 </div>

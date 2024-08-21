@@ -160,12 +160,12 @@
 					</ul>
 				</div>
 			</li>
-			<li style="display: <%= userCustType.equals("inter") && userAuth == 1 ? "block" : "none" %>;" class="<%= path.equals("/info/group/user") || path.equals("/info/group/item") ? "active" : "" %>">
+			<li style="display: <%= userCustType.equals("inter") && userAuth == 1 ? "block" : "none" %>;" class="<%= path.equals("/info/user") || path.equals("/info/item") ? "active" : "" %>">
 				<a id="info" class="menuLink"><span><i class="fa-light fa-memo-circle-info"></i></span>정보관리</a>
 				<div class="depth2Lnb">
 					<ul>
-						<li class="<%= path.equals("/info/group/user") ? "active" : "" %>"><a href="/info/group/user">사용자관리</a></li>
-						<li class="<%= path.equals("/info/group/item") ? "active" : "" %>"><a href="/info/group/item">품목관리</a></li>
+						<li class="<%= path.equals("/info/user") ? "active" : "" %>"><a href="/info/user">사용자관리</a></li>
+						<li class="<%= path.equals("/info/item") ? "active" : "" %>"><a href="/info/item">품목관리</a></li>
 					</ul>
 				</div>
 			</li>
