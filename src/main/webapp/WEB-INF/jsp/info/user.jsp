@@ -94,7 +94,6 @@
 		
 		$.post("/api/v1/couser/userList", params, 
 			function(response) {
-			console.log(response)
 			if(response.code === 'OK') {
 				var list = response.data.content;
 				updatePagination(response.data);
@@ -167,7 +166,6 @@
 			
 		$.post("/api/v1/couser/idcheck", params, 
 			function(response) {
-			console.log(response)
 			if(response.code === 'OK') {
 				$('#loginIdChk').val('Y')
 				Swal.fire('', '사용 가능한 로그인 ID 입니다.', 'info');
@@ -209,13 +207,11 @@
 			return
 		}
 		
-		console.log($('#loginIdChk').val())
 		if(!$('#loginIdChk').val()){
 			Swal.fire('', '로그인 ID를 중복 확인해 주세요.', 'warning')
 			return
 		}
 	
-		console.log(!$('#userSavePwd').val())
 		if(!$('#userSavePwd').val()){
 			Swal.fire('', '비밀번호를 입력해 주세요.', 'warning')
 			return
@@ -318,14 +314,12 @@
 			const checkedValues = [];
 			const checkboxes = document.querySelectorAll('input[name="auth4Check"]:checked');
 
-			console.log(checkboxes)
 			for (let i = 0; i < checkboxes.length; i++) {
 			    checkedValues.push(checkboxes[i].value);
 			}
 
 			params.userInterrelatedList = checkedValues;
 		}
-		console.log(params)
 		
 		$.post(
 			"/api/v1/couser/userSave",
@@ -409,12 +403,10 @@
 				
 		$.post("/api/v1/couser/userDetail", params, 
 			function(response) {
-			console.log(response)
 			if(response.code === 'OK') {
-				console.log(response.data)
+
 				const data = response.data
-				console.log(data.userId)
-				console.log(data.interrelatedCustCode)
+
 				$('#editLoginId').empty()
 				$('#editLoginId').append(data.userId)
 				$('#editSaveLoginId').val(data.userId)
@@ -435,9 +427,11 @@
 				
 				const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 				if(loginInfo.loginId != data.userId){
+					$("#pwdChkDisplay").css("pwdChkDisplay", "")
 					$('#editPweUpdate').empty()
 					$('#editPweUpdate').append("최종변경일 : " + data.pwdEditDateStr)
-					pwdChkDisplay
+
+					
 				}
 				
 				$('input[name="editAuth4Check"]').prop('checked', false)
@@ -546,14 +540,12 @@
 			const checkedValues = [];
 			const checkboxes = document.querySelectorAll('input[name="editAuth4Check"]:checked');
 
-			console.log(checkboxes)
 			for (let i = 0; i < checkboxes.length; i++) {
 			    checkedValues.push(checkboxes[i].value);
 			}
 
 			params.userInterrelatedList = checkedValues;
 		}
-		console.log(params)
 
 		$.post(
 			"/api/v1/couser/userSave",
