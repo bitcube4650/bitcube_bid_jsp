@@ -67,6 +67,7 @@ public class AspectController {
 	
 	@Around("execution(* bitcube.framework.ebid..*Controller.*(..))"
 			+ "&& !execution(* bitcube.framework.ebid.common.controller.GeneralController.*(..))"
+			+ "&& !execution(* bitcube.framework.ebid.bid.controller.BidModelAndViewController.*(..))"
 			+ "&& !execution(* bitcube.framework.ebid.core.LoginController.*(..))")
 	public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
 		Object[]			args		= joinPoint.getArgs();

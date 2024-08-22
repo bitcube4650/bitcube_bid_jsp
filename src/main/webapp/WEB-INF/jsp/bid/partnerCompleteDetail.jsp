@@ -27,14 +27,13 @@
 					esmtYn : '3'
 				}
 			).done(function(arg){
-				console.log(arg)
 				if(arg.code == 'fail'){
 					Swal.fire('', arg.msg, 'error');
 				} else {
 					Swal.fire({
-						title: "",
 						text : '승인하였습니다',
 						icon: "info",
+						type : 'info'
 						showCancelButton: false,
 						confirmButtonText: 'OK',
 					}).then((result) => {

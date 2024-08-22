@@ -8,7 +8,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import bitcube.framework.ebid.bid.service.BidPartnerStatusService;
 import bitcube.framework.ebid.dto.ResultBody;
@@ -70,31 +74,57 @@ public class BidPartnerStatusController {
 		return resultBody;
 	}
 	
-//	/**
-//	 * 입찰진행 상세
-//	 * @return
-//	 */
-//	@PostMapping("bidStatusDetail")
-//	public ResultBody bidStatusDetail(
-//			@RequestParam(name="bidNo",			defaultValue="") String bidNo,
-//			HttpServletRequest request) {
-//		ResultBody resultBody = new ResultBody();
-//
-//		// 로그인 세션정보
-//		HttpSession session	= request.getSession();
-//		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
-//		
-//		Map<String, Object> params = new HashMap<String, Object>();
-//		params.put("bidNo",		bidNo);
-//		
-//		try {
-//			resultBody = bidPtStatusService.bidStatusDetail(params,user);
-//		}catch(Exception e) {
-//			log.error("bidStatusDetail error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("입찰진행 상세 데이터를 가져오는것을 실패하였습니다.");
-//		}
-//		
-//		return resultBody;
-//	}
+
+	/**
+	 * 견적금액 단위 코드
+	 * @return
+	 */
+	@PostMapping("/currList")
+	public ResultBody currList(HttpServletRequest request) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			resultBody = bidPtStatusService.currList();
+		}catch(Exception e) {
+			log.error("currList error : {}", e);
+			resultBody.setCode("fail");
+			resultBody.setMsg("견적금액 단위 리스트를 가져오는것을 실패하였습니다.");	
+		}
+		return resultBody;
+	}
+
+	/**
+	 * 투찰
+	 * @param jsonData
+	 * @param file1
+	 * @param file2
+	 * @param user
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked" })
+	@PostMapping("/bidSubmitting")
+	public ResultBody bidSubmitting(
+			@RequestPart("data") String jsonData,
+			@RequestPart(value = "detailFile", required = false) MultipartFile detailFile, 
+			@RequestPart(value = "etcFile", required = false) MultipartFile etcFile,
+			HttpServletRequest request
+		) {
+		
+		ResultBody resultBody = new ResultBody();
+
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> params = null;
+		try {
+			params = mapper.readValue(jsonData, Map.class);
+			resultBody = bidPtStatusService.bidSubmitting(params, detailFile, etcFile, user);
+		} catch (Exception e) {
+			log.error("bidSubmitting error : {}", e);
+			resultBody.setCode("ERROR");
+			resultBody.setStatus(999);
+		} 
+		return resultBody;
+	}
 }

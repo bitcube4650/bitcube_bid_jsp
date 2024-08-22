@@ -214,31 +214,6 @@ public class BidCompleteController {
 	}
 	
 	/**
-	 * 협력사 입찰완료 상세
-	 * @param params
-	 * @return
-	 * @throws Exception 
-	 */
-	@PostMapping("/partnerDetail")
-	public ModelAndView complateBidPartnerDetail(
-			@RequestParam(name="biNo",			defaultValue="") String biNo,
-			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
-
-		// 로그인 세션정보
-		HttpSession session	= request.getSession();
-		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("biNo", biNo);
-		
-		// 입찰정보 setting
-		modelAndView.addObject("biInfo", bidCompleteSvc.complateBidPartnerDetail(params, user));
-		
-		modelAndView.setViewName("bid/partnerCompleteDetail");
-		return modelAndView;
-	}
-	
-	/**
 	 * 협력사 낙찰확인 업데이트
 	 * @param params
 	 * @return

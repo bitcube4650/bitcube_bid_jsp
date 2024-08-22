@@ -237,6 +237,13 @@
 		,		tbu.FILE_NM 
 		,		tbu.FILE_PATH 
 		,		tbu.FILE_ID
+		,		CASE
+					WHEN tbu.FILE_FLAG = '0'
+					THEN '대내용'
+					WHEN tbu.FILE_FLAG = '1'
+					THEN '대외용'
+					ELSE ''
+				END									AS FILE_FLAG_STR
 		from t_bi_upload tbu 
 		where tbu.USE_YN = 'Y' 
 		and tbu.FILE_FLAG in (<foreach collection="fileFlag" item="item" separator=",">#{item}</foreach>) 
