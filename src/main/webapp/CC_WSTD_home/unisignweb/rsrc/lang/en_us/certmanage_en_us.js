@@ -109,7 +109,7 @@
                                                             + "please check device connection\n"
                                                             + "or driver installation.",
                                                             
-		IDS_MSGBOX_SEARCH_CERT_GUIDE_FOR_SAFARI: 			"This function is not supported below Safari 6.0.\n"
+		IDS_MSGBOX_SEARCH_CERT_GUIDE_FOR_SAFARI: 			"This function is not supported below Safari 6.0.\n",
                                                             
         IDS_MSGBOX_SEARCH_CERT_GUIDE_FOR_IE9:               "Could not get file path cause of security setting of internet explorer.\n" 
                                                             + "If you want to operate the function on internet explorer 9.0\n"
@@ -156,7 +156,7 @@
 		IDS_MSGBOX_NOT_INSTALL_MOBILE:						"UBIKey program is not installed. \nPlease use it after install.",
 	    IDS_MSGBOX_NOT_INSTALL_MOBILE_CFM:					"UBIKey program is not installed.\nDo you want to move to install page?",
 	    
-	    IDS_MSGBOX_BLOCK_POPUP_WINDOW:						"Install page is not opened.\nPlease check if popup is block."		         
+	    IDS_MSGBOX_BLOCK_POPUP_WINDOW:						"Install page is not opened.\nPlease check if popup is block.",		         
 
  		IDS_MSGBOX_DOUBLE: 		"Cloud certificate service is only available for one service",
 		IDS_MSGBOX_JOIN: 		"You are not subscribed to the cloud certificate service.\nPlease use the service after signing up."

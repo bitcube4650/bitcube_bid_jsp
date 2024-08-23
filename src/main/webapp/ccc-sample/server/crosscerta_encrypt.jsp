@@ -1,4 +1,5 @@
 <%@ page language="java" import="java.io.*,java.util.*,crosscert.*" %>
+<%@page import="crosscert.Base64"%>
 <%@ page contentType = "text/html; charset=euc-kr" %>
 
 <%  

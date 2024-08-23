@@ -146,7 +146,7 @@
 		IDS_MSGBOX_NOT_INSTALL_MOBILE:						"UBIKey program is not installed. \nPlease use it after install.",	    
 	    IDS_MSGBOX_NOT_INSTALL_MOBILE_CFM:					"UBIKey program is not installed.\nDo you want to move to install page?",
 	    
-	    IDS_MSGBOX_BLOCK_POPUP_WINDOW:						"Install page is not opened.\nPlease check if popup is block."		         
+	    IDS_MSGBOX_BLOCK_POPUP_WINDOW:						"Install page is not opened.\nPlease check if popup is block.",		         
  		IDS_MSGBOX_DOUBLE: 		"Cloud certificate service is only available for one service",
 		IDS_MSGBOX_JOIN: 		"You are not subscribed to the cloud certificate service.\nPlease use the service after signing up."
     }
