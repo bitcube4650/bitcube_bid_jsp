@@ -53,7 +53,6 @@ public class BidCompleteController {
 		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
 		
 		Map<String, Object> params = new HashMap<String, Object>();
-
 		params.put("page",		page);
 		params.put("size",		size);
 		params.put("startDate",	startDate);
@@ -140,25 +139,45 @@ public class BidCompleteController {
 //		}
 //		return resultBody;
 //	}
-//	
-//	/**
-//	 * 낙찰이력 리스트
-//	 * @param params
-//	 * @return
-//	 */
-//	@PostMapping("/history")
-//	public ResultBody complateBidhistory(@RequestBody Map<String, Object> params) {
-//		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = bidCompleteSvc.complateBidhistory(params); 
-//		}catch(Exception e) {
-//			log.error("complateBidhistory list error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("낙찰 이력 리스트를 가져오는것을 실패하였습니다.");
-//		}
-//		return resultBody;
-//	}
-//	
+	
+	/**
+	 * 낙찰이력 리스트
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/history")
+	public ResultBody complateBidhistory(
+			@RequestParam(name="page",			defaultValue="0") int page,
+			@RequestParam(name="size",			defaultValue="10") int size,
+			@RequestParam(name="startDate",		defaultValue="") String startDate,
+			@RequestParam(name="endDate",		defaultValue="") String endDate,
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			@RequestParam(name="biName",		defaultValue="") String biName,
+			HttpServletRequest request) {
+		ResultBody resultBody = new ResultBody();
+
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("page",		page);
+		params.put("size",		size);
+		params.put("startDate",	startDate);
+		params.put("endDate",	endDate);
+		params.put("biNo",		biNo);
+		params.put("biName",	biName);
+		
+		try {
+			resultBody = bidCompleteSvc.complateBidhistory(params, user); 
+		}catch(Exception e) {
+			log.error("complateBidhistory list error : {}", e);
+			resultBody.setCode("fail");
+			resultBody.setMsg("낙찰 이력 리스트를 가져오는것을 실패하였습니다.");
+		}
+		return resultBody;
+	}
+	
 	/**
 	 * 낙찰이력 내 투찰업체 팝업 리스트
 	 * @param params

@@ -2,6 +2,49 @@
 <!DOCTYPE html>
 <html>
 <body>
+	<script>
+	// 투찰정보 팝업
+	function fnBidJoinCustListPop(biNo){
+		$.post(
+			'/api/v1/bidComplete/joinCustList',
+			{
+				biNo : biNo
+			}
+		).done(function(arg){
+			$("#biNo").text('');
+			$("#biName").text('');
+			$("#custName").text('');
+			
+			$("#bidJoinCustListTbl tbody").empty();
+
+			let text = "";
+			if(arg.code == "ERROR") {
+				Swal.fire('', arg.msg, 'error');
+			} else {
+				let result = arg.data;
+
+				for(let i = 0; i < result.length; i++){
+					if(result.length > 0){
+						text += "<tr>"
+						
+						text += "	<td class='text-left "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+result[i].custName+"</td>"
+						text += "	<td class='text-right "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+parseInt(result[i].esmtAmt).toLocaleString()+"</td>"
+						text += "	<td class='end "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+result[i].submitDate+"</td>"
+						text += "</tr>"
+						
+						if(result[i].succYn == "Y"){
+							$("#biNo").text(result[i].biNo);
+							$("#biName").text(result[i].biName);
+							$("#custName").text(result[i].custName);
+						}
+					}
+				}
+			}
+			$("#bidJoinCustListTbl tbody").html(text);
+		});
+	}
+	</script>
+<!-- 	투찰 정보 팝업 -->
 	<div class="modal fade modalStyle" id="bidJoinCustListPop" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog" style="width:100%; max-width:550px">
 			<div class="modal-content">

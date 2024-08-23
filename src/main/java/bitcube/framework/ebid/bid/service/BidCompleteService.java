@@ -170,32 +170,28 @@ public class BidCompleteService {
 //		return ModelAndView;
 //		
 //	}
-//	
-//	/**
-//	 * 낙찰 이력 리스트
-//	 * @param params : (String) biNo, (String) biName, (String) matDept, (String) matProc, (String) matCls, (String) startDate, (String) endDate
-//	 * @return
-//	 */
-//	@SuppressWarnings({ "rawtypes" })
-//	public ModelAndView complateBidhistory(Map<String, Object> params) throws Exception{
-//		
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		Optional<TCoUser> userOptional = tCoUserRepository.findById(principal.getUsername());
-//		String userId = userOptional.get().getUserId();
-//		String userInterrelatedCustCode = userOptional.get().getInterrelatedCustCode();
-//		String userAuth = userOptional.get().getUserAuth();
-//		
-//		params.put("userId", userId);
-//		params.put("interrelatedCustCode", userInterrelatedCustCode);
-//		params.put("userAuth", userAuth);
-//		
-//		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_COMPLETE_EBID_HISTORY_LIST, params);
-//		ModelAndView.setData(listPage);
-//			
-//		return ModelAndView;
-//		
-//	}
-//	
+	
+	/**
+	 * 낙찰 이력 리스트
+	 * @param params : (String) biNo, (String) biName, (String) startDate, (String) endDate
+	 * @param user 
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes" })
+	public ResultBody complateBidhistory(Map<String, Object> params, UserDto user) throws Exception{
+		ResultBody resultBody = new ResultBody();
+		
+		params.put("userId", user.getLoginId());
+		params.put("interrelatedCustCode", user.getCustCode());
+		params.put("userAuth", user.getUserAuth());
+		
+		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_COMPLETE_EBID_HISTORY_LIST, params);
+		resultBody.setData(listPage);
+			
+		return resultBody;
+		
+	}
+	
 	/**
 	 * 투찰 정보 팝업
 	 * @param params : (String) biNo

@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="excel">
-	<select id="selectFindComplateBidListCnt" resultType="int">
-		/* excel.selectFindComplateBidListCnt */
+	<select id="selectFindComplateBidList_count" resultType="int">
+		/* excel.selectFindComplateBidList_count */
 		select	count(1) 
 		from t_bi_info_mat tbim 
 		inner join t_bi_info_mat_cust tbimc 
@@ -152,6 +152,8 @@
 		and tbim.MAT_CLS = #{matCls}
 		</if>
 		order by tbim.UPDATE_DATE desc 
+		<if test="offset != null and offset != '' and pageSize != null and pageSize != ''">
 		LIMIT ${offset}, ${pageSize}
+		</if>
 	</select>
 </mapper>

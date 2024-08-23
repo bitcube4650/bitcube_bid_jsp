@@ -23,6 +23,23 @@
 		$(document).ready(function() {
 			$("#popBiModeDiv").text(Ft.ftBiMode("<%=biInfo.get("biMode")%>"));
 		});
+		
+		// 입찰결과 보고서 프린트
+		function fnPrint(){
+			const printContents = document.querySelector('.printDiv').innerHTML;
+			const html = document.querySelector('html');
+			const printDiv = document.createElement("DIV");
+			printDiv.className = "print-div modalStyle";
+			html.appendChild(printDiv);
+			printDiv.innerHTML = printContents;
+			printDiv.querySelector(".modalFooter").style.display = "none";
+			printDiv.querySelector(".ModalClose").style.display = "none";
+			printDiv.querySelector(".modal-dialog").style.cssText = "width:100%; max-width:700px";
+			document.body.style.display = 'none';
+			window.print();
+			document.body.style.display = 'block';
+			$(".print-div").remove();
+		}
 	</script>
 		<!-- 입찰결과 보고서 -->
 	<div class="modal fade modalStyle printDiv" id="resultsReport" tabindex="-1" role="dialog" aria-hidden="true">
@@ -142,7 +159,7 @@
 
 					<div class="modalFooter">
 						<a class="modalBtnClose" data-dismiss="modal" title="닫기">닫기</a>
-						<a @click="fnPrint" class="modalBtnCheck" title="인쇄하기">인쇄하기</a>
+						<a onclick="fnPrint()" class="modalBtnCheck" title="인쇄하기">인쇄하기</a>
 					</div>
 				</div>				
 			</div>
