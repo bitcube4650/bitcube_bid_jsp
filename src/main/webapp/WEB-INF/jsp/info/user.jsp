@@ -379,11 +379,9 @@
 		)
 		.done(function(arg) {
 			if (arg.code === "OK") {
-				if(arg.data){
-					onUserDetail()
-				} else {
-					Swal.fire('', '비밀번호가 일치하지 않습니다.', 'warning');
-				}
+				onUserDetail()
+			}else {
+				Swal.fire('', '비밀번호가 일치하지 않습니다.', 'warning');
 			}
 		})
 		.always(function(arg){
@@ -426,11 +424,11 @@
 				$('#editUseYn').val(data.useYn)	
 				
 				const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
-				if(loginInfo.loginId != data.userId){
-					$("#pwdChkDisplay").css("pwdChkDisplay", "")
+
+				if(loginInfo.userId != data.userId){
+					$("#pwdChkDisplay").css("display", "")
 					$('#editPweUpdate').empty()
 					$('#editPweUpdate').append("최종변경일 : " + data.pwdEditDateStr)
-
 					
 				}
 				
@@ -562,6 +560,57 @@
 			}
 		})
 		
+	}
+	
+	function onPwdEditModal(){
+		
+		$('#pwdEdit').modal('show')
+	}
+	
+	function onPwdEditSave(){
+		
+		if(!$('#editPwd').val()){
+			Swal.fire('', '비밀번호를 입력해 주세요.', 'warning')
+			return
+		}
+		
+        const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!pwdRegex.test($('#editPwd').val())) {
+            Swal.fire('', '비밀번호는 최소 8자 이상, 숫자와 특수문자를 포함해야 합니다..', 'warning');
+            return
+        }
+		
+		if(!$('#editPwdChk').val()){
+			Swal.fire('', '비밀번호 확인을 입력해 주세요.', 'warning')
+			return
+		}
+		
+		if ($('#editPwd').val() !== $('#editPwdChk').val()) {
+		    Swal.fire('', '비밀번호가 일치하지 않습니다.', 'warning');
+		    return;
+		}
+		
+		const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
+
+		const params = {
+			userPwd : $('#editPwd').val(),
+			userId : $('#rowLoginId').val(),
+			updateUser : loginInfo.userId
+		}
+		$.post(
+				"/api/v1/couser/saveChgPwd",
+				params
+			)
+			.done(function(arg) {
+				if (arg.code === "OK") {
+					Swal.fire('', '비밀번호가 정상적으로 변경되었습니다.', 'info');
+					onUserDetail();
+					$('#pwdEdit').modal('hide')
+				}else{
+		            Swal.fire('', '비밀번호 변경을 실패하였습니다.', 'warning');
+		            return
+				}
+			})
 		
 	}
 	</script>
@@ -892,7 +941,7 @@
 						<div class="flex align-items-center width100">
 							<div class="width100" id="editPweUpdate">
 							</div>
-							<a class='btnStyle btnSecondary flex-shrink0 ml10' title='비밀번호 변경'>비밀번호 변경</a>
+							<a onclick="onPwdEditModal()" class='btnStyle btnSecondary flex-shrink0 ml10' title='비밀번호 변경'>비밀번호 변경</a>
 							
 						</div>
 					</div>
@@ -958,5 +1007,36 @@
 		</div>
 	</div>
 		<!-- 비밀번호 확인 모달 -->
+		
+	<!-- 비밀번호 변경 -->
+	<div class="modal fade modalStyle" id="pwdEdit" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog" style="width:100%; max-width:510px">
+			<div class="modal-content">
+				<div class="modal-body">
+					<a class="ModalClose" data-dismiss="modal" title="닫기"><i class="fa-solid fa-xmark"></i></a>
+					<h2 class="modalTitle">비밀번호 변경</h2>
+					<div class="flex align-items-center">
+						<div class="formTit flex-shrink0 width120px">비밀번호</div>
+						<div class="width100">
+							<input type="password" id="editPwd" class="inputStyle" placeholder="대/소문자, 숫자, 특수문자 2 이상 조합(길이 8~16자리)">
+						</div>
+					</div>
+					<div class="flex align-items-center mt10">
+						<div class="formTit flex-shrink0 width120px">비밀번호 확인</div>
+						<div class="width100">
+							<input type="password" id="editPwdChk" class="inputStyle" placeholder="비밀번호와 동일해야 합니다.">
+						</div>
+					</div>
+
+					<div class="modalFooter">
+						<a class="modalBtnClose" data-dismiss="modal" title="취소">취소</a>
+						<a onclick="onPwdEditSave()" class="modalBtnCheck" data-toggle="modal" data-target="#pwMody3" title="저장">저장</a>
+					</div>
+				</div>				
+			</div>
+		</div>
+	</div>
+	<!-- //비밀번호 변경 -->
+		
 </body>
 </html>

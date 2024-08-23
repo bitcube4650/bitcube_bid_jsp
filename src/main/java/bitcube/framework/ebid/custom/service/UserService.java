@@ -6,13 +6,14 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import bitcube.framework.ebid.core.CustomUserDetails;
 import bitcube.framework.ebid.dao.GeneralDao;
 import bitcube.framework.ebid.dto.ResultBody;
+import bitcube.framework.ebid.etc.util.CommonUtils;
 import bitcube.framework.ebid.etc.util.consts.DB;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -111,6 +112,21 @@ public class UserService {
 				}
 			
 		}
+		return resultBody;
+	}
+	
+    // 비밀번호 변경
+    @Transactional
+	public ResultBody saveChgPwd(Map<String, Object> params) throws Exception {
+		ResultBody resultBody = new ResultBody();
+
+		// 비밀번호 암호화
+		String chgPassword = CommonUtils.getString(params.get("userPwd"), "");
+		String encodedPassword = passwordEncoder.encode(chgPassword);
+		params.put("userPwd", encodedPassword);
+
+		generalDao.updateGernal("user.updateUserChgPwd",params);
+
 		return resultBody;
 	}
 	

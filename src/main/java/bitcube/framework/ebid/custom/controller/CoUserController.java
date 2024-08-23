@@ -3,6 +3,7 @@ package bitcube.framework.ebid.custom.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import bitcube.framework.ebid.core.CustomUserDetails;
 import bitcube.framework.ebid.custom.service.UserService;
 import bitcube.framework.ebid.dto.ResultBody;
 import jakarta.servlet.http.HttpServletRequest;
@@ -112,6 +114,25 @@ public class CoUserController {
 		return resultBody;
     }
     
+    
+	/**
+	 * 비밀번호 변경
+	 * @param params userId
+	 * @param params chgPassword
+	 * @return
+	 */
+	@PostMapping("/saveChgPwd")
+	@ResponseBody
+	public ResultBody saveChgPwd(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			resultBody = userService.saveChgPwd(params);
+		}catch(Exception e) {
+			resultBody.setCode("fail");
+			resultBody.setMsg("비밀번호 변경에 실패하였습니다.");
+		}
+		return resultBody;
+    }
 
 
 }
