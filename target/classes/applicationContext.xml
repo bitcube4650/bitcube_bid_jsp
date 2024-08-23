@@ -3,20 +3,36 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+		xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util.xsd
                            http://www.springframework.org/schema/tx
-                           http://www.springframework.org/schema/tx/spring-tx.xsd">
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/aop
+							http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<util:properties id="cubeFrameworkConfig" location="classpath:application.properties" />
 
     <!-- 데이터 소스 설정 -->
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <!-- <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.mariadb.jdbc.Driver" />
-        <property name="url" value="jdbc:log4jdbc:mariadb://192.168.0.5:3306/iljin" />
+        <property name="url" value="jdbc:mariadb://192.168.0.5:3306/iljin" />
         <property name="username" value="bitcube" />
         <property name="password" value="test#123" />
-    </bean>
+    </bean> -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	    <property name="driverClassName" value="com.p6spy.engine.spy.P6SpyDriver" />
+	    <property name="url" value="jdbc:p6spy:mariadb://192.168.0.5:3306/iljin" />
+	    <property name="username" value="bitcube" />
+	    <property name="password" value="test#123" />
+	</bean>
+
+	    
 
     <!-- MyBatis 설정 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -32,6 +48,9 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
     </bean>
+    
+    <aop:aspectj-autoproxy />
+	<bean id="controllerAspect" class="bitcube.framework.ebid.intercept.AspectController"/>
 
     <!-- 애너테이션 기반 트랜잭션 관리 활성화 -->
     <tx:annotation-driven transaction-manager="transactionManager" />

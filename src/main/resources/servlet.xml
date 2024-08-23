@@ -23,6 +23,7 @@
 
     <mvc:annotation-driven/>
 	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:resources mapping="/CC_WSTD_home/**" location="/CC_WSTD_home/" />
 	
 	<!-- Anotation Scan -->
 	<context:component-scan base-package="bitcube.framework.ebid"/>

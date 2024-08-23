@@ -24,7 +24,21 @@
 	</build>
 	
 	
+	<properties>
+		<webapp.lib>${project.basedir}/src/main/webapp/WEB-INF/lib</webapp.lib>
+	</properties>
+	
+	
 	<dependencies>
+		
+		<dependency>
+			<groupId>local</groupId>
+			<artifactId>crosscert</artifactId>
+			<version>2.2</version>
+			<scope>system</scope>
+			<systemPath>D:\git\bitcube_bid_jsp/src/main/webapp/WEB-INF/lib/crosscert_2.2.jar</systemPath>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
