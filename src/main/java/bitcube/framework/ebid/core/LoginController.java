@@ -88,6 +88,7 @@ public class LoginController {
 			resultBody = userService.idSearch(paramMap);
 		} catch (Exception e) {
 			log.error("login idSearch error : {}", e);
+			resultBody.setCode("Fail");
 		}
 		return resultBody;
 	}
@@ -106,27 +107,37 @@ public class LoginController {
 			resultBody = userService.pwSearch(paramMap);
 		} catch (Exception e) {
 			log.error("login pwSearch error : {}", e);
+			resultBody.setCode("Fail");
 		}
 		return resultBody;
 	}
 
+	@SuppressWarnings({"unchecked"})
 	@PostMapping("/login/interrelatedList")
-	public List interrelatedList() {
-		List<Object> list = new ArrayList<Object>();
+	@ResponseBody
+	public ResultBody interrelatedList(HttpServletRequest request) {
+		ResultBody resultBody = new ResultBody();
 		try {
-			list = userService.interrelatedList();
+			List<Object> list = userService.interrelatedList();
+			
+			resultBody.setData(list);
 		} catch (Exception e) {
+			resultBody.setCode("Fail");
 			log.error("login interrelatedList error : {}", e);
 		}
-		return list;
+		return resultBody;
 	}
 
 	@PostMapping("/login/custSave")
-	public ResultBody custSave(@RequestPart(value = "regnumFile", required = false) MultipartFile regnumFile, @RequestPart(value = "bFile", required = false) MultipartFile bFile, @RequestPart("data") Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody custSave(HttpServletRequest request, 
+			@RequestPart(value = "regnumFile", required = false) MultipartFile regnumFile, 
+			@RequestPart(value = "bFile", required = false) MultipartFile bFile, 
+			@RequestPart("data") Map<String, Object> params) {
+		
 		ResultBody resultBody = new ResultBody();
 		try {
-//			custService.save(params, regnumFile, bFile, null);
-			custService.temp();
+			custService.save(params, regnumFile, bFile);
 		} catch (IOException e) {
 			resultBody.setCode("UPLOAD");
 			resultBody.setStatus(500);
@@ -142,33 +153,40 @@ public class LoginController {
 		return resultBody;
 	}
 
+	@SuppressWarnings({"unchecked"})
 	@PostMapping("/login/itemGrpList")
-	public List itemGrpList() {
-		List<Object> list = new ArrayList<Object>();
+	@ResponseBody
+	public ResultBody itemGrpList(HttpServletRequest request) {
+		ResultBody resultBody = new ResultBody();
 		try {
-			list = userService.itemGrpList();
+			List<Object> list = userService.itemGrpList();
+			resultBody.setData(list);
 		} catch (Exception e) {
 			log.error("login itemGrpList error : {}", e);
+			resultBody.setCode("Fail");
 		}
-		return list;
+		return resultBody;
 	}
 
 	@PostMapping("/login/itemList")
-	public ResultBody itemList(@RequestParam Map<String, Object> params) {
-		ResultBody result = new ResultBody();
+	@ResponseBody
+	public ResultBody itemList(HttpServletRequest request, @RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
 		try {
-//			result = itemService.itemList(params);
+			resultBody = itemService.itemList(params);
 		} catch (Exception e) {
 			log.error("login itemList error : {}", e);
+			resultBody.setCode("Fail");
 		}
-		return result;
+		return resultBody;
 	}
 	
 	@PostMapping("/login/idcheck")
-	public ResultBody idcheck(@RequestParam Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody idcheck(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 		try {
-//			resultBody = custService.idcheck(params);
+			resultBody = custService.idcheck(params);
 		} catch (Exception e) {
 			log.error("login idcheck error : {}", e);
 		}

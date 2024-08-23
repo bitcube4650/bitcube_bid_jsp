@@ -17,6 +17,7 @@
 <script src="${pageContext.request.contextPath}/resources/datepicker-ko.js"></script>
 <script src="${pageContext.request.contextPath}/resources/api/filters.js"></script>
 <script src="${pageContext.request.contextPath}/resources/jquery.blockUI.js"></script>
+<script src="${pageContext.request.contextPath}/resources/utils.js"></script>
 
 <script>
 $(document).ready(function() {
