@@ -24,15 +24,26 @@
     <mvc:annotation-driven/>
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 	<mvc:resources mapping="/CC_WSTD_home/**" location="/CC_WSTD_home/" />
+	<mvc:resources mapping="/install/**" location="/install/"/>
+	
 	
 	<!-- Anotation Scan -->
 	<context:component-scan base-package="bitcube.framework.ebid"/>
 	
-	<!--  Jsp Resolver  -->
+	<!-- JSP 리졸버 -->
 	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/"/>
 		<property name="suffix" value=".jsp"/>
+		<property name="order" value="1"/>
 	</bean>
+	
+	<!-- HTML 리졸버 -->
+	<bean id="htmlViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"/>
+		<property name="suffix" value=".html"/>
+		<property name="order" value="2"/>
+	</bean>
+
 	
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 	    <property name="messageConverters">
