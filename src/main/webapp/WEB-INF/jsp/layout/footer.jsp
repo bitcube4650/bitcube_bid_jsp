@@ -45,95 +45,6 @@
 			return false;
 		}
 	}
-	
-	var fnAuthBusinessNumberCallback = "";
-	var _borgType = "";
-	var _useType = "";
-	var _authStep = "";
-	var _businessNum = "";
-	var _borgId = "";
-	function fnAuthBusinessNumberDialog(borgType,useType,authStep,businessNum,callbackString, borgId) {
-		_borgType = borgType;
-		_useType  = useType;
-		_authStep = authStep;
-		_businessNum = businessNum;
-		_borgId = borgId;
-
-		fnAuthBusinessNumberCallback = callbackString;
-		if(authStep == '0' || authStep == '1'){
-			$("#businessNum").val(businessNum);
-			SignData();
-		}else if(authStep == '2'){
-			eval(fnAuthBusinessNumberCallback+"('0');");''
-		}
-	}
-
-	function fnAuthBusinessNumberDialog2(borgType,useType,authStep,businessNum,callbackString, borgId) {
-		_borgType = borgType;
-		_useType  = useType;
-		_authStep = authStep;
-		_businessNum = businessNum;
-		_borgId = borgId;
-		
-		fnAuthBusinessNumberCallback = callbackString;
-		if(authStep == '0'){
-			$("#authBusinessNumberDialogPop").jqmShow();
-		}else if(authStep == '1'){
-			$("#authBusinessNumberDialogPop").jqmShow();
-			$("#authBusinessNumberDialogPop").jqmHide();
-			$("#businessNum").val(businessNum);
-			SignData();
-		}else if(authStep == '2'){
-			eval(fnAuthBusinessNumberCallback+"('0');");
-		}
-		
-	}
-
-	function GetRValueFromKey(userDN) {
-		unisign.GetRValueFromKey(userDN, "", function( resultObject ) {
-			if( !resultObject || resultObject.resultCode != 0 ) {
-				alert( resultObject.resultMessage + "\n오류코드 : " + resultObject.resultCode );
-				if(_borgType=='VEN' && fnAuthBusinessNumberCallback == 'fnAuthBusinessNumberDialogCallback'){
-					$('#popContract').jqmShow();
-				}
-				return;
-			}
-			$("#userDn").val(resultObject.RValue);
-			fnAuthReg();
-		})
-	}
-
-	function GetRValueFromKeyRegi(userDN) {
-		unisign.GetRValueFromKey(userDN, "", function( resultObject ) {
-			if( !resultObject || resultObject.resultCode != 0 ) {
-				alert( resultObject.resultMessage + "\n오류코드 : " + resultObject.resultCode );
-				return;
-			}
-			$("#userDn").val(resultObject.RValue);
-			fnRegiAuthReg();
-		})
-	}
-
-	function SignData() {
-		var src = $("#src").val();
-		if (src == "") {
-			alert("서명할 원문이 없습니다.");
-			return;
-		}
-
-		unisign.SignDataNonEnveloped( src, null, "", function( resultObject ) {
-			$("#signed_data").val(resultObject.signedData);
-			if( !resultObject || resultObject.resultCode !=0 ) {
-				alert( resultObject.resultMessage + "\n오류코드 : " + resultObject.resultCode );
-				if(_borgType=='VEN' && fnAuthBusinessNumberCallback == 'fnAuthBusinessNumberDialogCallback'){
-					$('#popContract').jqmShow();
-				}
-				return;
-			}
-			
-			GetRValueFromKey(resultObject.certAttrs.subjectName);
-		});
-	}
 
 	function SignDataRegi() {
 		var src = $("#src").val();
@@ -141,6 +52,7 @@
 			alert("서명할 원문이 없습니다.");
 			return;
 		}
+		// 테스트를 위해 해놓은 것 > 추후 변경필요함
 		Swal.fire({
 			title: '',
 			text: "공인인증서 테스트 진행중입니다.",
@@ -165,71 +77,22 @@
 			// 사업자번호 초기화
 			$("#RegiBusinessNum").val("");
 		});
-
 	}
 
-
-	function fnAuthReg() {
-		$.post(
-			'/api/v1/common/authBusinessNumber.sys',
-			{ 
-				borgType:_borgType,
-				useType:_useType,
-				authStep:_authStep,
-				borgId:_borgId,
-				businessNum:$.trim($("#businessNum").val()),
-				signed_data:$.trim($("#signed_data").val()),
-				userDn:$.trim($("#userDn").val())
-			},
-			function(arg){
-				var result = eval('(' + arg + ')').customResponse;
-				if (result.success == false) {
-					var errors = "";
-					for (var i = 0; i < result.message.length; i++) { errors +=  result.message[i]; }
-					alert(errors);
-					$("#businessNum").val("");
-					$("#authBusinessNumberDialogPop").jqmHide();
-					if(_borgType=='VEN' && fnAuthBusinessNumberCallback == 'fnAuthBusinessNumberDialogCallback'){
-						$('#popContract').jqmShow();
-					}
-				} else {
-					alert("인증에 성공하였습니다.");
-					var resultStr = "'"+result.message[1]+"'";
-					eval(fnAuthBusinessNumberCallback+"("+resultStr+");");
-					$("#authBusinessNumberDialogPop").jqmHide();
-				}
+	function GetRValueFromKeyRegi(userDN) {
+		unisign.GetRValueFromKey(userDN, "", function( resultObject ) {
+			if( !resultObject || resultObject.resultCode != 0 ) {
+				alert( resultObject.resultMessage + "\n오류코드 : " + resultObject.resultCode );
+				return;
 			}
-		);
+			$("#userDn").val(resultObject.RValue);
+			fnRegiAuthReg();
+		})
 	}
-
+	
+	// 실제 작동해야하는 것
 	function fnRegiAuthReg() {
-		$.post(
-			'/api/v1/common/authBusinessNumber.sys',
-			{ 
-				borgType:_borgType,
-				useType:_useType,
-				authStep:_authStep,
-				borgId:_borgId,
-				businessNum:$.trim($("#RegiBusinessNum").val()),
-				signed_data:$.trim($("#signed_data").val()),
-				userDn:$.trim($("#userDn").val())
-			},
-			function(arg){
-				var result = eval('(' + arg + ')').customResponse;
-				if (result.success == false) {
-					var errors = "";
-					for (var i = 0; i < result.message.length; i++) { errors +=  result.message[i]; }
-					alert(errors);
-					$("#RegiBusinessNum").val("");
-					$("#authBusinessNumberDialogPop").jqmHide();
-				} else {
-					alert("인증에 성공하였습니다.");
-					var resultStr = "'"+result.message[1]+"'";
-					eval(fnAuthBusinessNumberCallback+"("+resultStr+");");
-					$("#authBusinessNumberDialogPop").jqmHide();
-				}
-			}
-		);
+		Swal.fire('', '인증되었습니다.', 'info');
 	}
 </script>
 
