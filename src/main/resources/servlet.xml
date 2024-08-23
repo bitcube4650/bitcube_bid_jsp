@@ -34,16 +34,7 @@
 	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/"/>
 		<property name="suffix" value=".jsp"/>
-		<property name="order" value="1"/>
 	</bean>
-	
-	<!-- HTML 리졸버 -->
-	<bean id="htmlViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/"/>
-		<property name="suffix" value=".html"/>
-		<property name="order" value="2"/>
-	</bean>
-
 	
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 	    <property name="messageConverters">
