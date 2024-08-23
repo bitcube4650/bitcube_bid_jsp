@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import bitcube.framework.ebid.bid.service.BidCompleteService;
 import bitcube.framework.ebid.dto.ResultBody;
@@ -37,11 +36,36 @@ public class BidCompleteController {
 	 */
 	@PostMapping(value="/list", produces = "application/json")
 	@ResponseBody
-	public ResultBody complateBidList(HttpServletRequest request, ModelAndView modelAndView,
-			@RequestParam Map<String, Object> params) {
+	public ResultBody complateBidList(
+			@RequestParam(name="page",			defaultValue="0") int page,
+			@RequestParam(name="size",			defaultValue="10") int size,
+			@RequestParam(name="startDate",		defaultValue="") String startDate,
+			@RequestParam(name="endDate",		defaultValue="") String endDate,
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			@RequestParam(name="biName",		defaultValue="") String biName,
+			@RequestParam(name="succBi",		required = false) boolean succBi,
+			@RequestParam(name="failBi",		required = false) boolean failBi,
+			HttpServletRequest request) {
 		ResultBody resultBody = new ResultBody();
+
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+
+		params.put("page",		page);
+		params.put("size",		size);
+		params.put("startDate",	startDate);
+		params.put("endDate",	endDate);
+		params.put("biNo",		biNo);
+		params.put("biName",	biName);
+		params.put("succBi",	succBi);
+		params.put("failBi",	failBi);
+		
 		try {
-			resultBody = bidCompleteSvc.complateBidList(params); 
+			
+			resultBody = bidCompleteSvc.complateBidList(params, user); 
 			
 		}catch(Exception e) {
 			System.out.println(e);
@@ -52,24 +76,6 @@ public class BidCompleteController {
 		return resultBody;
 	}
 	
-//	
-//	/**
-//	 * 입찰완료 상세
-//	 * @param params
-//	 * @return
-//	 */
-//	@PostMapping("/detail")
-//	public ResultBody complateBidDetail(@RequestBody Map<String, Object> params) {
-//		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = bidCompleteSvc.complateBidDetail(params); 
-//		}catch(Exception e) {
-//			log.error("complateBidDetail error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("입찰완료 상세 데이터를 가져오는것을 실패하였습니다.");
-//		}
-//		return resultBody;
-//	}
 //	
 //	/**
 //	 * 암호화 안된 파일 다운로드
@@ -89,25 +95,32 @@ public class BidCompleteController {
 //		return result;
 //
 //	}
-//	
-//	/**
-//	 * 실제계약금액 업데이트
-//	 * @param params
-//	 * @return
-//	 * @throws IOException
-//	 */
-//	@PostMapping("/updRealAmt")
-//	public ResultBody updRealAmt(@RequestBody Map<String, Object> params) throws IOException {
-//		ResultBody resultBody = new ResultBody();
-//		try {
-//			resultBody = bidCompleteSvc.updRealAmt(params); 
-//		}catch(Exception e) {
-//			log.error("updRealAmt error : {}", e);
-//			resultBody.setCode("fail");
-//			resultBody.setMsg("실제계약금액 업데이트를 실패했습니다.");
-//		}
-//		return resultBody;
-//	}
+	
+	/**
+	 * 실제계약금액 업데이트
+	 * @param params
+	 * @return
+	 * @throws IOException
+	 */
+	@PostMapping("/updRealAmt")
+	public ResultBody updRealAmt(
+			@RequestParam(name="realAmt",		defaultValue="") String realAmt,
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			HttpServletRequest request) {
+		ResultBody resultBody = new ResultBody();
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("realAmt", realAmt);
+		params.put("biNo", biNo);
+		try {
+			resultBody = bidCompleteSvc.updRealAmt(params); 
+		}catch(Exception e) {
+			log.error("updRealAmt error : {}", e);
+			resultBody.setCode("fail");
+			resultBody.setMsg("실제계약금액 업데이트를 실패했습니다.");
+		}
+		return resultBody;
+	}
 //	
 //	/**
 //	 * 롯데에너지머티리얼즈 코드값

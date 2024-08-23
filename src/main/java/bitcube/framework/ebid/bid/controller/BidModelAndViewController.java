@@ -84,4 +84,35 @@ public class BidModelAndViewController {
 		modelAndView.setViewName("bid/partnerStatusDetail");
 		return modelAndView;
 	}
+	
+	/**
+	 * 입찰완료 상세
+	 * @param params
+	 * @return
+	 * @throws Exception 
+	 */
+	@PostMapping("/api/v1/bidComplete/detail")
+	public ModelAndView complateBidDetail(
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
+		
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		if(user == null) {
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
+		
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("biNo", biNo);
+		
+		// 입찰정보 setting
+		modelAndView.addObject("biInfo", bidCompleteSvc.complateBidDetail(params));
+		
+		modelAndView.setViewName("bid/completeDetail");
+		return modelAndView;
+	}
 }

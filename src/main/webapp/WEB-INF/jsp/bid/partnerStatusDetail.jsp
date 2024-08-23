@@ -278,7 +278,7 @@
 			//==============================위에 주석처리 된 부분 대체되는 소스=========================
 
 			let params = {
-				biNo : localStorage.getItem('biNo'),
+				biNo : "<%= biInfo.get("biNo") %>",
 				submitData : Ft.isEmpty(submitArr) ? "" : submitArr,
 				amt : totalPrice,
 				certInfo : '',
