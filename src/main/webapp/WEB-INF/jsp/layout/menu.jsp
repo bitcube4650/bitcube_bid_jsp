@@ -140,15 +140,15 @@
 				</div>
 			</li>
 			<li style="display: <%= (userCustType.equals("inter") && (userAuth == 1 || userAuth == 2 || userAuth == 4)) || (userCustType.equals("cust") && userAuth == 1) ? "block" : "none" %>;" 
-				class="<%= (path.equals("/company/partner/approval") || path.indexOf("/company/partner/management") > -1) ? "active" : "" %>">
+				class="<%= (path.equals("/company/approval") || path.indexOf("/company/management") > -1) ? "active" : "" %>">
 				<a id="company" class="menuLink"><span><i class="fa-light fa-buildings"></i></span>업체정보</a>
 				<div class="depth2Lnb">
 					<ul style="display: <%= (userCustType.equals("inter") && (userAuth == 1 || userAuth == 2 || userAuth == 4)) ? "block" : "none" %>;">
-						<li class="<%= path.equals("/company/partner/approval") ? "active" : "" %>"><a href="/company/partner/approval">업체승인</a></li>
-						<li class="<%= path.equals("/company/partner/management") ? "active" : "" %>"><a href="/company/partner/management">업체관리</a></li>
+						<li class="<%= path.equals("/company/approval") ? "active" : "" %>"><a href="/company/approval">업체승인</a></li>
+						<li class="<%= path.equals("/company/management") ? "active" : "" %>"><a href="/company/management">업체관리</a></li>
 					</ul>
 					<ul style="display: <%= userCustType.equals("cust") && userAuth == 1 ? "block" : "none" %>;">
-						<%-- <li class="<%= path.equals("/company/partner/management/" + loginInfo.custCode) ? "active" : "" %>"><a href="/company/partner/management/<%= loginInfo.custCode %>">자사정보</a></li> --%>
+						<%-- <li class="<%= path.equals("/company/management/" + loginInfo.custCode) ? "active" : "" %>"><a href="/company/management/<%= loginInfo.custCode %>">자사정보</a></li> --%>
 						<li class=""><a href="">자사정보</a></li>
 						<li class="<%= path.equals("/company/partner/user") ? "active" : "" %>"><a href="/company/partner/user">사용자관리</a></li>
 					</ul>

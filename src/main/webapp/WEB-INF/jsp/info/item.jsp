@@ -56,8 +56,9 @@
 			useYn : $('#srcUseYn').val(),
 			itemCode : $('#srcItemCode').val(),
 			itemName : $('#srcItemName').val(),
-			"size"		: $("#pageSize").val(),
-			"page"		: page
+			"size" : $("#pageSize").val(),
+			"page" : page,
+			nonPopYn : 'Y',
 		}
 		
 		$.post("/api/v1/item/itemList", params, 
@@ -146,10 +147,7 @@
 		}else{
 			saveUrl = 'saveUpdate'
 		}
-		
-		console.log(params)
-		console.log(saveUrl)
-		
+			
 		$.post(
 			'/api/v1/item/'+saveUrl,
 			params

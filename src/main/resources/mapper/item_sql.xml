@@ -34,11 +34,8 @@
 				</if>
 			</when>
 			<otherwise>
-				<if test="itemCode != null and itemCode != ''">
-				AND A.ITEM_CODE LIKE CONCAT('%', #{itemCode}, '%')
-				</if>
 				<if test="itemName != null and itemName != ''">
-				AND A.ITEM_NAME LIKE CONCAT('%', #{itemName}, '%')
+					AND ( A.ITEM_CODE LIKE CONCAT('%', #{itemName}, '%') OR A.ITEM_NAME LIKE CONCAT('%', #{itemName}, '%'))
 				</if>
 			</otherwise>
 		</choose>
