@@ -23,8 +23,16 @@
 		</plugins>
 	</build>
 	
-	
 	<dependencies>
+		
+		<dependency>
+			<groupId>local</groupId>
+			<artifactId>crosscert</artifactId>
+			<version>2.2</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/crosscert_2.2.jar</systemPath>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

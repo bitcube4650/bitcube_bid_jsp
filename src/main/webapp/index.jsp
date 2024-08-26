@@ -122,7 +122,7 @@
 				<div class="loginFooter">
 					<div class="inner">
 						<div class="loginFootCenter">
-							<a href="/#" title="공동인증서">공동인증서</a>
+							<a href="/#" data-toggle="modal" data-target="#unisignwebModal" title="공동인증서">공동인증서</a>
 							<a href="/#" data-toggle="modal" data-target="#regProcess" title="업체등록절차">업체등록절차</a>
 							<a href="/#" data-toggle="modal" data-target="#biddingInfo" title="입찰업무안내">입찰업무안내</a>
 						</div>
@@ -147,6 +147,7 @@
 	
 	<jsp:include page="/WEB-INF/jsp/join/idSearchPop.jsp" />
 	<jsp:include page="/WEB-INF/jsp/join/pwSearchPop.jsp" />
+	<jsp:include page="/WEB-INF/jsp/layout/authCrosscert.jsp" />
 	<jsp:include page="/WEB-INF/jsp/layout/regProcessPop.jsp" />
 	<jsp:include page="/WEB-INF/jsp/layout/biddingInfoPop.jsp" />
 </body>

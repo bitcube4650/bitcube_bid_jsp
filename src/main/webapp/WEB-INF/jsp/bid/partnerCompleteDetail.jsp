@@ -23,7 +23,7 @@
 			$.post(
 				'/api/v1/bidComplete/updBiCustFlag',
 				{
-					biNo : localStorage.getItem('biNo'),
+					biNo : "<%= biInfo.get("biNo") %>",
 					esmtYn : '3'
 				}
 			).done(function(arg){

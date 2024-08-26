@@ -33,90 +33,88 @@ public class BidCompleteService {
 	/**
   	 * 그룹사 입찰완료 리스트
   	 * @param params : (String) biNo, (String) biName, (Boolean) succBi, (Boolean) failBi, (String) startDate, (String) endDate
+	 * @param user 
   	 * @return
   	 */
 	@SuppressWarnings({ "rawtypes" })
-	public ResultBody complateBidList(Map<String, Object> params) throws Exception{
+	public ResultBody complateBidList(Map<String, Object> params, UserDto user) throws Exception{
 		ResultBody resultBody = new ResultBody();
 
-		params.put("userId", "ebidmast");
-		params.put("interrelatedCustCode", "11");
-		params.put("userAuth", "1");
+		params.put("userId", user.getLoginId());
+		params.put("interrelatedCustCode", user.getCustCode());
+		params.put("userAuth", user.getUserAuth());
 		
 		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_COMPLETE_EBID_LIST, params);
 		resultBody.setData(listPage);
 			
 		return resultBody;
 	}
-//	
-//	/**
-//  	 * 그룹사 입찰완료 상세
-//  	 * @param params : (String) biNo
-//  	 * @return
-//  	 */
-//	@SuppressWarnings({ "unchecked" })
-//	public ModelAndView complateBidDetail(Map<String, Object> params) throws Exception {
-//		
-//		Map<String, Object> detailMap = new HashMap<String, Object>();
-//
-//		// ************ 데이터 검색 -- 입찰참가업체, 세부내역, 첨부파일 제외 ************
-//		detailMap = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_COMPLETE_EBID_DETAIL, params);
-//		
-//		// ************ 데이터 검색 -- 입찰참가업체 ************
-//		
-//		List<Object> custData = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_JOIN_CUST_LIST, params);
-//		
-//		//내역방식이 직접등록일 경우
-//		if(CommonUtils.getString(detailMap.get("insMode")).equals("2")) {
-//			for(Object obj : custData) {
-//				
-//				Map<String, Object> custDto = (Map<String, Object>) obj;
-//				
-//				Map<String, Object> innerParams = new HashMap<String, Object>();
-//				innerParams.put("biNo", params.get("biNo"));
-//				innerParams.put("custCode", custDto.get("custCode"));
-//				
-//				List<Object> specDto = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_JOIN_CUST_SPEC, innerParams);
-//				custDto.put("bid_Spec", specDto);
-//			}
-//		}
-//		
-//		detailMap.put("cust_List", custData);
-//		
-//		// ************ 데이터 검색 -- 세부내역 ************
-//		if(CommonUtils.getString(detailMap.get("insMode")).equals("1")) {		//내역방식이 파일등록일 경우
-//			ArrayList<String> fileFlagArr = new ArrayList<String>();
-//			fileFlagArr.add("K");
-//			
-//			Map<String, Object> innerParams = new HashMap<String, Object>();
-//			innerParams.put("biNo", params.get("biNo"));
-//			innerParams.put("fileFlag", fileFlagArr);
-//			
-//			List<Object> specfile = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
-//			detailMap.put("spec_File", specfile);
-//			
-//		}else if(CommonUtils.getString(detailMap.get("insMode")).equals("2")) {		//내역방식이 직접입력일 경우
-//			List<Object> specInput = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_SPEC, params);
-//			detailMap.put("spec_Input", specInput);
-//		}
-//		
-//		// ************ 데이터 검색 -- 첨부파일 ************
-//		ArrayList<String> fileFlagArr = new ArrayList<String>();
-//		fileFlagArr.add("0");
-//		fileFlagArr.add("1");
-//		
-//		Map<String, Object> innerParams = new HashMap<String, Object>();
-//		innerParams.put("biNo", params.get("biNo"));
-//		innerParams.put("fileFlag", fileFlagArr);
-//		
-//		List<Object> fileData = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
-//		detailMap.put("file_List", fileData);
-//		
-//		ModelAndView.setData(detailMap);
-//		
-//		return ModelAndView;
-//	
-//	}
+	
+	/**
+  	 * 그룹사 입찰완료 상세
+  	 * @param params : (String) biNo
+  	 * @return
+  	 */
+	@SuppressWarnings({ "unchecked" })
+	public Map<String, Object> complateBidDetail(Map<String, Object> params) throws Exception {
+		Map<String, Object> detailMap = new HashMap<String, Object>();
+
+		// ************ 데이터 검색 -- 입찰참가업체, 세부내역, 첨부파일 제외 ************
+		detailMap = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_COMPLETE_EBID_DETAIL, params);
+		
+		// ************ 데이터 검색 -- 입찰참가업체 ************
+		
+		List<Object> custData = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_JOIN_CUST_LIST, params);
+		
+		//내역방식이 직접등록일 경우
+		if(CommonUtils.getString(detailMap.get("insMode")).equals("2")) {
+			for(Object obj : custData) {
+				
+				Map<String, Object> custDto = (Map<String, Object>) obj;
+				
+				Map<String, Object> innerParams = new HashMap<String, Object>();
+				innerParams.put("biNo", params.get("biNo"));
+				innerParams.put("custCode", custDto.get("custCode"));
+				
+				List<Object> specDto = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_JOIN_CUST_SPEC, innerParams);
+				custDto.put("bid_Spec", specDto);
+			}
+		}
+		
+		detailMap.put("cust_List", custData);
+		
+		// ************ 데이터 검색 -- 세부내역 ************
+		if(CommonUtils.getString(detailMap.get("insMode")).equals("1")) {		//내역방식이 파일등록일 경우
+			ArrayList<String> fileFlagArr = new ArrayList<String>();
+			fileFlagArr.add("K");
+			
+			Map<String, Object> innerParams = new HashMap<String, Object>();
+			innerParams.put("biNo", params.get("biNo"));
+			innerParams.put("fileFlag", fileFlagArr);
+			
+			List<Object> specfile = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
+			detailMap.put("spec_File", specfile);
+			
+		}else if(CommonUtils.getString(detailMap.get("insMode")).equals("2")) {		//내역방식이 직접입력일 경우
+			List<Object> specInput = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_SPEC, params);
+			detailMap.put("spec_Input", specInput);
+		}
+		
+		// ************ 데이터 검색 -- 첨부파일 ************
+		ArrayList<String> fileFlagArr = new ArrayList<String>();
+		fileFlagArr.add("0");
+		fileFlagArr.add("1");
+		
+		Map<String, Object> innerParams = new HashMap<String, Object>();
+		innerParams.put("biNo", params.get("biNo"));
+		innerParams.put("fileFlag", fileFlagArr);
+		
+		List<Object> fileData = generalDao.selectGernalList(DB.QRY_SELECT_COMPLETE_EBID_DETAIL_FILE, innerParams);
+		detailMap.put("file_List", fileData);
+		
+		return detailMap;
+	
+	}
 //	
 //	/**
 //	 * 첨부파일 다운로드
@@ -136,17 +134,18 @@ public class BidCompleteService {
 //		
 //		return fileResource;
 //	}
-//	
-//	/**
-//	 * 실제계약금액 업데이트
-//	 * @param params : (String) biNo, (String) realAmt
-//	 * @return
-//	 */
-//	@Transactional
-//	public ModelAndView updRealAmt(Map<String, Object> params) throws Exception {
-//		generalDao.updateGernal(DB.QRY_UPDATE_COMPLETE_EBID_REAL_AMT, params);
-//		return ModelAndView;
-//	}
+	
+	/**
+	 * 실제계약금액 업데이트
+	 * @param params : (String) biNo, (String) realAmt
+	 * @return
+	 */
+	@Transactional
+	public ResultBody updRealAmt(Map<String, Object> params) throws Exception {
+		ResultBody resultBody = new ResultBody();
+		generalDao.updateGernal(DB.QRY_UPDATE_COMPLETE_EBID_REAL_AMT, params);
+		return resultBody;
+	}
 //	
 //	/**
 //	 * 낙찰 이력 롯데에너지머티리얼즈 코드값
@@ -171,32 +170,28 @@ public class BidCompleteService {
 //		return ModelAndView;
 //		
 //	}
-//	
-//	/**
-//	 * 낙찰 이력 리스트
-//	 * @param params : (String) biNo, (String) biName, (String) matDept, (String) matProc, (String) matCls, (String) startDate, (String) endDate
-//	 * @return
-//	 */
-//	@SuppressWarnings({ "rawtypes" })
-//	public ModelAndView complateBidhistory(Map<String, Object> params) throws Exception{
-//		
-//		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		Optional<TCoUser> userOptional = tCoUserRepository.findById(principal.getUsername());
-//		String userId = userOptional.get().getUserId();
-//		String userInterrelatedCustCode = userOptional.get().getInterrelatedCustCode();
-//		String userAuth = userOptional.get().getUserAuth();
-//		
-//		params.put("userId", userId);
-//		params.put("interrelatedCustCode", userInterrelatedCustCode);
-//		params.put("userAuth", userAuth);
-//		
-//		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_COMPLETE_EBID_HISTORY_LIST, params);
-//		ModelAndView.setData(listPage);
-//			
-//		return ModelAndView;
-//		
-//	}
-//	
+	
+	/**
+	 * 낙찰 이력 리스트
+	 * @param params : (String) biNo, (String) biName, (String) startDate, (String) endDate
+	 * @param user 
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes" })
+	public ResultBody complateBidhistory(Map<String, Object> params, UserDto user) throws Exception{
+		ResultBody resultBody = new ResultBody();
+		
+		params.put("userId", user.getLoginId());
+		params.put("interrelatedCustCode", user.getCustCode());
+		params.put("userAuth", user.getUserAuth());
+		
+		Page listPage = generalDao.selectGernalListPage(DB.QRY_SELECT_COMPLETE_EBID_HISTORY_LIST, params);
+		resultBody.setData(listPage);
+			
+		return resultBody;
+		
+	}
+	
 	/**
 	 * 투찰 정보 팝업
 	 * @param params : (String) biNo

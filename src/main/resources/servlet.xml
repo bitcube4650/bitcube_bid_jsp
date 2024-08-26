@@ -23,11 +23,15 @@
 
     <mvc:annotation-driven/>
 	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:resources mapping="/CC_WSTD_home/**" location="/CC_WSTD_home/" />
+	<mvc:resources mapping="/install/**" location="/install/"/>
+	<mvc:resources mapping="/favicon.ico" location="/favicon.ico"/>
+	
 	
 	<!-- Anotation Scan -->
 	<context:component-scan base-package="bitcube.framework.ebid"/>
 	
-	<!--  Jsp Resolver  -->
+	<!-- JSP 리졸버 -->
 	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/"/>
 		<property name="suffix" value=".jsp"/>

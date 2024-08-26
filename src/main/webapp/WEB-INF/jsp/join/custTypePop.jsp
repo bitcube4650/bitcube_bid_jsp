@@ -41,7 +41,6 @@ function onSearch(page){
 	)
 	.done(function(arg) {
 		if (arg.code === "OK") {
-			console.log(arg);
 			let html = "";
 			let data = arg.data.content;
 			updatePagination(arg.data);
