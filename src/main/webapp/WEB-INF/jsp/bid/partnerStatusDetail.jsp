@@ -340,7 +340,31 @@
 				$("#"+preDivid).append(p);
 			}
 		}
-		
+
+		// 첨부파일 다운로드
+		function fnfileDownload(filePath, fileName){
+			$.post(
+				'/api/v1/notice/downloadFile',
+				{
+					fileId : filePath,
+					responseType: "blob"
+				}
+			).done(function(arg) {
+				if (arg.code === "OK") {
+					const url = window.URL.createObjectURL(new Blob([arg.data]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", fileName);
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				}
+				else{
+					Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
+					return
+				}
+			})
+		}
 	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
@@ -470,7 +494,7 @@
 		
 		for(int i = 0; i < specFile.size(); i++){
 %>
-										<a class=textUnderline><%= (specFile.get(i)).get("fileNm") %></a>
+										<a class=textUnderline onclick="fnfileDownload('<%= (specFile.get(i)).get("filePath") %>', '<%= (specFile.get(i)).get("fileNm") %>')"><%= (specFile.get(i)).get("fileNm") %></a>
 <%
 		}
 	} else if("2".equals(CommonUtils.getString(biInfo.get("insMode")))){
@@ -516,8 +540,8 @@
 	for(int i = 0; i < fileList.size(); i++){
 %>
 										<div class="<%= "1".equals(fileList.get(i).get("fileFlag")) ? "textHighlight" : "" %>">
-										
-											<span class="mr20"><%= fileList.get(i).get("fileFlagStr") %></span><a class=textUnderline><%= (fileList.get(i)).get("fileNm") %></a> 
+											<span class="mr20"><%= fileList.get(i).get("fileFlagStr") %></span>
+											<a class=textUnderline onclick="fnfileDownload('<%= fileList.get(i).get("filePath") %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
 										</div>
 <%
 	}
@@ -692,15 +716,15 @@
 							<a href="/bid/partnerStatus" title="목록" class="btnStyle btnOutline"> 목록 </a>
 							<a data-toggle="modal" data-target="#biddingPreview" class="btnStyle btnOutline" title="공고문 미리보기" >공고문 미리보기</a>
 <%
-// 	if(esmtPossible && "1".equals(biInfo.get("custEsmtYn")) && ("A1".equals(biInfo.get("ingTag")) || ("A2".equals(biInfo.get("ingTag")) && "Y".equals(biInfo.get("data.custRebidYn"))))){
+	if(esmtPossible && "1".equals(biInfo.get("custEsmtYn")) && ("A1".equals(biInfo.get("ingTag")) || ("A2".equals(biInfo.get("ingTag")) && "Y".equals(biInfo.get("data.custRebidYn"))))){
 %>
 							<a onclick="fnCheck()" class="btnStyle btnPrimary" title="견적서 제출">견적서 제출</a>
 <%
-// 	} else if(esmtPossible && "1".equals(biInfo.get("data.custEsmtYn")) && "A3".equals(biInfo.get("ingTag")) && "N".equals(biInfo.get("custRebidYn")) ){
+	} else if(esmtPossible && "1".equals(biInfo.get("data.custEsmtYn")) && "A3".equals(biInfo.get("ingTag")) && "N".equals(biInfo.get("custRebidYn")) ){
 %>
 							<a onclick="fnAlert()" class="btnStyle btnPrimary" style="opacity: 0.5; cursor: not-allowed;" title="견적서 제출">견적서 제출</a>
 <%
-// 	}
+	}
 %>
 						</div>
 					</div>

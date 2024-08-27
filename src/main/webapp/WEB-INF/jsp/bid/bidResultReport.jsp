@@ -104,7 +104,7 @@
 						</div>
 						<div class="flex align-items-center mt10">
 							<div class="formTit flex-shrink0 width170px">예산금액</div>
-							<div class="width100"><%= CommonUtils.getFormatNumber(CommonUtils.getString(biInfo.get("bdAmt"))) %> 원</div>
+							<div class="width100"><%= CommonUtils.getFormatNumber(CommonUtils.getString(biInfo.get("bdAmt"))) %> <%= ("".equals(CommonUtils.getString(biInfo.get("bdAmt"))) ? "" : "원") %></div>
 						</div>
 						<div class="flex align-items-center mt10">
 							<div class="formTit flex-shrink0 width170px">입찰담당자</div>

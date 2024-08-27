@@ -32,12 +32,13 @@
 		}
 		
 		// 업체견적사항 상세 테이블
-		function fnCheck(esmtYn){
-			if(esmtYn == '2' && <%= "".equals(CommonUtils.getString(biInfo.get("estOpenDate"))) %>){
+		function fnCheck(esmtYn, fileName, filePath){
+			if(esmtYn == '2' && <%= !biInfo.containsKey("estOpenDate") %>){
 				Swal.fire('','복호화되지 않아 상세를 불러올 수 없습니다', 'warning');
 			}else if(esmtYn == '2' && <%= !"".equals(CommonUtils.getString(biInfo.get("estOpenDate"))) %>){
 				if(<%= "1".equals(biInfo.get("insMode"))%>){
 					// 파일 다운로드
+					fnfileDownload(filePath, fileName);
 				} else if(<%= "2".equals(biInfo.get("insMode"))%>){
 					$(event.target).closest('tr').next('.detailView').toggle();
 				}
@@ -103,6 +104,31 @@
 		// 제출이력 팝업 호출
 		function fnSubmitHistPop(custCode){
 			
+		}
+		
+		// 첨부파일 다운로드
+		function fnfileDownload(filePath, fileName){
+			$.post(
+				'/api/v1/notice/downloadFile',
+				{
+					fileId : filePath,
+					responseType: "blob"
+				}
+			).done(function(arg) {
+				if (arg.code === "OK") {
+					const url = window.URL.createObjectURL(new Blob([arg.data]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", fileName);
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				}
+				else{
+					Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
+					return
+				}
+			})
 		}
 	</script>
 	<div id="wrap">
@@ -200,11 +226,11 @@
 							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">예산금액</div>
 								<div class="width100">
-									<%= CommonUtils.getFormatNumber(CommonUtils.getString(biInfo.get("bdAmt"))) %> 원
+									<%= CommonUtils.getFormatNumber(CommonUtils.getString(biInfo.get("bdAmt"))) %> <%= ("".equals(CommonUtils.getString(biInfo.get("bdAmt"))) ? "" : "원") %>
 <%
 	if("A5".equals(biInfo.get("ingTag")) && !"".equals(CommonUtils.getString(biInfo.get("realAmt"))) && (user.getLoginId().equals(biInfo.get("createUser")) || user.getLoginId().equals(biInfo.get("gongoId")))){
 %>
-									<span> ( 실제 계약금액 : <%= CommonUtils.getFormatNumber(CommonUtils.getString(biInfo.get("realAmt"))) %>) </span>
+									<span> ( 실제 계약금액 : <%= CommonUtils.getFormatNumber(CommonUtils.getString(biInfo.get("realAmt"))) %> 원) </span>
 <%
 	}
 %>
@@ -221,38 +247,38 @@
 							<div class="flex align-items-center">
 								<div class="flex align-items-center width100">
 									<div class="formTit flex-shrink0 width170px">제출시작일시</div>
-									<div class="width100"><%= biInfo.get("estStartDate") %></div>
+									<div class="width100"><%= CommonUtils.getString(biInfo.get("estStartDate")) %></div>
 								</div>
 								<div class="flex align-items-center width100 ml80">
 									<div class="formTit flex-shrink0 width170px">제출마감일시</div>
-									<div class="width100"><%= biInfo.get("estCloseDate") %></div>
+									<div class="width100"><%= CommonUtils.getString(biInfo.get("estCloseDate")) %></div>
 								</div>
 							</div>
 							<div class="flex align-items-center mt20">
 								<div class="flex align-items-center width100">
 									<div class="formTit flex-shrink0 width170px">개찰자</div>
-									<div class="width100"><%= biInfo.get("estOpener") %></div>
+									<div class="width100"><%= CommonUtils.getString(biInfo.get("estOpener")) %></div>
 								</div>
 								<div class="flex align-items-center width100 ml80">
 									<div class="formTit flex-shrink0 width170px">입찰공고자</div>
-									<div class="width100"><%= biInfo.get("gongoName") %></div>
+									<div class="width100"><%= CommonUtils.getString(biInfo.get("gongoName")) %></div>
 								</div>
 							</div>
 							<div class="flex align-items-center mt20">
 								<div class="flex align-items-center width100">
 									<div class="formTit flex-shrink0 width170px">낙찰자</div>
-									<div class="width100"><%= biInfo.get("estBidder") %></div>
+									<div class="width100"><%= CommonUtils.getString(biInfo.get("estBidder")) %></div>
 								</div>
 								
 							</div>
 							<div class="flex align-items-center mt20">
 								<div class="flex align-items-center width100">
 									<div class="formTit flex-shrink0 width170px">입회자1</div>
-									<div class="width100"><%= biInfo.get("openAtt1") %></div>
+									<div class="width100"><%= CommonUtils.getString(biInfo.get("openAtt1")) %></div>
 								</div>
 								<div class="flex align-items-center width100 ml80">
 									<div class="formTit flex-shrink0 width170px">입회자2</div>
-									<div class="width100"><%= biInfo.get("openAtt2") %></div>
+									<div class="width100"><%= CommonUtils.getString(biInfo.get("openAtt2")) %></div>
 								</div>
 							</div>
 							<div class="flex align-items-center mt20">
@@ -262,7 +288,7 @@
 								</div>
 								<div class="flex align-items-center width100 ml80">
 									<div class="formTit flex-shrink0 width170px">납품조건</div>
-									<div class="width100"><%= biInfo.get("supplyCond") %></div>
+									<div class="width100"><%= CommonUtils.getString(biInfo.get("supplyCond")) %></div>
 								</div>
 							</div>
 							<div class="flex mt20">
@@ -275,7 +301,7 @@
 		
 		for(int i = 0; i < specFile.size(); i++){
 %>
-										<a class=textUnderline><%= (specFile.get(i)).get("fileNm") %></a>
+										<a class=textUnderline onclick="fnfileDownload('<%= (specFile.get(i)).get("filePath") %>', '<%= (specFile.get(i)).get("fileNm") %>')"><%= (specFile.get(i)).get("fileNm") %></a>
 <%
 		}
 	} else if("2".equals(CommonUtils.getString(biInfo.get("insMode")))){
@@ -331,7 +357,10 @@
 	List<Map<String, Object>> fileList = (List<Map<String, Object>>) biInfo.get("fileList");
 	for(int i = 0; i < fileList.size(); i++){
 %>
-										<a class=textUnderline><%= fileList.get(i).get("fileNm") %></a>
+									<div class="<%= ( "1".equals(fileList.get(i).get("fileFlag")) ? "textHighlight" : "" ) %>">
+										<span class="mr20"> <%= ( "1".equals(fileList.get(i).get("fileFlag")) ? "대내용" : "대외용" ) %> </span>
+										<a class=textUnderline onclick="fnfileDownload('<%= fileList.get(i).get("filePath") %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
+									</div>
 <%
 	}
 %>
@@ -391,12 +420,12 @@
 										</td>
 										<td class='text-overflow'><%= CommonUtils.getString(cust.get("esmtCurr")) %> <%= CommonUtils.getFormatNumber(CommonUtils.getString(cust.get("esmtAmt"))) %></td>
 										<td>
-											<a onclick="fnCheck('<%= cust.get("esmtYn") %>');" class="<%= ("2".equals(cust.get("esmtYn")) ? ("2".equals(biInfo.get("insMode")) && !"".equals(CommonUtils.getString(biInfo.get("estOpenDate"))) ? "textUnderline textMainColor detailBtn" : "textUnerline textMainColor" ) : "") %>"><%= ( "1".equals(cust.get("esmtYn")) ? "공고확인" : ("2".equals(cust.get("esmtYn")) ? "상세" : "") ) %> </a>
+											<a onclick="fnCheck('<%= cust.get("esmtYn") %>', '<%=cust.get("fileNm") %>', '<%= cust.get("filePath") %>');" class="<%= ("2".equals(cust.get("esmtYn")) ? ("2".equals(biInfo.get("insMode")) && !"".equals(CommonUtils.getString(biInfo.get("estOpenDate"))) ? "textUnderline textMainColor detailBtn" : "textUnerline textMainColor" ) : "") %>"><%= ( "1".equals(cust.get("esmtYn")) ? "공고확인" : ("2".equals(cust.get("esmtYn")) ? "상세" : "") ) %> </a>
 											
 										</td>
 										<td><%= CommonUtils.getString(cust.get("submitDate")) %></td>
 										<td><%= CommonUtils.getString(cust.get("presName")) %></td>
-										<td><img src='/resources/images/icon_etc.svg' class='iconImg' alt='etc' style='<%= "".equals(CommonUtils.getString(cust.get("etcPath"))) ? "display:none" : "" %>'></td>
+										<td><img src='/resources/images/icon_etc.svg' onclick="fnfileDownload('<%= cust.get("etcPath") %>', '<%= cust.get("etcFile") %>')" class='iconImg' alt='etc' style='<%= "".equals(CommonUtils.getString(cust.get("etcPath"))) ? "display:none" : "" %>'></td>
 										<td class='textHighlight'><%= ("Y".equals(CommonUtils.getString(cust.get("succYn"))) ? "낙찰" : "") %></td>
 										<td class='end'><%= CommonUtils.getString(cust.get("updateDate")) %></td>
 									</tr>
