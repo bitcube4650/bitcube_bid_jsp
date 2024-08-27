@@ -10,55 +10,8 @@ $(document).ready(function() {
 	console.log(loginInfo)
 	console.log(loginInfo.userName)
 	$('#userName').text(loginInfo.userName)
+	interrelatedList()
 		
-    $.post(
-        "/api/v1/login/interrelatedList",
-        function(response) {
-            if (response.length > 0) {
-                const tableBody = document.getElementById('affiliateTableBody');
-                
-                if (tableBody) {
-                    tableBody.innerHTML = '';  // Clear existing content
-
-                    response.forEach((affiliate, index) => {
-                        const row = document.createElement('tr');
-
-                        // Create checkbox cell
-                        const checkboxCell = document.createElement('td');
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.className = 'checkStyle';
-                        checkbox.id = 'ck' + index;
-                        checkbox.name = 'interrelatedListCheck' 
-                        checkbox.value = affiliate.interrelatedCustCode;
-                        const label = document.createElement('label');
-                        label.setAttribute('for', 'ck' + index);
-                        checkboxCell.appendChild(checkbox);
-                        checkboxCell.appendChild(label);
-
-                        // Create name cell
-                        const nameCell = document.createElement('td');
-                        nameCell.className = 'text-left end';
-                        const nameLabel = document.createElement('label');
-                        nameLabel.setAttribute('for', 'ck' + index);
-                        nameLabel.className = 'fontweight-400';
-                        nameLabel.textContent = affiliate.interrelatedNm;
-                        nameCell.appendChild(nameLabel);
-
-                        // Append cells to row
-                        row.appendChild(checkboxCell);
-                        row.appendChild(nameCell);
-
-                        // Append row to table body
-                        tableBody.appendChild(row);
-                    });
-                } else {
-                    console.error("affiliateTableBody element not found.");
-                }
-            }
-        },
-        "json"
-    );
 });
 
 
@@ -102,26 +55,114 @@ document.addEventListener("DOMContentLoaded", function() {
     
 });
 
-function onSelect(){
-    let checkedValues = [];
-    $('input[name="interrelatedListCheck"]:checked').each(function() {
-        checkedValues.push($(this).val());
-    });
-    console.log(checkedValues)
+function interrelatedList(){
+    $.post(
+            "/api/v1/login/interrelatedList",
+            function(response) {
+            	const data = response.data
+                if (data.length > 0) {
+                    const tableBody = document.getElementById('affiliateTableBody');
+                    console.log(tableBody)
+                    if (tableBody) {
+                        tableBody.innerHTML = '';  // Clear existing content
+
+                        data.forEach((affiliate, index) => {
+                            const row = document.createElement('tr');
+
+                            // Create checkbox cell
+                            const checkboxCell = document.createElement('td');
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.className = 'checkStyle';
+                            checkbox.id = 'ckp' + index;
+                            checkbox.name = 'interrelatedListCheck' 
+                            checkbox.value = affiliate.interrelatedCustCode;
+                            const label = document.createElement('label');
+                            label.setAttribute('for', 'ckp' + index);
+                            checkboxCell.appendChild(checkbox);
+                            checkboxCell.appendChild(label);
+
+                            // Create name cell
+                            const nameCell = document.createElement('td');
+                            nameCell.className = 'text-left end';
+                            const nameLabel = document.createElement('label');
+                            nameLabel.setAttribute('for', 'ckp' + index);
+                            nameLabel.className = 'fontweight-400';
+                            nameLabel.textContent = affiliate.interrelatedNm;
+                            nameCell.appendChild(nameLabel);
+
+                            // Append cells to row
+                            row.appendChild(checkboxCell);
+                            row.appendChild(nameCell);
+
+                            // Append row to table body
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        console.error("affiliateTableBody element not found.");
+                    }
+                }
+            },
+            "json"
+        );
 }
 
+function onSelect(){
+    $('#affiliate').empty();
+
+    let selectedNames = [];
+    $('input[name="interrelatedListCheck"]:checked').each(function() {
+        const label = $(this).closest('tr').find('label.fontweight-400').text();
+        selectedNames.push(label);
+    });
+
+    if (selectedNames.length > 0) {
+        $('#affiliate').text(selectedNames.join(', '));
+    } else {
+    	
+    }
+    $('#AffiliateSelect').modal('hide')
+}
+
+function onAffiliateSelectOpen(){
+	$('#affiliate').css("display", "")
+	$('#AffiliateSelect').modal('show')
+} 
+
 function saveNotice(){
-	let formData = new FormData()
-	const fileInput = document.getElementById('file-input');
-	const file = fileInput.files[0];
 	
-	const loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
+
+    
+	if(!$('#btitle').val().trim()){
+		Swal.fire('', '제목을 입력해 주세요', 'warning')
+		$('#btitle').val('')
+		return
+	}
+	 
+
+    const bco = $('input[name="bm2"]:checked').val()
     let checkedValues = [];
     $('input[name="interrelatedListCheck"]:checked').each(function() {
         checkedValues.push($(this).val());
     });
     
-    const bco = $('input[name="bm2"]:checked').val()
+	if(bco == 'CUST' && checkedValues.length === 0){
+		Swal.fire('', '공지대상이 계열사일 경우 계열사를 1개 이상 선택해야 합니다.', 'warning')
+		return
+	}
+	
+	if(!$('#bcontent').val().trim()){
+		Swal.fire('', '공지내용을 입력해 주세요 주세요.', 'warning')
+		$('#bcontent').val('')
+		return
+	}
+	
+	let formData = new FormData()
+	const fileInput = document.getElementById('file-input');
+	const file = fileInput.files[0];
+	
+	const loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
+
 	const params = {
 		btitle : $('#btitle').val(),
 		bcontent : $('#bcontent').val(),
@@ -145,9 +186,18 @@ function saveNotice(){
         contentType: false, 
         processData: false,  
         success: function(response) {
-            console.log('Response:', response);
+			if (response.code === "OK") {
+				Swal.fire('', '공지사항이 등록되었습니다.', 'info').then((result) => {
+				    if (result.isConfirmed) {
+				        window.location.href = '/notice/noticeList';
+				    }
+				});
+
+			}
         },
         error: function(xhr, status, error) {
+            Swal.fire('', '공지사항 등록을 실패하였습니다.', 'warning');
+            return
             console.error('AJAX Error:', status, error);
         }
     });
@@ -162,9 +212,11 @@ function saveNotice(){
        "json"
     );
     
-    */
+    */    
 	
-	
+}
+function bcoChange(){
+	$('#affiliate').css("display", "none")
 }
 </script>
 
@@ -195,10 +247,10 @@ function saveNotice(){
             <div class="flex align-items-center mt20">
               <div class="formTit flex-shrink0 width170px">공지대상</div>
               <div class="flex width100">
-                <input type="radio" name="bm2" value="ALL" id="bm2_1" class="radioStyle" checked="">
+                <input type="radio" name="bm2" value="ALL" id="bm2_1" class="radioStyle" checked="" onclick="bcoChange()">
                 <label for="bm2_1">공통</label>
-                <div data-toggle="modal" data-target="#AffiliateSelect">
-                  <input type="radio" name="bm2" value="CUST" id="bm2_2" class="radioStyle">
+                <div>
+                  <input type="radio" name="bm2" value="CUST" id="bm2_2" class="radioStyle" onclick="onAffiliateSelectOpen()" >
                   <label for="bm2_2">계열사</label>
                   <p class="mt5" id="affiliate"></p>
                 </div>

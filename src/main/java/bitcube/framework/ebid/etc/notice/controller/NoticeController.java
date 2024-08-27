@@ -84,7 +84,8 @@ public class NoticeController {
 	 * @return
 	 */
 	@PostMapping("/deleteNotice")
-	public ResultBody deleteNotice(@RequestParam Map<String, Object> params) {
+	@ResponseBody
+	public ResultBody deleteNotice(HttpServletRequest request, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 		try {
 			// 공지사항 삭제
@@ -106,7 +107,8 @@ public class NoticeController {
 	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping("/updateNotice")
-	public ResultBody updateNotice(@RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("data") String jsonData) {
+	@ResponseBody
+	public ResultBody updateNotice(HttpServletRequest httpServletRequest, @RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("data") String jsonData) {
 		ResultBody resultBody = new ResultBody();
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -133,6 +135,7 @@ public class NoticeController {
 	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping("/insertNotice")
+	@ResponseBody
 	public ResultBody insertNotice(
 			HttpServletRequest httpServletRequest, 
 			@RequestPart(value = "file", required = false) MultipartFile file, 
@@ -162,6 +165,7 @@ public class NoticeController {
 	 * @throws IOException
 	 */
 	@PostMapping("/downloadFile")
+	@ResponseBody
 	public ResponseEntity<ByteArrayResource> downloadFile(HttpServletRequest request, @RequestParam Map<String, Object> params) throws IOException {
 		
 		ByteArrayResource byteArrRsc = noticeService.downloadFile(params);

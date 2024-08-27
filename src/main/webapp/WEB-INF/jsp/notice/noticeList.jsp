@@ -7,68 +7,66 @@
 <script type="text/javascript">
 
 $(document).ready(function() { 
+	onSearch(0)
+    $('#srcNoticeTitle').keypress(function(event) {
+        if (event.which === 13) {
+            event.preventDefault();
+            onSearch(0);
+        }
+    });
 	
-    const params = {
-            title: "",
-            content: "",
-            userName: "",
-            size: 10,
-            page: 0
-        };
-
-        $.post(
-            '/api/v1/notice/noticeList',
-            params,
-            function(response) {
-                if (response.code == "OK") {
-                    const noticeData = response.data.content;
-                    console.log(noticeData)
-                    let tbody = $(".tblSkin1 tbody"); // Select the tbody element
-
-                    // Clear existing rows
-                    tbody.empty();
-
-                    // Loop through noticeData to create and append rows
-                    noticeData.forEach(function(notice) {
-                        // Create a row element and append it to tbody
-                        tbody.append(
-                            $("<tr>")
-                            .append($("<td>").text(notice.rowNo))  // Row Number
-                            .append($("<td>").addClass("text-left")  // Title with link
-                                .append($("<a>")
-                                    .addClass("textUnderline notiTitle")
-                                    .attr("title", "공지사항 자세히 보기")
-                                    .text(notice.btitle)
-                                    .click(() => clickNoticeDetail(notice.bno))
-                                )
-                            )
-                            .append($("<td>").html(notice.bfile ? '<i class="fa-regular fa-file-lines notiFile"></i>' : '')) // Optional File Icon
-                            .append($("<td>").text(notice.buserName))  // User Name
-                            .append($("<td>").text(notice.bdate))  // Date
-                            .append($("<td>").addClass("end").text(notice.bcount))  // View Count
-                        );
-                    });
-
-                    // If no data is returned, show a message
-                    if (noticeData.length === 0) {
-                        tbody.append(`
-                            <tr>
-                                <td class="end" colspan="6">조회된 데이터가 없습니다.</td>
-                            </tr>
-                        `);
-                    }
-                } else {
-                    console.error("Failed to retrieve data:", response.message);
-                }
-            },
-            "json"
-        );
-	
-	
-	
+    $('#srcNoticeContent').keypress(function(event) {
+        if (event.which === 13) {
+            event.preventDefault();
+            onSearch();
+        }
+    });
+    
+    $('#srcNoticeUserName').keypress(function(event) {
+        if (event.which === 13) {
+            event.preventDefault();
+            onSearch();
+        }
+    });
+		
 });
 
-	function search(page) { // 파라미터로 들어온 페이지로 데이터 검색
+	function onSearch(page) { // 파라미터로 들어온 페이지로 데이터 검색
+	    const params = {
+	            title: $('#srcNoticeTitle').val(),
+	            content: $('#srcNoticeContent').val(),
+	            userName: $('#srcNoticeUserName').val(),
+				size : $("#pageSize").val(),
+				page : page
+	        };
+
+	        $.post(
+	            '/api/v1/notice/noticeList',
+	            params,
+	            function(response) {
+	                if (response.code == "OK") {
+						const list = response.data.content;
+						updatePagination(response.data);
+						$("#total").html(response.data.totalElements)
+						$("#noticeListBody").empty();
+						for(var i=0;i<list.length;i++) {
+							$("#noticeListBody").append(
+								"<tr>" +
+								'<td>'+ list[i].rowNo +'</td>'+
+								'<td> <a onclick="clickNoticeDetail(\''+ list[i].bno +'\')" title="선택" class="textUnderline notiTitle">'+list[i].btitle+'</a></td>'+
+									'<td>'+ (list[i].bfile ? '<i class="fa-regular fa-file-lines notiFile"></i>' : '') +'</td>'+
+									'<td>'+ list[i].buserName +'</td>'+
+									'<td>'+ list[i].bdate +'</td>'+
+									'<td>'+ list[i].bcount +'</td>'+
+								"</tr>"
+							);
+						}
+	                } else {
+	                    console.error("Failed to retrieve data:", response.message);
+	                }
+	            },
+	            "json"
+	        );
 		/*
 		if (page >= 0) this.searchParams.page = page;
 		this.retrieve();
@@ -92,6 +90,8 @@ $(document).ready(function() {
 	}
 
 	function clickNoticeDetail(data) { // 공지사항 상세 이동
+		
+		window.location.href = '/notice/noticeDetail?bno='+data
 		/*
 		this.plusClickNum(data.bno); // 조회수 +1
 		this.$store.commit('setNoticeDetailData', data); // 상세 페이지에 store로 넘기는 방법
@@ -100,9 +100,6 @@ $(document).ready(function() {
 		*/
 	}
 
-	function plusClickNum(bno) { // 조회수 +1
-		// this.$http.post('/api/v1/notice/updateClickNum', { 'bno': bno });
-	}
 </script>
 
 <body>
@@ -132,25 +129,25 @@ $(document).ready(function() {
                 <div class="flex align-items-center">
                     <div class="sbTit mr30">제목</div>
                     <div class="width200px">
-                        <input type="text"  class="inputStyle" placeholder="" maxlength="300">
+                        <input id="srcNoticeTitle" type="text"  class="inputStyle" placeholder="" maxlength="300">
                     </div>
                     <div class="sbTit mr30 ml50">내용</div>
                     <div class="width200px">
-                        <input type="text" class="inputStyle" placeholder="" maxlength="300">
+                        <input id="srcNoticeContent" type="text" class="inputStyle" placeholder="" maxlength="300">
                     </div>
                     <div class="sbTit mr30 ml50">등록자</div>
                     <div class="width200px">
-                        <input type="text" class="inputStyle" placeholder="" maxlength="50">
+                        <input id="srcNoticeUserName" type="text" class="inputStyle" placeholder="" maxlength="50">
                     </div>
-                    <a class="btnStyle btnSearch">검색</a>
+                    <a onclick="onSearch(0)" class="btnStyle btnSearch">검색</a>
                 </div>
             </div>
             <!-- //searchBox -->
 
             <div class="flex align-items-center justify-space-between mt40">
                 <div class="width100">
-                    전체 : <span class="textMainColor"><strong>1</strong></span>건
-                    <select name="" class="selectStyle maxWidth140px ml20">
+                    전체 : <span class="textMainColor"><strong id="total"></strong></span>건
+                    <select id="pageSize" class="selectStyle maxWidth140px ml20" onchange="onSearch(0)">
                         <option value="10">10개씩 보기</option>
                         <option value="20">20개씩 보기</option>
                         <option value="30">30개씩 보기</option>
@@ -180,24 +177,14 @@ $(document).ready(function() {
                         <th class="end">조회수</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr >
-                        <td ></td>
-                        <td class="text-left"><a  class="textUnderline notiTitle" title="공지사항 자세히 보기"><span >[공통] </span></a></td>
-                        <td><i class="fa-regular fa-file-lines notiFile"></i></td>
-                        <td></td>
-                        <td></td>
-                        <td class="end"></td>
-                    </tr>
-                    <tr>
-                        <td class="end" colspan="6">조회된 데이터가 없습니다.</td>
-                    </tr>
+                <tbody id="noticeListBody">
                 </tbody>
             </table>
 
             <!-- pagination -->
             <div class="row mt40">
                 <div class="col-xs-12">
+                	<jsp:include page="/WEB-INF/jsp/pagination.jsp" />
                 </div>
             </div>
             <!-- //pagination -->
