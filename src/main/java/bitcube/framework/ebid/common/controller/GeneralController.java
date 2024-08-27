@@ -96,7 +96,7 @@ public class GeneralController {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
-	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$|CC_WSTD_home$|favicon.ico$).)*}/{step2}")
+	@RequestMapping(value = "/{step1:^(?:(?!api$|resources$|CC_WSTD_home$|install$|favicon.ico$).)*}/{step2}")
 	public ModelAndView generalPageMove(
 			@PathVariable(value="step1") String step1,
 			@PathVariable(value="step2") String step2,
