@@ -8,9 +8,6 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="java.time.LocalDateTime"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="java.util.Date"%>
-<%@page import="java.util.Calendar"%>
 <!DOCTYPE html>
 <html>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
@@ -28,26 +25,6 @@
 	LocalDateTime estCloseDate = LocalDateTime.parse(CommonUtils.getString(biInfo.get("estCloseDate")), dateFormat);
 	
 	boolean esmtPossible = now.compareTo(estCloseDate) > 0 ? false : true;
-	
-
-// 	Calendar cal = Calendar.getInstance();
-// 	Date currentTime = cal.getTime();
-// 	/* 서명시 서명원본을 구성하기 현재 시간을 구해옴.
-// 	    구해진 현재시간에서 해쉬값을 추출함.
-// 	*/
-// 	SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
-// 	String timestr=formatter.format(currentTime);
-	
-// 	int nRet;
-// 	String Origin_data = ""; 
-	
-	// 해당 부분 수정 필요 - 실제 https://127.0.0.1:15018/ 에서 통신해서 hash값을 가져오는거 같은데 통신이 안됌.... 확인 필요함
-// 	Hash hash = new Hash();
-// 	nRet = hash.GetHash(timestr.getBytes(), timestr.getBytes().length);
-	
-// 	if(nRet==0)		Origin_data = new String(hash.contentbuf);
-// 	else			Origin_data = "abcdefghijklmnopqrstuvwxyz1234567890";
-// 	Origin_data = "abcdefghijklmnopqrstuvwxyz1234567890";
 %>
 	<script>
 		$(document).ready(function() {
@@ -227,7 +204,7 @@
 
 			unisign.SignDataNonEnveloped( src, null, "", function( resultObject ) {
 				$("#signed_data").val(resultObject.signedData);
-				console.log(resultObject);
+				console.log('resultObject', resultObject);
 				if( !resultObject || resultObject.resultCode !=0 ) {
 					alert( resultObject.resultMessage + "\n오류코드 : " + resultObject.resultCode );
 					return;
@@ -235,7 +212,7 @@
 				
 				// 공동인증서 인증 내부로직 
 				unisign.GetRValueFromKey(resultObject.certAttrs.subjectName, "", function( resultObject2 ) {
-					console.log(resultObject2);
+					console.log('resultObject2', resultObject2);
 					if( !resultObject2 || resultObject2.resultCode != 0 ) {
 						alert( resultObject2.resultMessage + "\n오류코드 : " + resultObject2.resultCode );
 						return;
@@ -358,11 +335,7 @@
 				processData: false,
 				contentType: false,
 			}).done(function(arg){
-				if(arg.code == 'OK'){
-					Swal.fire("", "인증되었습니다.", "info");
-				} else {
-					Swal.fire("", arg.msg, "error");
-				}
+				console.log(arg);
 			})
 			//==============================위에 주석처리 된 부분 대체되는 소스/=========================
 		}
@@ -788,7 +761,6 @@
 				<!-- 				// 공고문 미리보기 팝업 끝-->
 			</div>
 		</div>
-<%-- 		<jsp:include page="/WEB-INF/jsp/layout/authCrosscert.jsp" /> --%>
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
 </body>
