@@ -80,6 +80,10 @@
 		function onBidProgressDetail(biNo) {
 			alert(biNo);
 		}
+		
+		function onMoveSave() {
+			location.href="/api/v1/move?viewName=bid/bidProgressSave&flag=save";
+		}
 	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
@@ -133,7 +137,7 @@
 							</select>
 						</div>
 						<div>
-							<button class="btnStyle btnPrimary">입찰계획등록</button> 
+							<button onClick="onMoveSave()" class="btnStyle btnPrimary">입찰계획등록</button> 
 						</div>
 					</div>
 					<table class="tblSkin1 mt10">

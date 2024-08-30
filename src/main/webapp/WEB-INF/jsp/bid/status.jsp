@@ -61,7 +61,7 @@
 								var str = "";
 									str += "<tr>";
 									str += "<td><button onClick=\"onClickBidDetail('"+ list[i].biNo +"')\" class='textUnderline'>"+ list[i].biNo +"</button></td>";
-									str += "<td><button onClick=\"onClickBidDetail("+ list[i].biNo +")\" class='textUnderline'>"+ list[i].biName +"</button></td>";
+									str += "<td><button onClick=\"onClickBidDetail('"+ list[i].biNo +"')\" class='textUnderline'>"+ list[i].biName +"</button></td>";
 								var currentDate = new Date();
 								var targetDate = new Date(list[i].estCloseDate);
 								if(targetDate < currentDate) {
@@ -102,7 +102,23 @@
 		}
 		
 		function onClickBidDetail(biNo) {
-			alert(biNo);
+			const form = document.createElement('form');
+			form.setAttribute('action', "/api/v1/bidstatus/moveBidStatusDetail");
+			form.setAttribute('method', 'post');
+			
+			// 선택한 회사명
+			const input = document.createElement('input');
+			input.setAttribute('type', 'hidden');
+			input.setAttribute('name', 'biNo');
+			input.setAttribute('value', biNo);
+			
+			// input태그를 form태그의 자식요소로 만듦
+			form.appendChild(input);
+			
+			document.body.appendChild(form) // form태그를 body태그의 자식요소로 만듦
+			form.submit();
+			
+		//	location.href="/api/v1/bidstatus/moveBidStatusDetail&biNo=" + biNo;
 		}
 	</script>
 	<div id="wrap">
@@ -164,9 +180,9 @@
 								<option value="50">50개씩 보기</option>
 							</select>
 						</div>
-						<div>
-							<button class="btnStyle btnPrimary">입찰계획등록</button> 
-						</div>
+<!--						<div>-->
+<!--							<button class="btnStyle btnPrimary">입찰계획등록</button> -->
+<!--						</div>-->
 					</div>
 					<table class="tblSkin1 mt10">
 						<colgroup>

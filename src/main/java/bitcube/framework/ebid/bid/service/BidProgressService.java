@@ -51,5 +51,15 @@ public class BidProgressService {
 		
 		return resultBody;
 	}
+	
+	public ResultBody progressCodeList() throws Exception {
+		ResultBody resultBody = new ResultBody();
+
+		List<Object> list = generalDao.selectGernalList("bid.selectProgressCodeList", null);
+		
+		resultBody.setData(list);
+		
+		return resultBody;
+	}
 
 }

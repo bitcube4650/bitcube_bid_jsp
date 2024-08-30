@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import bitcube.framework.ebid.bid.service.BidCompleteService;
 import bitcube.framework.ebid.bid.service.BidPartnerStatusService;
+import bitcube.framework.ebid.bid.service.BidStatusService;
 import bitcube.framework.ebid.dto.UserDto;
 import bitcube.framework.ebid.etc.util.Constances;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +27,9 @@ public class BidModelAndViewController {
 
 	@Autowired
 	private BidPartnerStatusService bidPtStatusService;
+	
+	@Autowired
+	private BidStatusService bidStatusService;
 
 	
 	/**
@@ -113,6 +117,36 @@ public class BidModelAndViewController {
 		modelAndView.addObject("biInfo", bidCompleteSvc.complateBidDetail(params));
 		
 		modelAndView.setViewName("bid/completeDetail");
+		return modelAndView;
+	}
+	
+	
+	/**
+	 * 협력사 > 입찰진행 상세
+	 * @return
+	 */
+	@PostMapping("/api/v1/bidstatus/moveBidStatusDetail")
+	public ModelAndView moveBidStatusDetail(
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
+
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		if(user == null) {
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("biNo", biNo);
+		
+		Map<String, Object> detailMap =  bidStatusService.statusDetail(params, user);
+		
+		modelAndView.addObject("data", detailMap);
+		
+		modelAndView.setViewName("bid/bidStatusDetail");
 		return modelAndView;
 	}
 }
