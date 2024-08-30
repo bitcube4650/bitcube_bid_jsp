@@ -22,7 +22,7 @@ $(document).ready(function() {
         }
     });
     
-    $('#srcNoticeUserName').keypress(function(event) {
+    $('#srcNoticeUserNm').keypress(function(event) {
         if (event.which === 13) {
             event.preventDefault();
             onSearch();
@@ -35,7 +35,7 @@ $(document).ready(function() {
 	    const params = {
 	            title: $('#srcNoticeTitle').val(),
 	            content: $('#srcNoticeContent').val(),
-	            userName: $('#srcNoticeUserName').val(),
+	            userName: $('#srcNoticeUserNm').val(),
 				size : $("#pageSize").val(),
 				page : page
 	        };
@@ -129,15 +129,15 @@ $(document).ready(function() {
                 <div class="flex align-items-center">
                     <div class="sbTit mr30">제목</div>
                     <div class="width200px">
-                        <input id="srcNoticeTitle" type="text"  class="inputStyle" placeholder="" maxlength="300">
+                        <input id="srcNoticeTitle" type="text"  class="inputStyle" autocomplete="off" maxlength="300">
                     </div>
                     <div class="sbTit mr30 ml50">내용</div>
                     <div class="width200px">
-                        <input id="srcNoticeContent" type="text" class="inputStyle" placeholder="" maxlength="300">
+                        <input id="srcNoticeContent" type="text" class="inputStyle" autocomplete="off" maxlength="300">
                     </div>
                     <div class="sbTit mr30 ml50">등록자</div>
                     <div class="width200px">
-                        <input id="srcNoticeUserName" type="text" class="inputStyle" placeholder="" maxlength="50">
+                        <input id="srcNoticeUserNm" type="text" class="inputStyle" autocomplete="off" maxlength="50">
                     </div>
                     <a onclick="onSearch(0)" class="btnStyle btnSearch">검색</a>
                 </div>

@@ -41,10 +41,11 @@
 					$("#addr").append(data.addr)
 					$("#addrDetail").append(data.addrDetail)
 					$("#regnum").append(data.regnum)
+					$("#regnumFile").append(data.regnumFileName)
 					$("#regnumPath").val(data.regnumPath)
-					$("#bfile").append(data.bfile)
-					$("#bfilePath").val(data.bfilePath)
-					$("#certYn").append(data.certYn === 'D' ? '미승인' : '승인')
+					$("#bfile").append(data.bFileName)
+					$("#bFilePath").val(data.bFilePath)
+					$("#certYn").append(data.certYn === 'N' ? '미승인' : '승인')
 					$("#userName1").append(data.userName)
 					$("#userEmail").append(data.userEmail)
 					$("#userId").append(data.userId)
@@ -93,9 +94,13 @@
 			)
 			.done(function(arg) {
 				if (arg.code === "OK") {
-					Swal.fire('', '정상적으로 반려 처리되었습니다.', 'info');
 					$('#companyTurnback').modal('hide')
-					window.location.href = '/company/approval'
+					Swal.fire('', '정상적으로 반려 처리되었습니다.', 'info').then((result) => {
+					    if (result.isConfirmed) {
+					        window.location.href = '/company/approval';
+					    }
+					});
+
 				}
 				else{
 		            Swal.fire('', '반려 처리를 실패하였습니다.', 'warning');
@@ -127,19 +132,51 @@
 					$('#companyAccept').modal('hide')
 					$("#certYn").empty()
 					onCustDetail()
-					Swal.fire('', '정상적으로 수정 처리되었습니다.', 'info').then((result) => {
+					Swal.fire('', '정상적으로 승인 처리되었습니다.', 'info').then((result) => {
 					    if (result.isConfirmed) {
 					        window.location.href = '/company/approval';
 					    }
-					});;
+					});
 				}
 				else{
-		            Swal.fire('', '수정 처리를 실패하였습니다.', 'warning');
+		            Swal.fire('', '승인 처리를 실패하였습니다.', 'warning');
 		            return
 				}
 			})
 			
 			
+	}
+	
+	function downloadFile(fileType){
+		
+		
+		const filePath = fileType === 'regnum' ? $("#regnumPath").val() : $("#bFilePath").val()
+		const fileName = fileType === 'regnum' ? $("#regnumFile").text() :$("#bfile").text()
+
+		const params = {
+				fileId : filePath,
+				responseType: "blob"
+		}
+		$.post(
+				'/api/v1/notice/downloadFile',
+				params
+				)
+				.done(function(arg) {
+					console.log(arg)
+					if (arg.code === "OK") {
+						const url = window.URL.createObjectURL(new Blob([arg.data]));
+						const link = document.createElement("a");
+						link.href = url;
+						link.setAttribute("download", fileName);
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
+					}
+					else{
+			            Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
+			            return
+					}
+				})
 	}
 
 	</script>
@@ -151,7 +188,7 @@
 		        <div class="conHeader">
 		            <ul class="conHeaderCate">
 		                <li>업체정보</li>
-		                <li>업체관리</li>
+		                <li>업체승인</li>
 		            </ul>
 		        </div>
 		
@@ -214,21 +251,15 @@
 							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">사업자등록증</div>
 								<div class="width100">
-									<a id="regnumFile" class="textUnderline"></a>
+									<a onclick="downloadFile('regnum')" id="regnumFile" class="textUnderline"></a>
 									<input id="regnumPath" type="text" hidden="">
 								</div>
 							</div>
-<!-- 							<div class="flex align-items-center mt20">
-								<div class="formTit flex-shrink0 width170px">첨부파일</div>
-								<div class="width100">
-									<a id="regnumFileName" class="textUnderline"></a>
-								</div>
-							</div> -->
 							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">회사소개 및 기타자료</div>
 								<div class="width100">
-									<a id="bfile" class="textUnderline"></a>
-									<input id="bfilePath" type="text" hidden="">
+									<a id="bfile" onclick="downloadFile('bfile')" class="textUnderline"></a>
+									<input id="bFilePath" type="text" hidden="">
 								</div>
 							</div>
 							

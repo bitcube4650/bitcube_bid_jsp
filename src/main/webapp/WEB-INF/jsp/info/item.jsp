@@ -227,11 +227,11 @@
 		                <div class="flex align-items-center height50px mt10">
 			                <div class="sbTit width100px">품목코드</div>
 			                <div class="flex align-items-center width250px">
-			                	<input type="text" id="srcItemCode" placeholder="" class="inputStyle">
+			                	<input type="text" id="srcItemCode" autocomplete="off" class="inputStyle">
 			                </div>
 			                <div class="sbTit width100px ml50">품목명</div>
 			                <div class="width250px"
-				                ><input type="text" id="srcItemName" class="inputStyle">
+				                ><input type="text" id="srcItemName" class="inputStyle" autocomplete="off">
 			                </div>
 			                <a class="btnStyle btnSearch" onclick="onSearch(0)">검색</a>
 		                </div>

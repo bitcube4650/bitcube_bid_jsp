@@ -654,11 +654,11 @@
 		                <div class="flex align-items-center height50px mt10">
 			                <div class="sbTit width100px">사용자명</div>
 			                <div class="flex align-items-center width250px">
-			                	<input type="text" id="srcUserNm" placeholder="" class="inputStyle">
+			                	<input type="text" id="srcUserNm" autocomplete="off" class="inputStyle">
 			                </div>
 			                <div class="sbTit width100px ml50">아이디</div>
 			                <div class="width250px"
-				                ><input type="text" id="srcUserId" class="inputStyle">
+				                ><input type="text" id="srcUserId" class="inputStyle" autocomplete="off">
 			                </div>
 			                <a class="btnStyle btnSearch" onclick="onSearch(0)">검색</a>
 		                </div>
