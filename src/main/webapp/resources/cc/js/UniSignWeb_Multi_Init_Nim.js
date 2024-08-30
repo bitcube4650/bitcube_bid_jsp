@@ -59,7 +59,7 @@ var unisign = UnisignWeb({
     Mode: 4,
     
     PKI: 'NPKI',
-    SRCPath: '../CC_WSTD_home/',
+    SRCPath: '/CC_WSTD_home/',
     Language: 'ko-kr',
     TargetObj: document.getElementById('ESignWindow'),
     TabIndex: 1000,

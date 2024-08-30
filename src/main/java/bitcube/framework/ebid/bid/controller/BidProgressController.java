@@ -36,7 +36,20 @@ public class BidProgressController {
 			resultBody.setMsg("입찰 계획 리스트를 가져오는것을 실패하였습니다.");
 			return resultBody;
 		}
+	}
+	
+	@PostMapping("/progressCodeList")
+	public ResultBody progressCodeList(HttpServletRequest httpServletRequest){
+		ResultBody resultBody = new ResultBody();
 		
+		try {
+			resultBody = bidProgressService.progressCodeList();
+		} catch (Exception e) {
+			log.error("progressCodeList error : {}", e);
+			resultBody.setCode("fail");
+			resultBody.setMsg("입찰분류 코드 조회를 실패하였습니다.");
+		}
+		return resultBody;
 	}
 	
 }

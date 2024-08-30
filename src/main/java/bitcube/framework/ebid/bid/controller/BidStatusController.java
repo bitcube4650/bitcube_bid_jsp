@@ -31,7 +31,7 @@ public class BidStatusController {
 	public ResultBody statuslist(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 		try {
-			resultBody = bidStatusService.statuslist(params); 
+			resultBody = bidStatusService.statuslist(params);
 		}catch(Exception e) {
 			log.error("statuslist list error : {}", e);
 			resultBody.setCode("fail");
@@ -39,4 +39,5 @@ public class BidStatusController {
 		}
 		return resultBody;
 	}
+	
 }

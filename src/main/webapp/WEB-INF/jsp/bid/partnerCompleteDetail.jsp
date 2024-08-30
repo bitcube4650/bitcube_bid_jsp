@@ -33,14 +33,39 @@
 					Swal.fire({
 						text : '승인하였습니다',
 						icon: "info",
-						type : 'info'
+						type : 'info',
 						showCancelButton: false,
-						confirmButtonText: 'OK',
+						confirmButtonText: 'OK'
 					}).then((result) => {
 						if (result.isConfirmed) {
 							location.href="/bid/partnerComplete"
 						}
 					})
+				}
+			})
+		}
+
+		// 첨부파일 다운로드
+		function fnfileDownload(filePath, fileName){
+			$.post(
+				'/api/v1/notice/downloadFile',
+				{
+					fileId : filePath,
+					responseType: "blob"
+				}
+			).done(function(arg) {
+				if (arg.code === "OK") {
+					const url = window.URL.createObjectURL(new Blob([arg.data]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", fileName);
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				}
+				else{
+					Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
+					return
 				}
 			})
 		}
@@ -170,7 +195,7 @@
 		
 		for(int i = 0; i < specFile.size(); i++){
 %>
-										<a class=textUnderline><%= (specFile.get(i)).get("fileNm") %></a>
+										<a class="textUnderline" onclick="fnfileDownload('<%= specFile.get(i).get("filePath") %>', '<%= specFile.get(i).get("fileNm") %>')"><%= specFile.get(i).get("fileNm") %></a>
 <%
 		}
 	} else if("2".equals(CommonUtils.getString(biInfo.get("insMode")))){
@@ -217,7 +242,7 @@
 	List<Map<String, Object>> fileList = (List<Map<String, Object>>) biInfo.get("fileList");
 	for(int i = 0; i < fileList.size(); i++){
 %>
-										<a class=textUnderline><%= (fileList.get(i)).get("fileNm") %></a>
+											<a class="textUnderline" onclick="fnfileDownload('<%= fileList.get(i).get("filePath") %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
 <%
 	}
 %>
@@ -257,13 +282,13 @@
 							<div class="flex mt20">
 								<div class="formTit flex-shrink0 width170px">견적내역파일</div>
 								<div class="width100">
-									<a class="textUnderline"><%= CommonUtils.getString(custList.get(0).get("fileNm")) %></a>
+									<a class="textUnderline" onclick="fnfileDownload('<%= CommonUtils.getString(custList.get(0).get("filePath")) %>', '<%= CommonUtils.getString(custList.get(0).get("fileNm")) %>')"><%= CommonUtils.getString(custList.get(0).get("fileNm")) %></a>
 								</div>
 							</div>
 							<div class="flex mt20">
 								<div class="formTit flex-shrink0 width170px">기타첨부</div>
 								<div class="width100">
-									<a class="textUnderline"><%= CommonUtils.getString(custList.get(0).get("etcFile")) %></a></a>
+									<a class="textUnderline" onclick="fnfileDownload('<%= CommonUtils.getString(custList.get(0).get("etcPath")) %>', '<%= CommonUtils.getString(custList.get(0).get("etcFile")) %>')"><%= CommonUtils.getString(custList.get(0).get("etcFile")) %></a>
 								</div>
 							</div>
 <%

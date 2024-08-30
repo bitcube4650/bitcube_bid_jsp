@@ -1,5 +1,6 @@
 package bitcube.framework.ebid.etc.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Properties;
 
@@ -164,5 +165,26 @@ public class CommonUtils {
 			return value;
 		}
 	}
+	
+	public static String ftEsmtYn(String value) {
+		if(value.equals("1")) {
+			return "공고확인";
+		} else if(value.equals("2")) {
+			return "상세";
+		} else {
+			return "";
+		}
+	}
+	
+	public static String numberWithCommas(BigDecimal val) {
+			if (val == null || val.compareTo(BigDecimal.ZERO) == 0) {
+				return "";
+			} else {
+			// 반올림 후 쉼표 추가
+				DecimalFormat formatter = new DecimalFormat("#,###");
+				return formatter.format(val.setScale(0, BigDecimal.ROUND_HALF_UP));
+			}
+	}
+
 
 }

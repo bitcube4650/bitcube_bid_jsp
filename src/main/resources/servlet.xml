@@ -44,4 +44,9 @@
 	        </list>
 	    </property>
 	</bean>
+	
+	<!-- 스케쥴러 -->
+	<task:scheduler id="taskScheduler" pool-size="10" />
+	<task:executor id="taskExecutor" pool-size="10"/>
+	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>	
 </beans>

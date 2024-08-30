@@ -20,6 +20,18 @@
 			$('#endDate').datepicker('setDate', 'today'); // 오늘
 
 			onSearch(0);
+			
+			$("#srcBiNo").keydown(function(e) {
+				if(e.key === "Enter" || e.keyCode === 13) {
+					onSearch(0);
+				}
+			});
+			
+			$("#srcBiName").keydown(function(e) {
+				if(e.key === "Enter" || e.keyCode === 13) {
+					onSearch(0);
+				}
+			});
 		});
 
 		function onSearch(page) {

@@ -28,8 +28,8 @@
 						text += "<tr>"
 						
 						text += "	<td class='text-left "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+result[i].custName+"</td>"
-						text += "	<td class='text-right "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+parseInt(result[i].esmtAmt).toLocaleString()+"</td>"
-						text += "	<td class='end "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+result[i].submitDate+"</td>"
+						text += "	<td class='text-right "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+Ft.numberWithCommas(result[i].esmtAmt)+"</td>"
+						text += "	<td class='end "+(result[i].succYn == "Y" ? 'textHighlight' : '')+"'>"+ (Ft.isEmpty(result[i].submitDate) ? '' : result[i].submitDate)+"</td>"
 						text += "</tr>"
 						
 						if(result[i].succYn == "Y"){

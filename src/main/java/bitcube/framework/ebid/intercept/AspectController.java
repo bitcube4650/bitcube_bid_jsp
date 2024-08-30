@@ -68,7 +68,8 @@ public class AspectController {
 	@Around("execution(* bitcube.framework.ebid..*Controller.*(..))"
 			+ "&& !execution(* bitcube.framework.ebid.common.controller.GeneralController.*(..))"
 			+ "&& !execution(* bitcube.framework.ebid.bid.controller.BidModelAndViewController.*(..))"
-			+ "&& !execution(* bitcube.framework.ebid.core.LoginController.*(..))")
+			+ "&& !execution(* bitcube.framework.ebid.core.LoginController.*(..))"
+			+ "&& !execution(* bitcube.framework.ebid.schedule.controller.ScheduleController.*(..))")
 	public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
 		Object[]			args		= joinPoint.getArgs();
 		HttpServletRequest	request		= this.getHttpServletRequest(args);			// 리퀘스트 정보 반환
