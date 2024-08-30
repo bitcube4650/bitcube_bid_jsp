@@ -1,10 +1,12 @@
 package bitcube.framework.ebid.bid.controller;
 
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,25 +77,24 @@ public class BidCompleteController {
 		return resultBody;
 	}
 	
-//	
-//	/**
-//	 * 암호화 안된 파일 다운로드
-//	 * @param params
-//	 * @return
-//	 * @throws IOException
-//	 */
-//	@PostMapping("/fileDown")
-//	public ByteArrayResource downloadFile(@RequestBody Map<String, Object> params) throws IOException {
-//		ByteArrayResource result = null;
-//		try {
-//			
-//			result = bidCompleteSvc.fileDown(params); 
-//		}catch(Exception e) {
-//			log.error("downloadFile error : {}", e);
-//		}
-//		return result;
-//
-//	}
+	/**
+	 * 암호화 안된 파일 다운로드
+	 * @param params
+	 * @return
+	 * @throws IOException
+	 */
+	@PostMapping("/fileDown")
+	public ByteArrayResource downloadFile(HttpServletRequest request, @RequestParam Map<String, Object> params) throws IOException {
+		ByteArrayResource result = null;
+		try {
+			
+			result = bidCompleteSvc.fileDown(params); 
+		}catch(Exception e) {
+			log.error("downloadFile error : {}", e);
+		}
+		return result;
+
+	}
 	
 	/**
 	 * 실제계약금액 업데이트
