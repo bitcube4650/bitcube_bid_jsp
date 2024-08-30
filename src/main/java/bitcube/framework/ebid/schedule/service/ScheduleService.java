@@ -74,11 +74,11 @@ public class ScheduleService {
 
 				CommonUtils.sendEmail(fromMail, toEmailAddrArray, mailTitle, mailContents);
 
-				map.put("sendFlag","1");
-				map.put("errMsg", "");
+				map.put("send_Flag","1");
+				map.put("err_Msg", "");
 			} catch (Exception e) {
-				map.put("sendFlag","9");
-				map.put("errMsg", e.getMessage());
+				map.put("send_Flag","9");
+				map.put("err_Msg", e.getMessage());
 			}
 			
 			generalDao.updateGernal("schedule.updateEmailSendResponse", map);
