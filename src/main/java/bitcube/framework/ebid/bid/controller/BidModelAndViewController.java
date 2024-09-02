@@ -144,7 +144,7 @@ public class BidModelAndViewController {
 		
 		Map<String, Object> detailMap =  bidStatusService.statusDetail(params, user);
 		
-		modelAndView.addObject("data", detailMap);
+		modelAndView.addObject("biInfo", detailMap);
 		
 		modelAndView.setViewName("bid/bidStatusDetail");
 		return modelAndView;
