@@ -149,8 +149,8 @@
 					</ul>
 					<ul style="display: <%= userCustType.equals("cust") && userAuth == 1 ? "block" : "none" %>;">
 						<%-- <li class="<%= path.equals("/company/management/" + loginInfo.custCode) ? "active" : "" %>"><a href="/company/management/<%= loginInfo.custCode %>">자사정보</a></li> --%>
-						<li class=""><a href="">자사정보</a></li>
-						<li class="<%= path.equals("/company/partner/user") ? "active" : "" %>"><a href="/company/partner/user">사용자관리</a></li>
+						<li class=""><a href="/company/partner">자사정보</a></li>
+						<li class="<%= path.equals("/company/user") ? "active" : "" %>"><a href="/company/user">사용자관리</a></li>
 					</ul>
 				</div>
 			</li>

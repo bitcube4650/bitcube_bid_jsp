@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -384,6 +386,47 @@ public class CustService {
 		// 사용자 삭제 처리
 		params.put("useYn", "N");
 		generalDao.updateGernal(DB.QRY_UPDATE_CUST_USER_USEYN, params);
+	}
+	
+	@Transactional
+	public ResultBody custUserSave(Map<String, Object> params) throws Exception {
+		ResultBody resultBody = new ResultBody();
+		
+		String userPwd = CommonUtils.getString(params.get("userPwd"));
+		
+		if(!"".equals(userPwd)) {
+			params.put("userPwd",	passwordEncoder.encode(userPwd));								// 비밀번호
+		}
+		params.put("updUserId",		CommonUtils.getString(params.get("updUserId")));											// 수정자 및 등록자 userId
+		params.put("userHp",		CommonUtils.getString(params.get("userHp")).replace("-", ""));	// 휴대폰번호
+		params.put("userTel",		CommonUtils.getString(params.get("userTel")).replace("-", ""));	// 전화번
+		
+		if ("REQ".equals(CommonUtils.getString(params.get("saveType")))) {
+			params.put("userType",	"2");							// 업체사용자 권한('2': 일반사용자)
+			params.put("useYn",		"Y");							// 사용여부 default '사용'
+			params.put("custCode",	CommonUtils.getString(params.get("custCode")));				// 업체코드
+
+			// 사용자 등록
+			generalDao.insertGernal(DB.QRY_INSERT_CUST_USER, params);
+		} else {
+			// 사용자 수정
+			generalDao.updateGernal(DB.QRY_UPDATE_CUST_USER, params);
+		}
+
+		return resultBody;
+	}
+	
+	@Transactional
+	public ResultBody custUserDel(Map<String, Object> params) throws Exception {
+		ResultBody resultBody = new ResultBody();
+
+		//params.put("useYn", "N");
+		//params.put("delUserId",	params.get("userId"));
+		//params.put("updUserId",	user.getUsername());
+		//params.put("custCode",	user.getCustCode());
+
+		generalDao.updateGernal(DB.QRY_UPDATE_CUST_USER_USEYN, params);
+		return resultBody;
 	}
 	
 }

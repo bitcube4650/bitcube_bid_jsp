@@ -208,4 +208,46 @@ public class CustController {
 	}
 
 	
+	/**
+	 * 업체 사용자 등록 및 수정
+	 * @param params
+	 * @param user
+	 * @return
+	 */
+	@PostMapping("/custUserSave")
+	@ResponseBody
+	public ResultBody custUserSave(HttpServletRequest httpServletRequest,  @RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			custService.custUserSave(params);
+		} catch (Exception e) {
+			resultBody.setCode("ERROR");
+			resultBody.setStatus(500);
+			resultBody.setMsg("업체 상세 내용 조회 중 오류가 발생하였습니다.");
+		}
+		
+		return resultBody;
+	}
+
+	/**
+	 * 업체 사용자 삭제
+	 * @param params
+	 * @param user
+	 * @return
+	 */
+	@PostMapping("custUserDel")
+	@ResponseBody
+	public ResultBody custUserDel(HttpServletRequest httpServletRequest,  @RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			custService.custUserDel(params);
+		} catch (Exception e) {
+			resultBody.setCode("ERROR");
+			resultBody.setStatus(500);
+			resultBody.setMsg("업체 상세 내용 조회 중 오류가 발생하였습니다.");
+		}
+		
+		return resultBody;
+	}
+		
 }
