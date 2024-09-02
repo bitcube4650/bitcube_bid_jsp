@@ -20,8 +20,7 @@
 	DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	// 현재 날짜와 시간을 LocalDateTime으로 가져옴
-// 	LocalDateTime now = LocalDateTime.now();
-	LocalDateTime now = LocalDateTime.parse("2024-06-30 09:59", dateFormat);
+	LocalDateTime now = LocalDateTime.now();
 	LocalDateTime estCloseDate = LocalDateTime.parse(CommonUtils.getString(biInfo.get("estCloseDate")), dateFormat);
 	
 	boolean esmtPossible = now.compareTo(estCloseDate) > 0 ? false : true;
@@ -168,8 +167,7 @@
 			
 			if(!fnValid(insMode)) return;			// 유효성체크
 			
-// 			const now = new Date()
-			const now = new Date('2024-06-30 09:00')
+			const now = new Date();
 			const estCloseDate = new Date("<%= estCloseDate %>");
 			const estStartDate = new Date("<%= biInfo.get("estStartDate") %>");
 			
@@ -204,24 +202,48 @@
 
 			unisign.SignDataNonEnveloped( src, null, "", function( resultObject ) {
 				$("#signed_data").val(resultObject.signedData);
-				console.log('resultObject', resultObject);
-				if( !resultObject || resultObject.resultCode !=0 ) {
+				if( !resultObject || resultObject.resultCode != 0 ) {
 					alert( resultObject.resultMessage + "\n오류코드 : " + resultObject.resultCode );
 					return;
+				} else {
+					// 공동인증서 인증 내부로직 
+					unisign.GetRValueFromKey(resultObject.certAttrs.subjectName, "", function( resultObject2 ) {
+						if( !resultObject2 || resultObject2.resultCode != 0 ) {
+							alert( resultObject2.resultMessage + "\n오류코드 : " + resultObject2.resultCode );
+							return;
+						} else {
+							let validFrom = resultObject.certAttrs.validateFrom;
+							let validTo = resultObject.certAttrs.validateTo;
+							
+							//인증서 유효기간 체크
+							let validDate = fnCheckCertDate(validFrom, validTo);
+							
+							if(!validDate){
+								Swal.fire('','인증서 유효기간이 아닙니다.', 'warning');
+								return;
+							} else {
+								$("#userDn").val(resultObject2.RValue);
+								fnSignCallback();
+							}
+						}
+					})
+					
 				}
-				
-				// 공동인증서 인증 내부로직 
-				unisign.GetRValueFromKey(resultObject.certAttrs.subjectName, "", function( resultObject2 ) {
-					console.log('resultObject2', resultObject2);
-					if( !resultObject2 || resultObject2.resultCode != 0 ) {
-						alert( resultObject2.resultMessage + "\n오류코드 : " + resultObject2.resultCode );
-						return;
-					}
-					$("#userDn").val(resultObject2.RValue);
-//	 				fnSignCallback();
-				})
 			});
 			
+		}
+		
+		// 인증서 유효기간 체크
+		function fnCheckCertDate(startDate, endDate){
+			const currentDate = new Date();
+			
+			let start = new Date(startDate);
+			let end = new Date(endDate);
+			if(currentDate < start || end < currentDate ){//인증서 유효기간이 아닌 경우
+				return false;
+			} else {
+				return true;
+			}
 		}
 		
 		function fnSignCallback(){
@@ -260,50 +282,6 @@
 			}
 
 			let formData = new FormData();
-// TradeSign 라이센스 문제로 데이터 서명 부분 주석
-// 	        =====================================주석처리 시작======================================
-// 	        nxTSPKI.signData(totalPrice, //암호화 하는 데이터
-// 	          {ssn:true}, //인증서 정보 포함 여부
-// 	          async function(res){//인증후 콜백
-
-// 	            if(res.code ==0){//인증완료
-
-// 	                //인증서 유효기간 체크
-// 	                var validFrom = res.data.certInfo.validFrom
-// 	                var validTo = res.data.certInfo.validTo//시작일
-// 	                var validDate = await vm.checkCertDate(validFrom, validTo);//만료일
-// 	                if(!validDate){
-// 	                    vm.$swal({
-// 	                        type: "warning",
-// 	                        text: "인증서 유효기간이 아닙니다.",
-// 	                    });
-
-// 	                    return false;
-// 	                }
-
-// 	                let params = {
-// 	                    biNo : vm.biNo
-// 	                ,   submitData : vm.submitData
-// 	                ,   amt : res.data.signedData
-// 	                ,   certInfo : res.data.certInfo
-// 	                ,   esmtCurr : vm.esmtCurr 
-// 	                ,   insModeCode : vm.data.insMode
-// 	                }
-
-// 	                formData.append('data', JSON.stringify(params));
-// 	                formData.append('detailFile', vm.detailFile);
-// 	                formData.append('etcFile', vm.etcFile);
-// 	                await vm.bidSubmitting(formData);
-	              
-// 	            }else{//실패
-// 	                vm.$swal({
-// 	                    type: "warning",
-// 	                    text: res.errorMessage,
-// 	                });
-// 	          }}
-// 	        )
-// 	        =====================================주석처리 끝======================================
-			//==============================위에 주석처리 된 부분 대체되는 소스=========================
 
 			let params = {
 				biNo : "<%= biInfo.get("biNo") %>",
@@ -335,9 +313,30 @@
 				processData: false,
 				contentType: false,
 			}).done(function(arg){
-				console.log(arg);
+				if (arg.code == "OK") {
+					Swal.fire({
+						type : 'success',
+						icon : 'success',
+						text : "투찰했습니다",
+						showCancelButton : false,
+						confirmButtonText : '확인',
+					}).then((result) => {
+						if (result.isConfirmed) {
+							location.href='/bid/partnerStatus'
+						}
+					})
+				} else if(arg.code == 'LESSTIME'){
+					Swal.fire('', '견적제출시간이 아닙니다. 제출시작일시를 확인해주세요.', 'warning');
+				} else if(arg.code == 'TIMEOUT'){
+					Swal.fire('', '견적제출시간이 지났습니다. 제출마감일시를 확인해주세요.', 'warning');
+				} else {
+					if(arg.msg !== undefined && arg.msg !== null && arg.msg !== ''){
+						Swal.fire('', arg.msg, 'error');
+					}else{
+						Swal.fire('', '투찰 중 오류가 발생했습니다.', 'error');
+					}
+				}
 			})
-			//==============================위에 주석처리 된 부분 대체되는 소스/=========================
 		}
 		
 		// 첨부파일
