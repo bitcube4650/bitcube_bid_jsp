@@ -90,8 +90,8 @@ function noticeDetail(){
             	    $('#bcontent').append(data.bcontent)
 
             	    if(data.bfile){
-                	    $('#uploadFileNm').append('<a onclick="downloadFile(\'' + data.bfilePath + '\', \'' + data.bfile + '\')" class="textUnderline notiTitle"> '+(data.bfile ? data.bfile : '' )+'</a>')
-                	    
+                	    $('#uploadFileNm').append('<a onclick="downloadFile()" class="textUnderline notiTitle">'+(data.bfile ? data.bfile : '' )+'</a>')
+                	    $("#uploadFilePath").val(data.bfilePath);
                 	    $('#editEfilePath').val(data.bfilePath)
                 	    $('#editBfile').val(data.bfile)
             	    }
@@ -250,8 +250,8 @@ function saveNotice(){
     if(file){
     	formData.append('file', file);
     }
-
-	formData.append('data', JSON.stringify(params));
+    
+    formData.append('data', new Blob([JSON.stringify(params)], { type: 'application/json' }));
 	
 	    $.ajax({
         url: '/api/v1/notice/updateNotice',
@@ -262,9 +262,7 @@ function saveNotice(){
         success: function(response) {
 			if (response.code === "OK") {
 				Swal.fire('', '공지사항이 수정되었습니다.', 'info').then((result) => {
-				    if (result.isConfirmed) {
-				        window.location.href = '/notice/noticeList';
-				    }
+					window.location.href = '/notice/noticeList';
 				});
 
 			}
@@ -310,9 +308,7 @@ function deleteNotice(){
 			if (arg.code === "OK") {
 				$('#notiDel').modal('hide')
 				Swal.fire('', '공지사항이 삭제되었습니다.', 'info').then((result) => {
-				    if (result.isConfirmed) {
-				        window.location.href = '/notice/noticeList';
-				    }
+			        window.location.href = '/notice/noticeList';
 				});
 
 			}
@@ -323,30 +319,39 @@ function deleteNotice(){
 		})
 }
 
-function downloadFile(filePath,fileName){
+function downloadFile(){
+	let fileName = $(".notiTitle").text();
 	const params = {
-			fileId : filePath,
-			responseType: "blob"
+			fileId : $("#uploadFilePath").val()
 	}
-	$.post(
-			'/api/v1/notice/downloadFile',
-			params
-			)
-			.done(function(arg) {
-				if (arg.code === "OK") {
-					const url = window.URL.createObjectURL(new Blob([arg.data]));
-					const link = document.createElement("a");
-					link.href = url;
-					link.setAttribute("download", fileName);
-					document.body.appendChild(link);
-					link.click();
-					document.body.removeChild(link);
-				}
-				else{
-		            Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
-		            return
-				}
-			})
+	
+	$.ajax({
+		url: '/api/v1/notice/downloadFile',
+		data: params,
+		type: 'POST',
+		xhrFields: {
+			responseType: "blob",
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			Swal.fire('', '파일 다운로드를 실패했습니다.', 'error');
+		},
+		success: function(data, status, xhr) {
+			var blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+
+			// 링크 생성
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = fileName;
+
+			// 링크를 클릭하여 다운로드를 실행
+			document.body.appendChild(link);
+			link.click();
+
+			// 링크 제거
+			document.body.removeChild(link);
+		}
+	});
+	
 }
 
 function onEdit(){
@@ -392,6 +397,7 @@ function onEdit(){
             uploadBox.style.display = '';  // 업로드 박스를 다시 표시
             $('#fileEditYn').val('Y');  // 파일이 수정되었음을 표시
             $('#uploadFileNm').text('');  // 파일명을 초기화
+            $("#uploadFilePath").text('');
     		$('#editEfilePath').val('')
     		$('#editBfile').val('')
         };
@@ -472,6 +478,7 @@ function onEdit(){
                 </div>
                 <div id="uploadFileNm">
                 </div>
+                <input type="text" id="uploadFilePath" style="display:none;">
               </div>
             </div>
             <div class="flex mt20">
