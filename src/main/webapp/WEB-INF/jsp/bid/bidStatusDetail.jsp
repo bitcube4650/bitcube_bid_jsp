@@ -58,34 +58,17 @@
 		}
 		
 		function onCheck() {
-		//	if(!Ft.isEmpty(data.openAtt1Id) && data.openAtt1Sign !== 'Y'){
-		//	            Swal.fire('', '입회자1의 서명이 필요합니다.', 'warning');
-		//	            return false;
-		//	        }
-
-		//	        if(!Ft.isEmpty(data.openAtt2Id) && data.openAtt2Sign !== 'Y'){
-		//	            Swal.fire('', '입회자2의 서명이 필요합니다.', 'warning');
-		//	            return false;
-		//	        }
-
-		//	        Swal.fire({
-		//	            title: '',              // 타이틀
-		//	            text: "개찰하시겠습니까?",  // 내용
-		//	            icon: 'question',                        // success / error / warning / info / question
-		//	            confirmButtonColor: '#3085d6',  // 기본옵션
-		//	            confirmButtonText: '개찰',      // 기본옵션
-		//	            showCancelButton: true,         // conrifm 으로 하고싶을떄
-		//	            cancelButtonColor: '#d33',      // conrifm 에 나오는 닫기버튼 옵션
-		//	            cancelButtonText: '취소',       // conrifm 에 나오는 닫기버튼 옵션
-		//	        }).then((result) => {
-		//	            if(result.value){
-		//	                onOpenBid();
-		//	            }
-		//	        });
 		}
 		
 		function onShowCustSubmitHist(cust) {
 			
+		}
+		
+		function onSuccSelect(index) {
+			alert("asdfasdfasdfasdf!!!!!");
+			//var custList	= <%= jsonCustList %>;
+			//var cust		= custList[index];
+			$("#bidSuccessPop").modal('show');
 		}
 		
 		function onEvent(index, e) {
@@ -94,8 +77,8 @@
 			var cust		= custList[index];
 			var insMode		= data.insMode;
 			
-			if(insMode === "1" && cust.esmyYn === "2") {
-		//		Api.fnCustSpecFileDown(cust.fileNm, cust.filePath)
+			if(insMode === "1" && cust.esmtYn === "2") {
+				fnCustSpecFileDown(cust.fileNm, cust.filePath)
 			} else if (insMode === "2" && cust.esmtYn === "2") {
 				if ($("#subTr" + index).css('display') === 'none' || $("#subTr" + index).css('display') === '') {
 					$("#subTr" + index).css('display', 'table-row');
@@ -104,6 +87,38 @@
 				}
 			}
 			
+		}
+		
+		//파일 다운로드 파라미터 셋팅
+		function fnCustSpecFileDown(fileNm, filePath){
+			if(!Ft.isEmpty(fileNm) && !Ft.isEmpty(filePath)){
+				downloadFile(fileNm, filePath);
+			}
+		}
+		
+		function downloadFile(fileNm,filePath){
+			var params = {
+					fileId : filePath,
+					responseType: "blob"
+			}
+			$.post(
+					"/api/v1/bidComplete/fileDown",
+					params
+					)
+					.done(function(arg) {
+						if (arg.code === "OK") {
+							const url = window.URL.createObjectURL(new Blob([arg.data]));
+							const link = document.createElement("a");
+							link.href = url;
+							link.setAttribute("download", fileNm);
+							document.body.appendChild(link);
+							link.click();
+							document.body.removeChild(link);
+						} else {
+							Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
+							return;
+						}
+					});
 		}
 		
 	</script>
@@ -170,7 +185,7 @@
 											</td>
 											<td class="end">
 												<% if(!CommonUtils.getString(map.get("etcPath")).equals("")) { %>
-													<img className="iconImg" alt="etc" onClick="onRejectDetail('<%= CommonUtils.getString(map.get("esmtYn")) %>')"/>
+													<img class="iconImg" alt="etc" onClick="onRejectDetail('<%= CommonUtils.getString(map.get("esmtYn")) %>')"/>
 												<% } %>
 											</td>
 										</tr>
@@ -218,8 +233,6 @@
 									<%
 											int index = 0;
 											for(Map<String, Object> map : custList) { 
-												ObjectMapper mapper = new ObjectMapper();
-												String jsonStr = mapper.writeValueAsString(map);
 									%>
 									<tr id="mainTr<%= index %>">
 										<td>
@@ -238,20 +251,21 @@
 											<% if(CommonUtils.getString(map.get("esmtYn")).equals("2")) { %>
 												<a onClick="onEvent(<%= index %> , event)" class="textUnderline textMainColor"><%= CommonUtils.getString(map.get("esmtYn")) %></a>
 											<% } else { %>
-												<a onClick="onEvent(<%= index %>)", event><%= CommonUtils.getString(map.get("esmtYn")) %></a>
+												<a onClick="onEvent(<%= index %> , event)"><%= CommonUtils.getString(map.get("esmtYn")) %></a>
 											<% } %>
 										</td>
 										<td><%= CommonUtils.getString(map.get("submitDate")) %></td>
 										<td><%= CommonUtils.getString(map.get("damdangName")) %></td>
 										<td>
-	<!--											{cust.etcPath &&-->
-	<!--											<img onClick={ () => Api.fnCustSpecFileDown(cust.etcFile, cust.etcPath)} src="/images/icon_etc.svg" class="iconImg" alt="etc"/>-->
-	<!--											}-->
+											<% if(CommonUtils.getString(map.get("etcPath")).equals("")) { %>
+												<img src='/resources/images/icon_etc.svg' onclick="fnfileDownload('<%= map.get("etcFile") %>', '<%= map.get("etcPath") %>')" class='iconImg' alt='etc' />
+											<% } %>
 										</td>
 										<td>
-	<!--											{(cust.esmtYn === '2' && (data.openAuth || data.bidAuth)) &&-->
-	<!--											<a onClick={()=>onSuccSelect(cust)} class="btnStyle btnSecondary btnSm" title="낙찰">낙찰</a>-->
-	<!--											}-->
+											<% if( CommonUtils.getString(map.get("esmtYn")).equals("2") && ((boolean) data.get("openAuth") || (boolean) data.get("bidAuth")) ) { %>
+												<a onClick="onSuccSelect(<%= index %>)" class="btnStyle btnSecondary btnSm" title="낙찰">낙찰</a>
+											<% } %>
+											<a onClick="onSuccSelect(<%= index %>)" class="btnStyle btnSecondary btnSm" title="낙찰">낙찰</a>
 										</td>
 									</tr>
 									<tr id="subTr<%= index %>" class="detailView">
@@ -294,9 +308,6 @@
 											</table>
 										</td>
 									</tr>
-									
-									
-									
 									<%
 											index++;
 											}
@@ -324,5 +335,9 @@
 		</div>
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
+	
+	
+	<!-- 낙찰 팝업 -->
+	<jsp:include page="/WEB-INF/jsp/bid/bidSuccessPop.jsp" />
 </body>
 </html>

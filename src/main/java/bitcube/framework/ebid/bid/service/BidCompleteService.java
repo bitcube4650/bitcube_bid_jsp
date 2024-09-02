@@ -17,6 +17,7 @@ import bitcube.framework.ebid.dao.GeneralDao;
 import bitcube.framework.ebid.dto.ResultBody;
 import bitcube.framework.ebid.dto.UserDto;
 import bitcube.framework.ebid.etc.util.CommonUtils;
+import bitcube.framework.ebid.etc.util.FileService;
 import bitcube.framework.ebid.etc.util.consts.DB;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,8 +28,8 @@ public class BidCompleteService {
 	@Autowired
 	private GeneralDao generalDao;
 	
-//	@Autowired
-//	private FileService fileService;
+	@Autowired
+	private FileService fileService;
 	
 	/**
   	 * 그룹사 입찰완료 리스트
@@ -115,25 +116,25 @@ public class BidCompleteService {
 		return detailMap;
 	
 	}
-//	
-//	/**
-//	 * 첨부파일 다운로드
-//	 * @param params : (String) fileId - file경로
-//	 * @return
-//	 */
-//	public ByteArrayResource fileDown(Map<String, Object> params) {
-//		
-//		String filePath = (String) params.get("fileId");
-//		ByteArrayResource fileResource = null;
-//		
-//		try {
-//			fileResource = fileService.downloadFile(filePath);
-//		} catch (Exception e) {
-//			log.error("fileDown error : {}", e);
-//		}
-//		
-//		return fileResource;
-//	}
+
+	/**
+	 * 첨부파일 다운로드
+	 * @param params : (String) fileId - file경로
+	 * @return
+	 */
+	public ByteArrayResource fileDown(Map<String, Object> params) {
+		
+		String filePath = (String) params.get("fileId");
+		ByteArrayResource fileResource = null;
+		
+		try {
+			fileResource = fileService.downloadFile(filePath);
+		} catch (Exception e) {
+			log.error("fileDown error : {}", e);
+		}
+		
+		return fileResource;
+	}
 	
 	/**
 	 * 실제계약금액 업데이트
@@ -315,5 +316,6 @@ public class BidCompleteService {
 		
 		return resultBody;
 	}
+
 }
 

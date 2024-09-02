@@ -77,7 +77,7 @@
 			localStorage.setItem("biNo", biNo);
 			
 			const form = document.createElement('form');
-			form.setAttribute('action', "/api/v1/bidPtStatus/bidStatusDetail");
+			form.setAttribute('action', "/bidPtStatus/bidStatusDetail");
 			form.setAttribute('method', 'post');
 			
 			// 선택한 회사명

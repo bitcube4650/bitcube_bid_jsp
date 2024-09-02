@@ -80,7 +80,7 @@
 
 			
 			const form = document.createElement('form');
-			form.setAttribute('action', "/api/v1/bidComplete/detail");
+			form.setAttribute('action', "/bidComplete/detail");
 			form.setAttribute('method', 'post');
 			
 			// 선택한 회사명

@@ -24,11 +24,75 @@
 		$(document).ready(function() {
 			$("#biModeDiv").text(Ft.ftBiMode("<%=biInfo.get("biMode")%>"));
 			$("#insModeDiv").text(Ft.ftInsMode("<%=biInfo.get("insMode")%>"));				// 내역방식
+
+			$("#srcCustUserNm").keydown(function(e) {
+				if(e.key === "Enter" || e.keyCode === 13) {
+					fnDetailBi('');
+				}
+			});
+			
+			$("#srcCustLogin").keydown(function(e) {
+				if(e.key === "Enter" || e.keyCode === 13) {
+					fnDetailBi('');
+				}
+			});
 		});
 		
 		// 입찰 참가 업체 협력사 사용자 팝업 호출
 		function fnDetailBi(custCode){
-			alert(custCode);
+			if(custCode != ''){
+				// 업체 선택시 협력사 사용자 내 팝업 조회조건 초기화
+				$("#srcCustCode").val(custCode);
+				$('#srcCustUserNm').val('');
+				$('#srcCustLogin').val('');
+			} else {
+				custCode = $("#srcCustCode").val();
+			}
+			
+			$.post(
+				"/api/v1/cust/userListForCust",
+				{
+					custCode : custCode,
+					userName : $('#srcCustUserNm').val(),
+					userId : $('#srcCustLogin').val(), 
+					useYn : 'Y'
+				}
+			).done(function(response){
+				$("#custUserListTbl tbody").empty();
+				let html = ''
+				
+				if(response.code === 'OK') {
+					const list = response.data.content;
+					if(list.length > 0){
+						for(var i=0;i<list.length;i++) {
+							html += '<tr>';
+							html += '	<td>'+ list[i].userName +'</td>';
+							html += '	<td>'+ list[i].userId +'</td>';
+							html += '	<td>'+ Ft.defaultIfEmpty(list[i].userBuseo,'')  +'</td>';
+							html += '	<td>'+ Ft.defaultIfEmpty(list[i].userPosition,'') +'</td>';
+							html += '	<td>'+ list[i].userEmail +'</td>';
+							html += '	<td>'+ Ft.onAddDashTel(list[i].userTel) +'</td>';
+							html += '	<td>'+ Ft.onAddDashTel(list[i].userHp) +'</td>';
+							html += '	<td class="end">'+ (list[i].userType === '1' ? '업체관리자' : '사용자') +'</td>';
+							html += '</tr>';
+							
+							$("#custUserListTbl tbody").html(html);
+						}
+					} else {
+						html += '<tr>';
+						html += '	<td colspan="8">조회된 결과가 없습니다.</td>';
+						html += '</tr>';
+						$("#custUserListTbl tbody").html(html);
+					}
+				} else {
+					html += '<tr>';
+					html += '	<td colspan="8">조회된 결과가 없습니다.</td>';
+					html += '</tr>';
+					$("#custUserListTbl tbody").html(html);
+					
+					Swal.fire('', response.msg, 'warning')
+				}
+			})
 		}
 		
 		// 업체견적사항 상세 테이블
@@ -102,8 +166,46 @@
 		}
 		
 		// 제출이력 팝업 호출
-		function fnSubmitHistPop(custCode){
-			
+		function fnSubmitHistPop(custCode, custName, damdangName){
+// 			$.post(
+// 				'/api/v1/bidstatus/submitHist',
+// 				{
+// 					custCode : custCode,
+<%-- 					biNo : "<%= biInfo.get("biNo") %>" --%>
+// 				}
+// 			).done(function(response){
+// 				$("#submitHistTbl tbody").empty();
+// 				let html = ''
+				
+// 				if(response.code === 'OK') {
+// 					const list = response.data.content;
+// 					if(list.length > 0){
+// 						for(var i=0;i<list.length;i++) {
+// 							html += '<tr>';
+// 							html += '	<td>'+ list[i].biOrder +'</td>';
+// 							html += '	<td class="text-left">'+ custName +'</td>';
+// 							html += '	<td>'+ Ft.ftEsmtAmt(list[i]) +'</td>';
+// 							html += '	<td>'+ damdangName +'</td>';
+// 							html += '	<td class="end">'+ list[i].submitDate +'</td>';
+// 							html += '</tr>';
+							
+// 							$("#submitHistTbl tbody").html(html);
+// 						}
+// 					} else {
+// 						html += '<tr>';
+// 						html += '	<td colspan="5">조회된 결과가 없습니다.</td>';
+// 						html += '</tr>';
+// 						$("#submitHistTbl tbody").html(html);
+// 					}
+// 				} else {
+// 					html += '<tr>';
+// 					html += '	<td colspan="5">조회된 결과가 없습니다.</td>';
+// 					html += '</tr>';
+// 					$("#submitHistTbl tbody").html(html);
+					
+// 					Swal.fire('', response.msg, 'warning')
+// 				}
+// 			})
 		}
 		
 		// 첨부파일 다운로드
@@ -416,7 +518,7 @@
 %>
 									<tr>
 										<td class='text-left'>
-											<a onclick="fnSubmitHistPop('<%= cust.get("custCode") %>')" class='textUnderline' data-toggle='modal' data-target='#submitHistPop'><%= cust.get("custName") %></a>
+											<a onclick="fnSubmitHistPop('<%= cust.get("custCode") %>', '<%= cust.get("custName") %>', '<%= cust.get("damdangName") %>')" class='textUnderline' data-toggle='modal' data-target='#submitHistPop'><%= cust.get("custName") %></a>
 										</td>
 										<td class='text-overflow'><%= CommonUtils.getString(cust.get("esmtCurr")) %> <%= CommonUtils.getFormatNumber(CommonUtils.getString(cust.get("esmtAmt"))) %></td>
 										<td>
@@ -545,17 +647,93 @@
 				</div>
 		
 				<!--입찰결과보고서-->
-				
 				<jsp:include page="/WEB-INF/jsp/bid/bidResultReport.jsp">
 					<jsp:param name="title" value="입찰결과 보고서" />
 				</jsp:include>
 <!-- 				<report :data="data"/> -->
 		
 				<!-- 입찰이력 -->
+				
+				<div class="modal fade modalStyle" id="submitHistPop" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-body">
+								<a class="ModalClose" data-dismiss="modal" title="닫기"><i class="fa-solid fa-xmark"></i></a>
+								<h2 class="modalTitle">제출 이력</h2>
+								<table class="tblSkin1 mt30" id="submitHistTbl">
+									<colgroup>
+										<col>
+									</colgroup>
+									<thead>
+										<tr>
+											<th>차수</th>
+											<th>입찰참가업체명</th>
+											<th>견적금액(총액)</th>
+											<th>담당자</th>
+											<th class="end">제출일시</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+								<div class="modalFooter">
+									<a class="modalBtnClose" data-dismiss="modal" title="닫기">닫기</a>
+								</div>
+							</div>				
+						</div>
+					</div>
+				</div>
+				<!--// 입찰이력 끝 -->
 <!-- 				<SubmitHistPop ref="submitHistPop"/> -->
-		
-				<!-- 협력사 사용자 팝업 -->
-<!-- 				<CustUserPop ref="custUserPop" /> -->
+				<!-- 협력사 사용자 -->
+				<div class="modal fade modalStyle" id="custUserPop" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog" style="width:100%; max-width:1100px">
+						<div class="modal-content">
+							<div class="modal-body">
+								<a class="ModalClose" data-dismiss="modal" title="닫기"><i class="fa-solid fa-xmark"></i></a>
+								<h2 class="modalTitle">협력사 사용자</h2>
+								
+								<div class="modalSearchBox mt20">
+									<div class="flex align-items-center">
+										<div class="sbTit mr30">사용자명</div>
+										<div class="width150px">
+											<input type="hidden" id="srcCustCode">
+											<input type="text" id="srcCustUserNm" class="inputStyle" autocomplete="off">
+										</div> 
+										<div class="sbTit mr30 ml50">로그인 ID</div>
+										<div class="width150px">
+											<input type="text" id="srcCustLogin" class="inputStyle" autocomplete="off">
+										</div>
+										<a onclick="fnDetailBi('')" class="btnStyle btnSearch">검색</a>
+									</div>
+								</div>
+								<table class="tblSkin1 mt30" id="custUserListTbl">
+									<colgroup>
+										<col>
+									</colgroup>
+									<thead>
+									<tr>
+										<th>사용자명</th>
+										<th>로그인ID</th>
+										<th>부서</th>
+										<th>직급</th>
+										<th>이메일</th>
+										<th>전화번호</th>
+										<th>휴대폰</th>
+										<th>권한</th>
+									</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+								<div class="modalFooter">
+									<a class="modalBtnClose" data-dismiss="modal" title="닫기">닫기</a>
+								</div>
+							</div>				
+						</div>
+					</div>
+				</div>
+				<!-- //협력사 사용자 -->
 			</div>
 		</div>
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />

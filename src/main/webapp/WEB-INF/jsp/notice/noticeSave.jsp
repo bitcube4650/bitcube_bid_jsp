@@ -177,7 +177,7 @@ function saveNotice(){
     	formData.append('file', file);
     }
 
-	formData.append('data', JSON.stringify(params));
+    formData.append('data', new Blob([JSON.stringify(params)], { type: 'application/json' }));
 	
 	    $.ajax({
         url: '/api/v1/notice/insertNotice',
@@ -188,9 +188,7 @@ function saveNotice(){
         success: function(response) {
 			if (response.code === "OK") {
 				Swal.fire('', '공지사항이 등록되었습니다.', 'info').then((result) => {
-				    if (result.isConfirmed) {
-				        window.location.href = '/notice/noticeList';
-				    }
+			        window.location.href = '/notice/noticeList';
 				});
 
 			}

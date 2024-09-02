@@ -103,7 +103,7 @@
 		
 		function onClickBidDetail(biNo) {
 			const form = document.createElement('form');
-			form.setAttribute('action', "/api/v1/bidstatus/moveBidStatusDetail");
+			form.setAttribute('action', "/bidstatus/moveBidStatusDetail");
 			form.setAttribute('method', 'post');
 			
 			// 선택한 회사명
@@ -117,8 +117,6 @@
 			
 			document.body.appendChild(form) // form태그를 body태그의 자식요소로 만듦
 			form.submit();
-			
-		//	location.href="/api/v1/bidstatus/moveBidStatusDetail&biNo=" + biNo;
 		}
 	</script>
 	<div id="wrap">

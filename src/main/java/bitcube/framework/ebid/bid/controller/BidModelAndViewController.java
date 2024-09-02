@@ -38,7 +38,7 @@ public class BidModelAndViewController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@PostMapping("/api/v1/bidComplete/partnerDetail")
+	@PostMapping("/bidComplete/partnerDetail")
 	public ModelAndView complateBidPartnerDetail(
 			@RequestParam(name="biNo",			defaultValue="") String biNo,
 			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
@@ -65,7 +65,7 @@ public class BidModelAndViewController {
 	 * 협력사 > 입찰진행 상세
 	 * @return
 	 */
-	@PostMapping("/api/v1/bidPtStatus/bidStatusDetail")
+	@PostMapping("/bidPtStatus/bidStatusDetail")
 	public ModelAndView bidStatusDetail(
 			@RequestParam(name="biNo",			defaultValue="") String biNo,
 			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
@@ -95,7 +95,7 @@ public class BidModelAndViewController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@PostMapping("/api/v1/bidComplete/detail")
+	@PostMapping("/bidComplete/detail")
 	public ModelAndView complateBidDetail(
 			@RequestParam(name="biNo",			defaultValue="") String biNo,
 			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
@@ -125,7 +125,7 @@ public class BidModelAndViewController {
 	 * 협력사 > 입찰진행 상세
 	 * @return
 	 */
-	@PostMapping("/api/v1/bidstatus/moveBidStatusDetail")
+	@PostMapping("/bidstatus/moveBidStatusDetail")
 	public ModelAndView moveBidStatusDetail(
 			@RequestParam(name="biNo",			defaultValue="") String biNo,
 			HttpServletRequest request, ModelAndView modelAndView) throws Exception {

@@ -14,12 +14,12 @@
 
 
 		$('#srcState').val('Y')
-		onManageSearch(0);
+		onSearch(0);
 		
         $('#srcCustName').keypress(function(event) {
             if (event.which === 13) {
                 event.preventDefault();
-                onManageSearch(0);
+                onSearch(0);
             }
         });
 		
@@ -50,7 +50,7 @@
 
 	}
 
-	function onManageSearch(page){
+	function onSearch(page){
 		const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 		
 		const params = {
@@ -197,7 +197,7 @@
 			                </div>
 			                <div class="sbTit mr30 ml50">상태</div>
 								<div class="width120px">
-									<select id="srcState" class="selectStyle" onchange="onManageSearch(0)">
+									<select id="srcState" class="selectStyle" onchange="onSearch(0)">
 										<option value="">전체</option>
 										<option value="Y">정상</option>
 										<option value="D">삭제</option>
@@ -210,7 +210,7 @@
 			                <a onclick="itemSelectPop()" title="조회" class="btnStyle btnSecondary ml10">조회</a>
 			                <button onclick="srcCustTypeCodeInit()" id="srcCustTypeCodeRemove" type="button" title="삭제" class="btnStyle btnOutline" style="display:none">삭제</button>
 			                </div>
-			                <a class="btnStyle btnSearch" onclick="onManageSearch(0)">검색</a>
+			                <a class="btnStyle btnSearch" onclick="onSearch(0)">검색</a>
 		                </div>
 	                </div>
 					<input type="text" id="custCodeForSrc" class="inputStyle" hidden="">
@@ -218,7 +218,7 @@
 		            <div class="flex align-items-center justify-space-between mt40">
 		                <div class="width100">
 		                    전체 : <span id="totalElements" class="textMainColor"><strong id="total"></strong></span>건
-		                    <select id="pageSize" class="selectStyle maxWidth140px ml20" onchange="onManageSearch(0)">
+		                    <select id="pageSize" class="selectStyle maxWidth140px ml20" onchange="onSearch(0)">
 		                        <option value="10">10개씩 보기</option>
 		                        <option value="20">20개씩 보기</option>
 		                        <option value="30">30개씩 보기</option>
