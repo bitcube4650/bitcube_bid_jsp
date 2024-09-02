@@ -3,7 +3,7 @@
 <html>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
-	<script type="text/javascript">
+<script type="text/javascript">
 	$(document).ready(function() {
 		onCustDetail();	
 	});
@@ -31,16 +31,15 @@
 					$("#custTypeNm2").append(data.custTypeNm2)
 					$("#custName").append(data.custName)
 					$("#presName").append(data.presName)
-					$("#regnum").append(data.regnum)
-					$("#presJuminNo").append(data.presJuminNo)
-					$("#capital").append(data.capital)
+					$("#regnum").append(Ft.onAddDashRegNum(data.regnum))
+					$("#presJuminNo").append(Ft.onAddDashRPresJuminNum(data.presJuminNo))
+					$("#capital").append(Ft.fnRoundComma(data.capital))
 					$("#foundYear").append(data.foundYear)
-					$("#tel").append(data.tel)
-					$("#fax").append(data.fax)
+					$("#tel").append(Ft.onAddDashTel(data.tel))
+					$("#fax").append(Ft.onAddDashTel(data.fax))
 					$("#zipcode").append(data.zipcode)
 					$("#addr").append(data.addr)
 					$("#addrDetail").append(data.addrDetail)
-					$("#regnum").append(data.regnum)
 					$("#regnumFile").append(data.regnumFileName)
 					$("#regnumPath").val(data.regnumPath)
 					$("#bfile").append(data.bFileName)
@@ -49,8 +48,8 @@
 					$("#userName1").append(data.userName)
 					$("#userEmail").append(data.userEmail)
 					$("#userId").append(data.userId)
-					$("#userHp").append(data.userHp)
-					$("#userTel").append(data.userTel)
+					$("#userHp").append(Ft.onAddDashTel(data.userHp))
+					$("#userTel").append(Ft.onAddDashTel(data.userTel))
 					$("#userPosition").append(data.userPosition)
 					$("#userBuseo").append(data.userBuseo)
 					
@@ -96,9 +95,7 @@
 				if (arg.code === "OK") {
 					$('#companyTurnback').modal('hide')
 					Swal.fire('', '정상적으로 반려 처리되었습니다.', 'info').then((result) => {
-					    if (result.isConfirmed) {
-					        window.location.href = '/company/approval';
-					    }
+				        window.location.href = '/company/approval';
 					});
 
 				}
@@ -133,9 +130,7 @@
 					$("#certYn").empty()
 					onCustDetail()
 					Swal.fire('', '정상적으로 승인 처리되었습니다.', 'info').then((result) => {
-					    if (result.isConfirmed) {
-					        window.location.href = '/company/approval';
-					    }
+				        window.location.href = '/company/approval';
 					});
 				}
 				else{
@@ -154,32 +149,37 @@
 		const fileName = fileType === 'regnum' ? $("#regnumFile").text() :$("#bfile").text()
 
 		const params = {
-				fileId : filePath,
-				responseType: "blob"
+				fileId : filePath
 		}
-		$.post(
-				'/api/v1/notice/downloadFile',
-				params
-				)
-				.done(function(arg) {
-					console.log(arg)
-					if (arg.code === "OK") {
-						const url = window.URL.createObjectURL(new Blob([arg.data]));
-						const link = document.createElement("a");
-						link.href = url;
-						link.setAttribute("download", fileName);
-						document.body.appendChild(link);
-						link.click();
-						document.body.removeChild(link);
-					}
-					else{
-			            Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
-			            return
-					}
-				})
+		$.ajax({
+			url: '/api/v1/notice/downloadFile',
+			data: params,
+			type: 'POST',
+			xhrFields: {
+				responseType: "blob",
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				Swal.fire('', '파일 다운로드를 실패했습니다.', 'error');
+			},
+			success: function(data, status, xhr) {
+				var blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+
+				// 링크 생성
+				var link = document.createElement('a');
+				link.href = window.URL.createObjectURL(blob);
+				link.download = fileName;
+
+				// 링크를 클릭하여 다운로드를 실행
+				document.body.appendChild(link);
+				link.click();
+
+				// 링크 제거
+				document.body.removeChild(link);
+			}
+		});
 	}
 
-	</script>
+</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
 		<div class="contentWrap">

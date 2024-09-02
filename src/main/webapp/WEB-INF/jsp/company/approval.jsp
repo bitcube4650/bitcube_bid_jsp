@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
-<body>
-	<script type="text/javascript">
+
+<script type="text/javascript">
 	$(document).ready(function() {
 		onApprovalSearch(0);
 		
@@ -18,13 +18,10 @@
 	});
 	
 	function itemSelectPop(){
-		
 		$("#custTypePop").modal('show')
 	}
 	
 	function itemSelectCallback(itemCode, itemName) {
-		console.log(itemCode)
-		console.log(itemName)
 		$("#custTypePop").modal('hide')
 		$('#srcCustTypeCode').val(itemCode)
 		$('#srcCustTypeName').val(itemName)
@@ -48,7 +45,6 @@
 		
 		$.post("/api/v1/cust/approvalList", params, 
 			function(response) {
-			console.log(response)
 			if(response.code === 'OK') {
 				const list = response.data.content;
 				updatePagination(response.data);
@@ -64,7 +60,7 @@
 					            '</a>' +
 					        '</td>' +
 					        '<td>' + list[i].custType1 + '</td>' +
-					        '<td>' + list[i].regnum + '</td>' +
+					        '<td>' + Ft.onAddDashRegNum(list[i].regnum) + '</td>' +
 					        '<td>' + list[i].presName + '</td>' +
 					        '<td>' + list[i].userName + '</td>' +
 					        '<td>' + list[i].createDate + '</td>' +
@@ -90,7 +86,8 @@
 		$('#srcCustTypeName').val('')
 		$("#srcCustTypeCodeRemove").css("display", "none")
 	}
-	</script>
+</script>
+<body>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
 		<div class="contentWrap">
@@ -147,6 +144,8 @@
 		                    <col style="width: 15%" />
 		                    <col />
 		                    <col style="width: 15%" />
+		                    <col style="width: 8%" />
+		                    <col style="width: 8%" />
 		                    <col style="width: 15%" />
 		                </colgroup>
 		                <thead>
