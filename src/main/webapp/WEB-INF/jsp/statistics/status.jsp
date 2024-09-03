@@ -182,16 +182,16 @@
 		)
 	}
 
-	var loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
 	// 엑셀 다운로드
-	function fnExcelDown(){
+	var fnExcelDown = async function (){
+		var loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
 		let coInterArr = new Array();					// 조회할 계열사코드값을 담을 array
 		let srcCoInter = $("#srcCoInter").val();		// 조회조건 중 '계열사' 선택 값
 		
 		if(srcCoInter != ""){
 			coInterArr.push(srcCoInter)
 		} else {
-			$.post(
+			await $.post(
 				'/api/v1/statistics/coInterList',
 				{}
 			).done(function(arg){
@@ -224,11 +224,11 @@
 				{'header' : "기타",						'column' : "temp"}
 			],
 			"coInters" : coInterArr,
-			"userId" : loginInfo.loginId,
+			"userId" : loginInfo.userId,
 			"userAuth" : loginInfo.userAuth
 		};
 		
-		$.ajax({
+		await $.ajax({
 			url: "/api/v1/statistics/bidPresentList/excel",
 			type: "POST",
 			data: JSON.stringify(params),

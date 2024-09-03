@@ -1,4 +1,5 @@
 package bitcube.framework.ebid.statistics.controller;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -126,7 +127,7 @@ public class StatisticsContoller {
 		params.put("startDay",		startDay);
 		params.put("endDay",		endDay);
 		params.put("srcCoInter",	srcCoInter);
-		params.put("srcCustType",	srcCustType);
+		params.put("itemCode",	srcCustType);
 		try {
 			resultBody = statisticsService.biInfoDetailList(params, user);
 		} catch (Exception e) {
@@ -193,7 +194,7 @@ public class StatisticsContoller {
 			@RequestParam(name="size",			defaultValue="10") int size,
 			@RequestParam(name="startDay",		defaultValue="") String startDay,
 			@RequestParam(name="endDay",		defaultValue="") String endDay,
-			@RequestParam(name="srcCoInter",	defaultValue="") String srcCoInter,
+			@RequestParam(name="coInters",	defaultValue="") ArrayList coInters,
 			HttpServletRequest request) {
 		ResultBody resultBody = new ResultBody();
 
@@ -207,7 +208,7 @@ public class StatisticsContoller {
 		params.put("size",			size);
 		params.put("startDay",		startDay);
 		params.put("endDay",		endDay);
-		params.put("srcCoInter",	srcCoInter);
+		params.put("coInters",	coInters);
 		
 		try {
 			Page listPage = generalDao.selectGernalListPage("statistics.bidDetailList", params);

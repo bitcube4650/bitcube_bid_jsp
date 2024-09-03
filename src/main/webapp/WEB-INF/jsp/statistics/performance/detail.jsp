@@ -61,10 +61,10 @@
 							<div class="flex align-items-center height50px mt10">
 								<div class="sbTit width100px">품목</div>
 								<div class="flex align-items-center">
-									<input type="text" placeholder="우측 검색 버튼을 클릭해 주세요" class="inputStyle width300px readonly" readonly="readonly">
+									<input type="text" id="srcCustTypeName" placeholder="우측 검색 버튼을 클릭해 주세요" class="inputStyle width300px readonly" readonly="readonly">
 									<input type="hidden" id="srcCustType"/>
-									<a data-toggle="modal" data-target="#itemPop" title="조회" class="btnStyle btnSecondary ml10">조회</a>
-									<button type="button" title="삭제" class="btnStyle btnOutline">삭제</button>
+									<a href="javascript:itemSelectPop()" title="조회" class="btnStyle btnSecondary ml10">조회</a>
+									<button type="button" id="srcCustTypeCodeRemove" title="삭제" class="btnStyle btnOutline" style="display:none;">삭제</button>
 								</div>
 								<div class="sbTit mr30 ml50">계열사</div>
 								<div class="flex align-items-center width280px">
@@ -128,6 +128,8 @@
 		</div>
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
+	
+	<jsp:include page="/WEB-INF/jsp/join/custTypePop.jsp" />
 </body>
 <script>
 	$(function(){
@@ -140,6 +142,12 @@
 		
 		// 계열사 리스트 조회
 		fnSetCoInter();
+		
+		$("#srcCustTypeCodeRemove").click(function(){
+			$('#srcCustType').val('')
+			$('#srcCustTypeName').val('')
+			$("#srcCustTypeCodeRemove").css("display", "none")
+		})
 	});
 	
 	// 계열사 리스트 조회
@@ -173,6 +181,7 @@
 				startDay	: $("#startDay").val(),
 				endDay		: $("#endDay").val(),
 				srcCoInter	: $("#srcCoInter").val(),
+				srcCustType	: $("#srcCustType").val(),
 				size		: $("#pageSize").val()
 			}
 		).done(function(arg){
@@ -193,7 +202,7 @@
 					$("#listTbl tbody").append("<tr><td colspan='14'>조회된 데이터가 없습니다.</td></tr>");
 				} else {
 					let text = "";
-	 				for(let i = 0; i < result.content.length - 1; i++){
+	 				for(let i = 0; i < result.content.length ; i++){
 	 					text += "<tr>";
 	 					text += "	<td class='text-left'>"+result.content[i].biNo+"</td>";
 	 					text += "	<td class='text-left'>"+result.content[i].biName+"</td>";
@@ -218,14 +227,14 @@
 	}
 	
 	// 엑셀 다운로드
-	function fnExcelDown(){
+	var fnExcelDown = async function(){
 		let coInterArr = new Array();					// 조회할 계열사코드값을 담을 array
 		let srcCoInter = $("#srcCoInter").val();		// 조회조건 중 '계열사' 선택 값
 		
 		if(srcCoInter != ""){
 			coInterArr.push(srcCoInter)
 		} else {
-			$.post(
+			await $.post(
 				'/api/v1/statistics/coInterList',
 				{}
 			).done(function(arg){
@@ -266,7 +275,7 @@
 			"excel" : "Y"
 		};
 		
-		$.ajax({
+		await $.ajax({
 			url: "/api/v1/statistics/biInfoDetailList/excel",
 			type: "POST",
 			data: JSON.stringify(params),
@@ -293,6 +302,18 @@
 				Swal.fire('', '엑셀 다운로드 중 오류가 발생했습니다.', 'error');
 			}
 		});
+	}
+	
+	function itemSelectPop(){
+		$("#custTypePop").modal('show')
+	}
+	
+	function itemSelectCallback(itemCode, itemName) {
+		$("#custTypePop").modal('hide')
+		$('#srcCustType').val(itemCode)
+		$('#srcCustTypeName').val(itemName)
+		$("#srcCustTypeCodeRemove").css("display", "")
+
 	}
 </script>
 </html>
