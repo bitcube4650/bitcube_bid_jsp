@@ -42,7 +42,13 @@
 		}
 		
 		function onOpenCustUserPop(index) {
+			var custList	= <%= jsonCustList %>;
+			var cust		= custList[index];
 			
+			$("#custUserPopCustCode").val(cust.custCode);
+			$("#custUserPopCustName").val(cust.custName);
+			$("#custUserPop").modal('show');
+			onSearch();
 		}
 				
 		// 유찰
@@ -727,5 +733,9 @@
 	<jsp:include page="/WEB-INF/jsp/bid/bidResultReport.jsp">
 		<jsp:param name="title" value="입찰결과 보고서" />
 	</jsp:include>
+	
+<!--	협력사 사용자 팝업-->
+	<jsp:include page="/WEB-INF/jsp/bid/custUserPop.jsp" />
+
 </body>
 </html>
