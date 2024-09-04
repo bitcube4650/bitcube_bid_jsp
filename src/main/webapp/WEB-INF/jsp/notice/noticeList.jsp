@@ -7,6 +7,10 @@
 <script type="text/javascript">
 
 $(document).ready(function() { 
+	var loginInfo = JSON.parse(localStorage.getItem("loginInfo"));
+	if(loginInfo.custType == 'inter' && ( loginInfo.userAuth == '1' || loginInfo.userAuth == '2' ) ){//시스템관리자 또는 각사관리자인 경우
+		$("#insertBtn").css("display","");
+    }
 	onSearch(0)
     $('#srcNoticeTitle').keypress(function(event) {
         if (event.which === 13) {
@@ -154,7 +158,7 @@ $(document).ready(function() {
                         <option value="50">50개씩 보기</option>
                     </select>
                 </div>
-                <div>
+                <div id="insertBtn" style="display:none;">
                     <a href="/notice/noticeSave" class="btnStyle btnPrimary" title="공지등록">공지등록</a>
                 </div>
             </div>

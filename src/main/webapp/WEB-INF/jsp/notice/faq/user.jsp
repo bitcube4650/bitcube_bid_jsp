@@ -40,7 +40,7 @@
 		);
 	}
 
-	function renderFaqItems(faqList) {
+	/* function renderFaqItems(faqList) {
 	    const faqItemWrap = $('.faq_item_wrap');
 	    faqItemWrap.empty();
 		const faqType = $('#faqType').val()
@@ -57,7 +57,7 @@
 		                </div>
 		                <div class="faqAn">
 		                    <span class="faqA">A.</span>
-		                    <div class="faqTxt">${faq.answer}</div>
+		                    <div class="faqTxt"><span>${faq.answer}</span></div>
 		                </div>
 		            </div>
 		        `;
@@ -66,7 +66,7 @@
 	        faqItemWrap.append(faqItemHtml);
 	    });
 	}
-	
+	 */
 	
 	
 	function renderFaqItems(faqList) {
@@ -89,7 +89,7 @@
 	                '</div>' +
 	                '<div class="faqAn">' +
 	                    '<span class="faqA">A.</span>' +
-	                    '<div class="faqTxt">' + faq.answer + '</div>' +
+	                    '<div class="faqTxt"><span>' + faq.answer + '</span></div>' +
 	                '</div>' +
 	            '</div>';
 

@@ -14,18 +14,6 @@
 			}
 		});
 		
-		$("#info_userHp").keydown(function(e){
-			let text = e.target.value;
-			text= text.replace(/[^0-9]/g, '');
-			$("#info_userHp").val(text);
-		});
-		
-		$("#info_userTel").keydown(function(e){
-			let text = e.target.value;
-			text= text.replace(/[^0-9]/g, '');
-			$("#info_userTel").val(text);
-		});
-		
 	});
 
 	function fnCheckPwd(){
@@ -264,13 +252,13 @@
 				<div class="flex align-items-center mt10">
 					<div class="formTit flex-shrink0 width120px">휴대폰 <span class="star">*</span></div>
 					<div class="width100">
-						<input type="text" name="userHp" id="info_userHp" class="inputStyle" maxLength="20"/>
+						<input type="text" name="userHp" id="info_userHp" class="inputStyle" maxLength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
 					</div>
 				</div>
 				<div class="flex align-items-center mt10">
 					<div class="formTit flex-shrink0 width120px">유선전화 <span class="star">*</span></div>
 					<div class="width100">
-					<input type="text" name="userTel" id="info_userTel" class="inputStyle" maxLength="20"/>
+					<input type="text" name="userTel" id="info_userTel" class="inputStyle" maxLength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
 					</div>
 				</div>
 				<div class="flex align-items-center mt10">

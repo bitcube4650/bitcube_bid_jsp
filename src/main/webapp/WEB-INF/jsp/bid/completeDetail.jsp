@@ -102,9 +102,9 @@
 		
 		// 업체견적사항 상세 테이블
 		function fnCheck(esmtYn, fileName, filePath){
-			if(esmtYn == '2' && <%= !biInfo.containsKey("estOpenDate") %>){
+			if((esmtYn == '2' || esmtYn == '3') && <%= !biInfo.containsKey("estOpenDate") %>){
 				Swal.fire('','복호화되지 않아 상세를 불러올 수 없습니다', 'warning');
-			}else if(esmtYn == '2' && <%= !"".equals(CommonUtils.getString(biInfo.get("estOpenDate"))) %>){
+			}else if((esmtYn == '2' || esmtYn == '3') && <%= !"".equals(CommonUtils.getString(biInfo.get("estOpenDate"))) %>){
 				if(<%= "1".equals(biInfo.get("insMode"))%>){
 					// 파일 다운로드
 					fnfileDownload(filePath, fileName);
@@ -536,7 +536,7 @@
 										</td>
 										<td class='text-overflow'><%= CommonUtils.getString(cust.get("esmtCurr")) %> <%= CommonUtils.getFormatNumber(CommonUtils.getString(cust.get("esmtAmt"))) %></td>
 										<td>
-											<a onclick="fnCheck('<%= cust.get("esmtYn") %>', '<%=cust.get("fileNm") %>', '<%= cust.get("filePath") %>');" class="<%= ("2".equals(cust.get("esmtYn")) ? ("2".equals(biInfo.get("insMode")) && !"".equals(CommonUtils.getString(biInfo.get("estOpenDate"))) ? "textUnderline textMainColor detailBtn" : "textUnerline textMainColor" ) : "") %>"><%= ( "1".equals(cust.get("esmtYn")) ? "공고확인" : ("2".equals(cust.get("esmtYn")) ? "상세" : "") ) %> </a>
+											<a onclick="fnCheck('<%= cust.get("esmtYn") %>', '<%=cust.get("fileNm") %>', '<%= cust.get("filePath") %>');" class="<%= ("2".equals(cust.get("esmtYn")) ? ("2".equals(biInfo.get("insMode")) && !"".equals(CommonUtils.getString(biInfo.get("estOpenDate"))) ? "textUnderline textMainColor detailBtn" : "textUnerline textMainColor" ) : "") %>"><%= ( "1".equals(cust.get("esmtYn")) ? "공고확인" : ("2".equals(cust.get("esmtYn")) || "3".equals(cust.get("esmtYn")) ? "상세" : "") ) %> </a>
 											
 										</td>
 										<td><%= CommonUtils.getString(cust.get("submitDate")) %></td>
