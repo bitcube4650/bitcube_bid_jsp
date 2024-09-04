@@ -81,6 +81,11 @@
 				);
 			}
 		}
+		
+		// 과거입찰 가져오기 팝업
+		function onBidPastModal() {
+			$("#bidPast").modal("show");
+		}
 	</script>
 	<div>
 		<h3 class="h3Tit">입찰 기본 정보</h3>
@@ -95,7 +100,7 @@
 					</div>
 					<div class="width100">
 						<% if(flagNm.equals("등록")) { %>
-						<button class="btnStyle btnOutlineBlue" title="과거입찰 가져오기" style="marginLeft:0px" onClick=onBidPastModal()>과거입찰 가져오기</button>
+						<button class="btnStyle btnOutlineBlue" title="과거입찰 가져오기" style="marginLeft:0px" onclick=onBidPastModal()>과거입찰 가져오기</button>
 						<% } else { %>
 					<div>
 <!--						{bidContent.biNo}-->
@@ -290,5 +295,7 @@
 				
 			</div>
 			<% } %>
-
+			
+			<!-- 과거입찰 가져오기 -->
+			<jsp:include page="/WEB-INF/jsp/bid/bidPast.jsp" />
 	</div>
