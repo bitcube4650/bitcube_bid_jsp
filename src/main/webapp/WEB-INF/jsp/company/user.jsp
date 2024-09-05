@@ -209,12 +209,24 @@ $(document).ready(function() {
 			Swal.fire('', '휴대폰 번호를 입력해 주세요', 'warning')
 			$('#custUserHp').val('')
 			return
+		}else{
+			const phoneNumberRegex = /^\d{3}-\d{3,4}-\d{4}$/;
+			if (!phoneNumberRegex.test(onAddDashTel($('#custUserHp').val().trim()))) {
+				Swal.fire('', '휴대폰번호 형식에 맞게 입력해주세요.', 'warning');
+				return;
+			}
 		}
 				
 		if(!$('#custUserTel').val().trim()){
 			Swal.fire('', '유선전화를 입력해 주세요', 'warning')
 			$('#custUserTel').val('')
 			return
+		}else{
+			const telNumberRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
+			if (!telNumberRegex.test(onAddDashTel($('#custUserTel').val().trim()))) {
+				Swal.fire('', '유선전화 형식에 맞게 입력해주세요.', 'warning');
+				return;
+			}
 		}
 		
 		$('#userSaveConfirm').modal('show')
@@ -453,7 +465,7 @@ $(document).ready(function() {
 						<div class="formTit flex-shrink0 width120px">아이디 <span id="idStar" class="star">*</span></div>
 						<div class="flex align-items-center width100">
 							<div class="width100">
-								<input type="text" onchange="onLoginIdChkInit()" oninput="loginInputVali(this)" id="custUserId" class="inputStyle" placeholder="영문, 숫자 입력(8자 이내) 후 중복확인" maxlength="8">
+								<input type="text" onchange="onLoginIdChkInit()" oninput="loginInputVali(this)" id="custUserId" class="inputStyle" placeholder="영문, 숫자 입력(8자 이내) 후 중복확인" maxlength="20">
 								<input type="text" id="custUserIdChk" hidden="">
 								<div id="loginIdEditStr"></div>
 							</div>
@@ -474,11 +486,11 @@ $(document).ready(function() {
 					</div>
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width120px">휴대폰 <span class="star">*</span></div>
-						<div class="width100"><input type="text" id="custUserHp" class="inputStyle" placeholder=""></div>
+						<div class="width100"><input type="text" id="custUserHp" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
 					</div>
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width120px">유선전화 <span class="star">*</span></div>
-						<div class="width100"><input type="text" id="custUserTel" class="inputStyle" placeholder=""></div>
+						<div class="width100"><input type="text" id="custUserTel" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
 					</div>					
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width120px">직급</div>
