@@ -87,10 +87,8 @@ public class BidStatusController {
 	public ResultBody bidOpening(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) {
 		ResultBody resultBody = new ResultBody();
 		
-		System.out.println("asdfasdf " + params);
-		
 		try {
-//			resultBody = bidStatusService.bidOpening(params); 
+			resultBody = bidStatusService.bidOpening(params); 
 		}catch(Exception e) {
 			log.error("bidOpening error : {}", e);
 			resultBody.setCode("fail");
