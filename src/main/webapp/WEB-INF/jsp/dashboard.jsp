@@ -78,11 +78,7 @@ function selectNotice() {
 		'/api/v1/notice/noticeList', 
 		{ 
 			size: '7',
-			page: '0',
-			custType : loginInfo.custType,
-			userAuth : loginInfo.userAuth,
-			custCode : loginInfo.custCode,
-			userId : loginInfo.userId
+			page: '0'
 			
 		}
 	)

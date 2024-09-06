@@ -43,11 +43,7 @@ $(document).ready(function() {
 	            content: $('#srcNoticeContent').val(),
 	            userName: $('#srcNoticeUserNm').val(),
 				size : $("#pageSize").val(),
-				page : page,
-				custType : loginInfo.custType,
-				userAuth : loginInfo.userAuth,
-				custCode : loginInfo.custCode,
-				userId : loginInfo.userId
+				page : page
 	        };
 
 	        $.post(
