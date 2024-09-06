@@ -249,5 +249,24 @@ public class CustController {
 		
 		return resultBody;
 	}
+	
+	/**
+	 * 업체 상세 조회
+	 * @param httpServletRequest
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/otherCustDetail")
+	@ResponseBody
+	public ResultBody selectOtherCustDetail(HttpServletRequest httpServletRequest,  @RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			resultBody = custService.otherCustDetail(params);
+		}catch(Exception e) {
+			resultBody.setCode("fail");
+			resultBody.setMsg("타계열사 업체 정보를 가져오는 것을 실패하였습니다.");
+		}
+		return resultBody;
+	}
 		
 }

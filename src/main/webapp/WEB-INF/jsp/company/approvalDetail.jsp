@@ -31,7 +31,7 @@
 					$("#custTypeNm2").append(data.custTypeNm2)
 					$("#custName").append(data.custName)
 					$("#presName").append(data.presName)
-					$("#regnum").append(Ft.onAddDashRegNum(data.regnum))
+					$("#regnum").append(data.regnum ? Ft.onAddDashRegNum(data.regnum) : '')
 					$("#presJuminNo").append(Ft.onAddDashRPresJuminNum(data.presJuminNo))
 					$("#capital").append(Ft.fnRoundComma(data.capital))
 					$("#foundYear").append(data.foundYear)

@@ -102,8 +102,8 @@
 				for(var i=0;i<list.length;i++) {
 					$("#userListBody").append(
 						"<tr>" +
-							'<td class="text-left"><a data-toggle="modal" class="textUnderline notiTitle" onClick="onUserEdit(\'' + list[i].userId + '\')">' + list[i].userName + '</a></td>' +
-							'<td class="text-left"><a data-toggle="modal" class="textUnderline notiTitle"  onClick="onUserEdit(\'' + list[i].userId + '\')">' + list[i].userId + '</a></td>' +
+							'<td class="text-left"><a class="textUnderline notiTitle" onClick="onUserEdit(\'' + list[i].userId + '\')">' + list[i].userName + '</a></td>' +
+							'<td class="text-left"><a class="textUnderline notiTitle" onClick="onUserEdit(\'' + list[i].userId + '\')">' + list[i].userId + '</a></td>' +
 							'<td>'+ (list[i].userPosition || '') +'</td>' +
 							'<td>'+ (list[i].deptName || '')+'</td>' +
 							'<td>'+ list[i].userTel +'</td>'+
@@ -320,21 +320,30 @@
 
 			params.userInterrelatedList = checkedValues;
 		}
+        const formData = new FormData();
+		formData.append('data',JSON.stringify(params))
 		
-		$.post(
-			"/api/v1/couser/userSave",
-			params
-		)
-		.done(function(arg) {
-			if (arg.code === "OK") {
-				Swal.fire('', '사용자가 정상적으로 등록되었습니다.', 'info');
-				onSearch(0);
-				$('#userReg').modal('hide')
-			}else{
-	            Swal.fire('', '사용자 등록을 실패하였습니다.', 'warning');
-	            return
-			}
-		})
+		$.ajax({
+	        url: "/api/v1/couser/userSave",
+	        type: 'POST',
+	        data: formData,
+	        contentType: false,  
+	        processData: false, 
+	        success: function(response) {
+	            if (response.code === "OK") {
+					Swal.fire('', '사용자가 정상적으로 등록되었습니다.', 'info');
+					onSearch(0);
+					$('#userReg').modal('hide')
+	            } else {
+	            	Swal.fire('', '사용자 등록을 실패하였습니다.', 'warning');
+	            }
+	        },
+	        error: function(xhr, status, error) {
+	        	Swal.fire('', '사용자 등록을 실패하였습니다.', 'warning');
+	            console.error('AJAX Error:', status, error);
+	        }
+	    });
+		
 		
 	}
 	
@@ -363,6 +372,7 @@
 	function onUserEdit(loginId){
 		const rowLoginId = loginId
 		$("#rowLoginId").val(rowLoginId)
+		$("#userConfirmPassword").val('');
 		$('#userCheckPwdPop').modal('show')
 	}
 				
@@ -379,15 +389,16 @@
 		)
 		.done(function(arg) {
 			if (arg.code === "OK") {
-				onUserDetail()
+				if(arg.data){
+					$("#userCheckPwdPop").modal('hide');
+					$("#userEdit").modal('show');
+					onUserDetail()
+				}else{
+					Swal.fire('', '비밀번호가 일치하지 않습니다.', 'warning');
+				}
 			}else {
-				Swal.fire('', '비밀번호가 일치하지 않습니다.', 'warning');
+				Swal.fire('', arg.msg, 'warning');
 			}
-		})
-		.always(function(arg){
-			$("#userCheckPwdPop").modal('hide');
-			$("#userConfirmPassword").val('');
-			$("#userEdit").modal('show');
 		})
 		
 	}
@@ -543,22 +554,31 @@
 			}
 
 			params.userInterrelatedList = checkedValues;
-		}
-
-		$.post(
-			"/api/v1/couser/userSave",
-			params
-		)
-		.done(function(arg) {
-			if (arg.code === "OK") {
-				Swal.fire('', '사용자가 정상적으로 수정되었습니다.', 'info');
-				onSearch(0);
-				$('#userEdit').modal('hide')
-			}else{
+		}		
+		
+        const formData = new FormData();
+		formData.append('data',JSON.stringify(params))
+		
+		$.ajax({
+	        url: "/api/v1/couser/userSave",
+	        type: 'POST',
+	        data: formData,
+	        contentType: false,  
+	        processData: false, 
+	        success: function(response) {
+	            if (response.code === "OK") {
+					Swal.fire('', '사용자가 정상적으로 수정되었습니다.', 'info');
+					onSearch(0);
+					$('#userEdit').modal('hide')
+	            } else {
+		            Swal.fire('', '사용자 수정을 실패하였습니다.', 'warning');
+	            }
+	        },
+	        error: function(xhr, status, error) {
 	            Swal.fire('', '사용자 수정을 실패하였습니다.', 'warning');
-	            return
-			}
-		})
+	            console.error('AJAX Error:', status, error);
+	        }
+	    });
 		
 	}
 	
@@ -862,7 +882,7 @@
 	<div class="modal fade modalStyle" id="userEdit" tabindex="-1" role="dialog">
 		<div class="modal-dialog" style="width:100%; max-width:650px">
 			<div class="modal-content">
-				<div class="modal-body">
+				<div class="modal-body" style="overflow-y: auto;max-height: 95vh; ">
 					<a class="ModalClose" data-dismiss="modal" title="닫기"><i class="fa-solid fa-xmark"></i></a>
 					<h2 class="modalTitle">사용자 수정</h2>
 					<div class="flex align-items-center">

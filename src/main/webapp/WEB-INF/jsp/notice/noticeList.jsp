@@ -32,12 +32,18 @@ $(document).ready(function() {
 });
 
 	function onSearch(page) { // 파라미터로 들어온 페이지로 데이터 검색
+		const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
+		
 	    const params = {
 	            title: $('#srcNoticeTitle').val(),
 	            content: $('#srcNoticeContent').val(),
 	            userName: $('#srcNoticeUserNm').val(),
 				size : $("#pageSize").val(),
-				page : page
+				page : page,
+				custType : loginInfo.custType,
+				userAuth : loginInfo.userAuth,
+				custCode : loginInfo.custCode,
+				userId : loginInfo.userId
 	        };
 
 	        $.post(

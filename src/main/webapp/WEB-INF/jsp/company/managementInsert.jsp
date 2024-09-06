@@ -11,13 +11,13 @@
         $('#srcOtherCustName').keypress(function(event) {
             if (event.which === 13) {
                 event.preventDefault();
-                otherCustList();
+                onSearch();
             }
         });
 	});
 
 		
-	function otherCustList(){
+	function onSearch(){
 		const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 			
 		
@@ -60,20 +60,75 @@
 	}
 	
 	function onCustDetail(custCode){
-		const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 
 		const params = {
 			custCode : custCode,
-			interrelatedCustCode : loginInfo.custCode
 		}
 		
-		$.post("/api/v1/cust/CustDetail", params, 
+		$.post("/api/v1/cust/otherCustDetail", params, 
 			function(response) {
-			console.log(response)
 			const data = response.data[0]
+			console.log(data)
 				if(response.code === 'OK') {
 					$('#otherCompany').modal('hide')
+					$('#type1Str, #type2Str,#otherCustIdStr').empty()
+				 	$("#custType1").val(data.custType1),
+				 	$("#custType2").val(data.custType2),
+					$('#type1Str').append(data.custTypeNm1)
+					$('#type2Str').append(data.custTypeNm2 || '')
+					$('#otherCustName').val(data.custName)
+		            $('#otherCustPresName').val(data.presName)
+		            $('#otherCustCapital').val(Number(data.capital).toLocaleString())
+		            $('#otherCustFoundYear').val(data.foundYear)
+		            $('#otherCustTel').val(data.tel)
+		            $('#otherCustFax').val(data.fax)
+		            $('#otherCustZipcode').val(data.zipcode)
+		            $('#otherCustAddr').val(data.addr)
+		            $('#otherCustAddrDetail').val(data.addrDetail)
+					$('#manageItem,#type1Str,#type2Str,#otherCustIdStr').css('display','')
+					$('#type1Input,#type2Input,#custUserInput,#otherCustUserPwdInPut').css('display','none')
 					
+
+		            $('#otherCustRegnum1').val(data.regnum1 || '')
+		            $('#otherCustRegnum2').val(data.regnum2 || '')
+		            $('#otherCustRegnum3').val(data.regnum3 || '')
+		            
+		            $('#otherCustPresJuminNo1').val(data.presJuminNo1 || '')
+		            $('#otherCustPresJuminNo2').val(data.presJuminNo2 || '')
+		            
+		            $('#otherCustUserNm').val(data.userName)
+		            $('#otherUserCustEmail').val(data.userEmail)
+		            $('#otherCustUserHp').val(data.userHp)
+		            $('#otherCustUserTel').val(data.userTel)
+		            $('#otherCustIdStr').append(data.userId)
+		            $('#otherCustUserPosition').val(data.userPosition)
+		            $('#otherCustUserbuseo').val(data.userBuseo)
+
+					if(data.regnumFile){
+						$("#emptyFile1").css("display", "none");
+						$("#preview1").css("display", "block");
+						$("#fileName1").text(data.regnumFile);
+						$("#regnumFilePath").val(data.regnumPath)
+					}else{
+						$("#emptyFile1").css("display", "");
+						$("#preview1").css("display", "none");
+						$("#fileName1").text();
+						$("#regnumFilePath").val('')
+					}
+					if(data.BFile){
+						$("#emptyFile2").css("display", "none");
+						$("#preview2").css("display", "block");
+						$("#fileName2").text(data.BFile)
+						$("#bFilePath").val(data.BFilePath)
+					}else{
+						$("#emptyFile2").css("display", "");
+						$("#preview2").css("display", "none");
+						$("#fileName2").text('')
+						$("#bFilePath").val('')
+					}
+					
+					
+					$('#otherCustSaveYn').val('Y')
 					
 			} else {
 				Swal.fire('', response.msg, 'warning')
@@ -92,7 +147,7 @@
 		$("#srcOtherCustTypeNm").val('')
 		$("#srcOtherCustTypeCode").val('')
 		$("#srcOtherCustName").val('')		
-		otherCustList()
+		onSearch()
 		$('#otherCompany').modal('show')
 	}
 	
@@ -163,12 +218,14 @@
 	function companyVali(){
 		
 		
-		if(!$('#custType1').val()){
-			Swal.fire('', '업체유형1을 선택해 주세요', 'warning')
-			$('#btitle').val('')
-			return
+		if(!$('#otherCustSaveYn').val()){
+			if(!$('#custType1').val()){
+				Swal.fire('', '업체유형1을 선택해 주세요', 'warning')
+				$('#btitle').val('')
+				return
+			}
 		}
-		
+
 		if(!$('#otherCustName').val().trim()){
 			Swal.fire('', '회사명 입력해 주세요', 'warning')
 			$('#otherCustName').val('')
@@ -238,37 +295,38 @@
 			Swal.fire('', '이메일을 형식에 맞게 입력해 주세요', 'warning')
 		   return;
 		}
-		
-		if(!$('#otherCustUserId').val().trim()){
-			Swal.fire('', '로그인 ID를 입력해 주세요.', 'warning')
-			$('#otherCustUserId').val('')
-			return
-		}
-		
-		if(!$('#otherCustUSerLoginIdChk').val()){
-			Swal.fire('', '로그인 ID를 중복 확인해 주세요.', 'warning')
-			return
-		}
-		
-		if(!$('#otherCustUserPwd').val()){
-			Swal.fire('', '비밀번호를 입력해 주세요.', 'warning')
-			return
-		}
-		
-        const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-        if (!pwdRegex.test($('#otherCustUserPwd').val())) {
-            Swal.fire('', '비밀번호는 최소 8자 이상, 숫자와 특수문자를 포함해야 합니다..', 'warning');
-            return
-        }
-		
-		if(!$('#otherCustUserPwdChk').val()){
-			Swal.fire('', '비밀번호 확인을 입력해 주세요.', 'warning')
-			return
-		}
-		
-		if ($('#otherCustUserPwd').val() !== $('#otherCustUserPwdChk').val()) {
-		    Swal.fire('', '비밀번호가 일치하지 않습니다.', 'warning');
-		    return;
+		if(!$('#otherCustSaveYn').val()){
+			if(!$('#otherCustUserId').val().trim()){
+				Swal.fire('', '로그인 ID를 입력해 주세요.', 'warning')
+				$('#otherCustUserId').val('')
+				return
+			}
+			
+			if(!$('#otherCustUSerLoginIdChk').val()){
+				Swal.fire('', '로그인 ID를 중복 확인해 주세요.', 'warning')
+				return
+			}
+			
+			if(!$('#otherCustUserPwd').val()){
+				Swal.fire('', '비밀번호를 입력해 주세요.', 'warning')
+				return
+			}
+			
+	        const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+	        if (!pwdRegex.test($('#otherCustUserPwd').val())) {
+	            Swal.fire('', '비밀번호는 최소 8자 이상, 숫자와 특수문자를 포함해야 합니다..', 'warning');
+	            return
+	        }
+			
+			if(!$('#otherCustUserPwdChk').val()){
+				Swal.fire('', '비밀번호 확인을 입력해 주세요.', 'warning')
+				return
+			}
+			
+			if ($('#otherCustUserPwd').val() !== $('#otherCustUserPwdChk').val()) {
+			    Swal.fire('', '비밀번호가 일치하지 않습니다.', 'warning');
+			    return;
+			}
 		}
 		
 		
@@ -349,7 +407,35 @@
 		 	userHp :  $('#otherCustUserHp').val(),
 		 	userTel :  $('#otherCustUserTel').val(),
 		 	userPosition :  $('#otherCustUserPosition').val(),
-		 	userBuseo :  $('#otherCustUserbuseo').val()
+		 	userBuseo :  $('#otherCustUserbuseo').val(),
+		 	otherCustSaveYn : $('#otherCustSaveYn').val() ? 'Y' : 'N',
+		 }
+		 
+		 if($('#otherCustSaveYn').val()){
+			 
+			 if( $('input[name="otherCustBm2"]:checked').val()){
+				 params.custLevel = $('input[name="otherCustBm2"]:checked').val()
+			 }
+			   
+			 if($('#otherCustCareContent').val().trim()){
+				 params.custValuation = $('#otherCustCareContent').val().trim()
+			 }
+			 
+			 if($('#otherCustValuation').val().trim()){
+				 params.careContent = $('#otherCustValuation').val().trim() 
+			 }
+			 
+			 if($('#regnumFilePath').val()){
+				params.regnumPath = $('#regnumFilePath').val()
+				params.regnumFile = $('#fileName1').text()
+			 }
+			 
+			 if($('#bFilePath').val()){
+				params.bFilePath = $('#bFilePath').val()
+				params.bFile = $('#fileName2').text()	 
+			 }
+	
+			 
 		 }
 
 		 formData.append('data',JSON.stringify(params))
@@ -362,6 +448,8 @@
 	    if(fileInput2){
 			formData.append('bFile', fileInput2.files[0]);
 	    }    
+	    
+	    console.log(params)
 	    
 	    $.ajax({
 	        url: '/api/v1/cust/save',
@@ -413,8 +501,12 @@
 		
 		if(id === 1){
 			$("#file-input").val('');
+			$("#regnumFilePath").val('');
+			$("#fileName1").empty();
 		}else{
 			$("#file-input2").val('');
+			$("#bFilePath").val('');
+			$("#fileName2").empty();
 		}
 	}
 	
@@ -431,6 +523,7 @@
 		            </ul>
 		        </div>
 				<input id="itemType" type="text" hidden="">
+				<input id="otherCustSaveYn" type="text" hidden="">
 		        <div class="contents">
 		        	<div class="formWidth">
 		        		<div class="conTopBox">
@@ -459,7 +552,9 @@
 								</div>
 								<div class="flex align-items-center mt20">
 									<div class="formTit flex-shrink0 width170px">업체유형1<span class="star">*</span></div>
-									<div class="flex align-items-center width100">
+									<div id="type1Str" class="width100" style="display: none">
+									</div>
+									<div id="type1Input" class="flex align-items-center width100">
 										<input type="text" id="custTypeNm1" class="inputStyle readonly" placeholder="우측 검색 버튼을 클릭해 주세요" >
 										<input type="text" id="custType1" hidden="">
 										<a onclick="openCustTypePop('type1')"  class="btnStyle btnSecondary ml10" title="조회">조회</a>
@@ -467,7 +562,9 @@
 								</div>
 								<div class="flex align-items-center mt20">
 									<div class="formTit flex-shrink0 width170px">업체유형2</div>
-									<div class="flex align-items-center width100">
+									<div id="type2Str" class="width100" style="display: none">
+									</div>
+									<div id="type2Input"  class="flex align-items-center width100">
 										<input type="text" id="custTypeNm2" class="inputStyle readonly" placeholder="우측 검색 버튼을 클릭해 주세요" >
 										<input type="text" id="custType2" hidden="">
 										<a onclick="openCustTypePop('type2')" class="btnStyle btnSecondary ml10" title="조회">조회</a>
@@ -554,6 +651,7 @@
 												</p>
 											</div>
 										</div>
+										<input id="regnumFilePath" type="text" hidden="">
 										<!-- //다중파일 업로드 -->
 									</div>
 								</div>
@@ -586,35 +684,37 @@
 													<button id="removeBtn" class="file-remove" onClick="fnEmptyFile(2)">삭제</button>
 												</p>
 											</div>
+											<input id="bFilePath" type="text" hidden="">
 										</div>
 										<!-- //다중파일 업로드 -->
 									</div>
 								</div>
 							</div>
 							
-	<!-- 						<h3 class="h3Tit mt50">계열사 관리항목</h3>
-							<div class="boxSt mt20">
-								<div class="flex align-items-center">
-									<div class="formTit flex-shrink0 width170px">업체등급</div>
-									<div class="width100">
-										<input type="radio" name="otherCustBm2" value="A" id="otherCustBm2_1" class="radioStyle"><label for="otherCustBm2_1">A등급</label>
-										<input type="radio" name="otherCustBm2" value="B" id="otherCustBm2_2" class="radioStyle"><label for="otherCustBm2_2">B등급</label>
-										<input type="radio" name="otherCustBm2" value="C" id="otherCustBm2_3" class="radioStyle"><label for="otherCustBm2_3">C등급</label>
-										<input type="radio" name="otherCustBm2" value="D" id="otherCustBm2_4" class="radioStyle"><label for="otherCustBm2_4">D등급</label>
+						<div id="manageItem" style="display: none">	
+							<h3  class="h3Tit mt50">계열사 관리항목</h3>
+								<div class="boxSt mt20">
+									<div class="flex align-items-center">
+										<div class="formTit flex-shrink0 width170px">업체등급</div>
+										<div class="width100">
+											<input type="radio" name="otherCustBm2" value="A" id="otherCustBm2_1" class="radioStyle"><label for="otherCustBm2_1">A등급</label>
+											<input type="radio" name="otherCustBm2" value="B" id="otherCustBm2_2" class="radioStyle"><label for="otherCustBm2_2">B등급</label>
+											<input type="radio" name="otherCustBm2" value="C" id="otherCustBm2_3" class="radioStyle"><label for="otherCustBm2_3">C등급</label>
+											<input type="radio" name="otherCustBm2" value="D" id="otherCustBm2_4" class="radioStyle"><label for="otherCustBm2_4">D등급</label>
+										</div>
 									</div>
-								</div>
-								<div class="flex align-items-center mt20">
-									<div class="formTit flex-shrink0 width170px">D업체평가</div>
-									<div class="width100">
-										<textarea id="otherCustCareContent" class="textareaStyle boxOverflowY" ></textarea>
+									<div class="flex align-items-center mt20">
+										<div class="formTit flex-shrink0 width170px">D업체평가</div>
+										<div class="width100">
+											<textarea id="otherCustCareContent" class="textareaStyle boxOverflowY" ></textarea>
+										</div>
 									</div>
-								</div>
-								<div class="flex align-items-center mt20">
-									<div class="formTit flex-shrink0 width170px">관리단위</div>
-									<div class="width100"><input type="text" id="otherCustValuation" class="inputStyle" ></div>
+									<div class="flex align-items-center mt20">
+										<div class="formTit flex-shrink0 width170px">관리단위</div>
+										<div class="width100"><input type="text" id="otherCustValuation" class="inputStyle" ></div>
+									</div>
 								</div>
 							</div>
-							 -->
 
 							<h3 class="h3Tit mt50">관리자 정보</h3>
 							<div class="boxSt mt20">
@@ -630,26 +730,32 @@
 										<input type="text" id="otherUserCustEmail" class="inputStyle maxWidth-max-content" placeholder="ex) sample@iljin.co.kr">
 									</div>
 								</div>
-								<div class="flex align-items-center mt10">
-									<div class="formTit flex-shrink0 width170px">아이디 <span class="star">*</span></div>
-									<div class="flex align-items-center width100">
-										<input type="text"  maxlength="8" onchange="onLoginIdChkInit()" id="otherCustUserId" class="inputStyle maxWidth-max-content" placeholder="영문, 숫자 입력(8자 이내) 후 중복확인" oninput="loginInputVali(this)" >
-										<a onclick="onLoginIdChk()" class="btnStyle btnSecondary flex-shrink0 ml10" title="중복 확인">중복 확인</a>
-										<input type="text" id="otherCustUSerLoginIdChk"  hidden="">
+
+									<div class="flex align-items-center mt10">
+										<div class="formTit flex-shrink0 width170px">아이디 <span class="star">*</span></div>
+										<div id="custUserInput" class="flex align-items-center width100">
+											<input type="text"  maxlength="8" onchange="onLoginIdChkInit()" id="otherCustUserId" class="inputStyle maxWidth-max-content" placeholder="영문, 숫자 입력(8자 이내) 후 중복확인" oninput="loginInputVali(this)" >
+											<a onclick="onLoginIdChk()" class="btnStyle btnSecondary flex-shrink0 ml10" title="중복 확인">중복 확인</a>
+											<input type="text" id="otherCustUSerLoginIdChk"  hidden="">
+										</div>
+										<div id="otherCustIdStr" class="flex align-items-center width100" style="display: none">
+										</div>
 									</div>
-								</div>
-								<div class="flex align-items-center mt10">
-									<div class="formTit flex-shrink0 width170px">비밀번호 <span class="star">*</span></div>
-									<div class="width100">
-										<input type="password" id="otherCustUserPwd" class="inputStyle maxWidth-max-content" placeholder="대/소문자, 숫자, 특수문자 2 이상 조합(길이 8~16자리)">
+									<div id="otherCustUserPwdInPut">
+										<div class="flex align-items-center mt10">
+											<div class="formTit flex-shrink0 width170px">비밀번호 <span class="star">*</span></div>
+											<div class="width100">
+												<input type="password" id="otherCustUserPwd" class="inputStyle maxWidth-max-content" placeholder="대/소문자, 숫자, 특수문자 2 이상 조합(길이 8~16자리)">
+											</div>
+										</div>
+										<div class="flex align-items-center mt10">
+											<div class="formTit flex-shrink0 width170px">비밀번호 확인 <span class="star">*</span></div>
+											<div class="width100">
+												<input type="password" id="otherCustUserPwdChk" class="inputStyle maxWidth-max-content" placeholder="비밀번호와 동일해야 합니다.">
+											</div>
+										</div>
 									</div>
-								</div>
-								<div class="flex align-items-center mt10">
-									<div class="formTit flex-shrink0 width170px">비밀번호 확인 <span class="star">*</span></div>
-									<div class="width100">
-										<input type="password" id="otherCustUserPwdChk" class="inputStyle maxWidth-max-content" placeholder="비밀번호와 동일해야 합니다.">
-									</div>
-								</div>
+								<div>
 								<div class="flex align-items-center mt10">
 									<div class="formTit flex-shrink0 width170px">휴대폰 <span class="star">*</span></div>
 									<div class="width100">
@@ -684,7 +790,9 @@
 		        </div>
 
 		    </div>
+		    </div>
     	</div>
+    	
     	<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 		
 		
@@ -714,7 +822,7 @@
 							<div class="width150px">
 								<input type="text" id="srcOtherCustName" class="inputStyle">
 							</div>
-							<a onclick="otherCustList()" class="btnStyle btnSearch" >검색</a>
+							<a onclick="onSearch()" class="btnStyle btnSearch" >검색</a>
 							</div>
 						</div>
 					</div>
@@ -750,7 +858,7 @@
 				</div>				
 			</div>
 		</div>
-	</div>
+
 	<!-- //타계열사 업체조회 -->
 	
 		<!-- 회원가입 신청 -->

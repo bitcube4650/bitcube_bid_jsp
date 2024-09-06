@@ -386,4 +386,48 @@
 		,		CARE_CONTENT	= #{careContent}
 		,		CERT_DATE		= NOW() 
 	</insert>
+	
+	<select id="selectOtheCustDetail" resultType="camel">
+		/* cust.selectOtheCustDetail */
+		SELECT a.cust_code 
+        , cust_name 
+        , (SELECT GROUP_CONCAT(interrelated_nm SEPARATOR '\n') FROM t_co_cust_ir x, t_co_interrelated y WHERE x.cust_code = a.cust_code AND x.interrelated_cust_code = y.interrelated_cust_code) AS interrelated_nm
+        , cust_type1, cust_type2
+        , (SELECT item_name FROM t_co_item x WHERE x.item_code = a.cust_type1) AS cust_type_nm1
+        , (SELECT item_name FROM t_co_item x WHERE x.item_code = a.cust_type2) AS cust_type_nm2
+        , CONCAT(SUBSTR(regnum, 1, 3), '-', SUBSTR(regnum, 4, 2), '-', SUBSTR(regnum, 6, 5)) AS regnum
+        , SUBSTR(regnum, 1, 3) AS regnum1
+        , SUBSTR(regnum, 4, 2) AS regnum2
+        , SUBSTR(regnum, 6, 5) AS regnum3
+        , pres_name 
+        , CONCAT(SUBSTR(pres_jumin_no, 1, 6), '-', SUBSTR(pres_jumin_no, 7, 7)) AS pres_jumin_no
+        , SUBSTR(pres_jumin_no, 1, 6) AS pres_jumin_no1
+        , SUBSTR(pres_jumin_no, 7, 7) AS pres_jumin_no2
+        , capital
+        , found_year 
+        , tel
+        , fax
+        , zipcode 
+        , addr 
+        , addr_detail
+        , regnum_file
+        , regnum_path
+        , b_file
+        , b_file_path
+        , cert_yn 
+        , etc 
+        , b.user_name 
+        , b.user_email 
+        , b.user_id 
+        , b.user_hp 
+        , b.user_tel 
+        , b.user_buseo 
+        , b.user_position 
+     FROM t_co_cust_master a
+        , t_co_cust_user   b
+    WHERE a.cust_code = b.cust_code
+      AND b.user_type = '1' 
+      AND a.cust_code   = #{custCode}
+    LIMIT 1
+	</select>
 </mapper>

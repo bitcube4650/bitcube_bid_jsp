@@ -113,7 +113,10 @@ public class CustService {
 			generalDao.insertGernal(DB.QRY_MERGE_CUST_IR, params);
 
 			// 업체 관리자 계정 생성
-			generalDao.insertGernal(DB.QRY_INSERT_CUST_USER, params);
+			if("N".equals(params.get("otherCustSaveYn"))) {
+				generalDao.insertGernal(DB.QRY_INSERT_CUST_USER, params);
+			}
+
 			
 			// 회원가입을 통한 업체등록인 경우
 			if (user == null) {
@@ -426,6 +429,22 @@ public class CustService {
 		//params.put("custCode",	user.getCustCode());
 
 		generalDao.updateGernal(DB.QRY_UPDATE_CUST_USER_USEYN, params);
+		return resultBody;
+	}
+	
+	public ResultBody otherCustDetail(Map<String, Object> params) throws Exception {
+		ResultBody resultBody = new ResultBody();
+			
+		try {
+			List custDetailList = generalDao.selectGernalList("cust.selectOtheCustDetail", params);
+			resultBody.setData(custDetailList);
+		}catch(Exception e) {
+			e.printStackTrace();
+			resultBody.setCode("ERROR");
+			resultBody.setStatus(500);
+			resultBody.setMsg("An error occurred while selecting the itemGrpList.");
+			resultBody.setData(e.getMessage());
+		}
 		return resultBody;
 	}
 	

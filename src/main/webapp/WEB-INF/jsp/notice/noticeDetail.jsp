@@ -60,9 +60,13 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function noticeDetail(){
-	
+	const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 	   const params = {
 	            bno : new URLSearchParams(window.location.search).get('bno'),
+				custType : loginInfo.custType,
+				userAuth : loginInfo.userAuth,
+				custCode : loginInfo.custCode,
+				userId : loginInfo.userId
 	        };
 
 	        $.post(

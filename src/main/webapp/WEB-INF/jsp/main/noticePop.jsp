@@ -6,10 +6,16 @@
 var fnNoticeDetail = async function(bno){
 	
 	await $.post("/api/v1/notice/updateClickNum", {'bno': bno}); //클릭 시 조회수 +1
-	
+	const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 	await $.post(
 		'/api/v1/notice/noticeList', 
-		{ 'bno': bno }
+		{ 
+			'bno': bno, 
+			custType : loginInfo.custType,
+			userAuth : loginInfo.userAuth,
+			custCode : loginInfo.custCode,
+			userId : loginInfo.userId
+		}
 	)
 	.done(function(arg) {
 		if (arg.code === "OK") {

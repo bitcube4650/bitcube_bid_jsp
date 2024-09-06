@@ -60,7 +60,7 @@
 					            '</a>' +
 					        '</td>' +
 					        '<td>' + list[i].custType1 + '</td>' +
-					        '<td>' + Ft.onAddDashRegNum(list[i].regnum) + '</td>' +
+					        '<td>' + (list[i].regnum ? Ft.onAddDashRegNum(list[i].regnum) : '') + '</td>' +
 					        '<td>' + list[i].presName + '</td>' +
 					        '<td>' + list[i].userName + '</td>' +
 					        '<td>' + list[i].createDate + '</td>' +

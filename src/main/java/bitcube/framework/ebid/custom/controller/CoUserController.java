@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import bitcube.framework.ebid.core.CustomUserDetails;
 import bitcube.framework.ebid.custom.service.UserService;
@@ -103,9 +106,11 @@ public class CoUserController {
      */
     @PostMapping("/userSave")
 	@ResponseBody
-    public ResultBody userSave(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) {
+    public ResultBody userSave(HttpServletRequest httpServletRequest, @RequestPart("data")  String data) {
 		ResultBody resultBody = new ResultBody();
 		try {
+			ObjectMapper mapper = new ObjectMapper();
+	        Map<String, Object> params = mapper.readValue(data, Map.class);
 			resultBody = userService.userSave(params);
 		}catch(Exception e) {
 			resultBody.setCode("fail");
