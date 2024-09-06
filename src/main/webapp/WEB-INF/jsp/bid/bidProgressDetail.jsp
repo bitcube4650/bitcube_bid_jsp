@@ -42,7 +42,7 @@
 		
 		// 공고문 미리 보기
 		function onBidBiddingPreviewModal() {
-			
+			$("#bidBiddingPreviewPop").modal("show");
 		}
 		
 		// 첨부파일 다운로드
@@ -383,6 +383,8 @@
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
 	
-	
+	<!-- 공고문 미리보기 팝업 -->
+	<jsp:include page="/WEB-INF/jsp/bid/bidBiddingPreview.jsp" />
+		
 </body>
 </html>
