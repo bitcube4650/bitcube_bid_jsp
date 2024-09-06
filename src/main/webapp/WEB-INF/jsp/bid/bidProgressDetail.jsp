@@ -45,6 +45,21 @@
 			$("#bidBiddingPreviewPop").modal("show");
 		}
 		
+		// 삭제
+		function onBidProgressDelModal() {
+			
+		}
+		
+		// 수정 페이지 이동
+		function onMoveSave{
+			
+		}
+		
+		// 입찰 공고
+		function onBidNoticeConfirm() {
+			
+		}
+		
 		// 첨부파일 다운로드
 		function fnfileDownload(filePath, fileName){
 			$.post(
