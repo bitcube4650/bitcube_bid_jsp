@@ -52,7 +52,7 @@
 								$("#progressListBody").append(
 									"<tr>" + 
 										"<td><button onClick=\"onBidProgressDetail('"+ list[i].biNo +"')\" class='textUnderline'>"+ list[i].biNo +"</button></td>" +
-										"<td><button onClick=\"onBidProgressDetail("+ list[i].biNo +")\" class='textUnderline'>"+ list[i].biName +"</button></td>" +
+										"<td><button onClick=\"onBidProgressDetail('"+ list[i].biNo +"')\" class='textUnderline'>"+ list[i].biName +"</button></td>" +
 										"<td><i class='fa-regular fa-timer'></i>"+ list[i].estStartDate +"</td>" +
 										"<td><i class='fa-regular fa-timer'></i>"+ list[i].estCloseDate +"</td>" +
 										"<td>"+ list[i].biMode +"</td>"+
@@ -78,10 +78,8 @@
 		}
 		
 		function onBidProgressDetail(biNo) {
-			
 			const form = document.createElement('form');
-		//	form.setAttribute('action', "/bidstatus/moveBidStatusDetail");
-			form.setAttribute('action', "/bidStatus/moveBidProgressDetail");
+			form.setAttribute('action', "/bidstatus/moveBidProgressDetail");
 			form.setAttribute('method', 'post');
 			
 			// 선택한 회사명
