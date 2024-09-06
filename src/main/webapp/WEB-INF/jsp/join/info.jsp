@@ -441,45 +441,45 @@ function fnEmptyFile(id){
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width170px">사업자등록번호 <span class="star">*</span></div>
 						<div class="flex align-items-center width100">
-							<input type="text" name="regnum1" id="regnum1" class="inputStyle" placeholder="">
+							<input type="text" name="regnum1" id="regnum1" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 							<span style="margin:0 10px">-</span>
-							<input type="text" name="regnum2" id="regnum2" class="inputStyle" placeholder="">
+							<input type="text" name="regnum2" id="regnum2" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 							<span style="margin:0 10px">-</span>
-							<input type="text" name="regnum3" id="regnum3" class="inputStyle" placeholder="">
+							<input type="text" name="regnum3" id="regnum3" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 						</div>
 					</div>
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width170px">법인번호 </div>
 						<div class="flex align-items-center width100">
-							<input type="text" name="presJuminNo1" id="presJuminNo1" class="inputStyle" placeholder="">
+							<input type="text" name="presJuminNo1" id="presJuminNo1" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 							<span style="margin:0 10px">-</span>
-							<input type="text" name="presJuminNo2" id="presJuminNo2" class="inputStyle" placeholder="">
+							<input type="text" name="presJuminNo2" id="presJuminNo2" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 						</div>
 					</div>
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width170px">자본금 <span class="star">*</span></div>
 						<div class="flex align-items-center width100">
-							<input type="text" name="capital" id="capital" class="inputStyle" placeholder="ex) 10,000,000">
+							<input type="text" name="capital" id="capital" class="inputStyle" placeholder="ex) 10,000,000" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 							<div class="ml10">원</div>
 						</div>
 					</div>
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width170px">설립년도 <span class="star">*</span></div>
 						<div class="flex align-items-center width100">
-							<input type="text" name="foundYear" id="foundYear" class="inputStyle" placeholder="ex) 2021">
+							<input type="text" name="foundYear" id="foundYear" class="inputStyle" placeholder="ex) 2021" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 							<div class="ml10">년</div>
 						</div>
 					</div>
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width170px">대표전화 <span class="star">*</span></div>
 						<div class="width100">
-							<input type="text" name="tel" id="tel" class="inputStyle" placeholder="">
+							<input type="text" name="tel" id="tel" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 						</div>
 					</div>
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width170px">팩스</div>
 						<div class="width100">
-							<input type="text" name="fax" id="fax" class="inputStyle" placeholder="">
+							<input type="text" name="fax" id="fax" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 						</div>
 					</div>
 					<div class="flex mt10">
@@ -586,13 +586,13 @@ function fnEmptyFile(id){
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width170px">휴대폰 <span class="star">*</span></div>
 						<div class="width100">
-							<input type="text" name="userHp" id="userHp" class="inputStyle" placeholder="">
+							<input type="text" name="userHp" id="userHp" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 						</div>
 					</div>
 					<div class="flex align-items-center mt10">
 						<div class="formTit flex-shrink0 width170px">유선전화 <span class="star">*</span></div>
 						<div class="width100">
-							<input type="text" name="userTel" id="userTel" class="inputStyle" placeholder="">
+							<input type="text" name="userTel" id="userTel" class="inputStyle" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 						</div>
 					</div>
 					<div class="flex align-items-center mt10">

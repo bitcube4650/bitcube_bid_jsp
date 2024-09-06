@@ -56,7 +56,10 @@
 		// 금액 한글 표기
 		function fnAmtStr(){
 			if(event.target.value.length > 0){
-				let number = Number(event.target.value);
+				let inputVal = event.target.value;
+				inputVal = inputVal.replace(/[^0-9]/g, '');
+				$("#amt").val(inputVal);
+				let number = Number(inputVal);
 				
 				// 숫자 외의 문자가 들어간 경우 공백문자 처리
 				if(isNaN(number)){
@@ -177,7 +180,7 @@
 				return;
 			}
 
-			let amt = $("#esmtCurr").val() + " " + Ft.numberWithCommas((insMode == '1' ? $("#amt").val() : $("#totalAmt").val()));
+			let amt = $("#esmtCurr").val() + " " + (insMode == '1' ? Ft.numberWithCommas($("#amt").val()) : $("#totalAmt").val());
 
 			Swal.fire({
 				type : 'info',
@@ -293,19 +296,23 @@
 			}
 
 			formData.append('data', JSON.stringify(params));
-
+			
+			if(insMode == '1'){
 			// 견적첨부파일
-			let detailFiles = document.getElementById('file-input').files;
-			if(detailFiles.length > 0){
-				formData.append('detailFile', detailFiles[0]);
+				let detailFiles = document.getElementById('file-input').files;
+				if(detailFiles.length > 0){
+					formData.append('detailFile', detailFiles[0]);
+				}
 			}
-
-			// 기타 첨부파일
-			let etcFiles = document.getElementById('file-input2').files;
-			if(etcFiles.length > 0){
-				formData.append('etcFile', etcFiles[0]);
+			
+			if($("#file-input2").val() != null && $("#file-input2").val() != ''){
+				// 기타 첨부파일
+				let etcFiles = document.getElementById('file-input2').files;
+				if(etcFiles.length > 0){
+					formData.append('etcFile', etcFiles[0]);
+				}
 			}
-
+			
 			$.ajax({
 				url : '/api/v1/bidPtStatus/bidSubmitting',
 				type : 'POST',
@@ -321,9 +328,7 @@
 						showCancelButton : false,
 						confirmButtonText : '확인',
 					}).then((result) => {
-						if (result.isConfirmed) {
-							location.href='/bid/partnerStatus'
-						}
+						location.href='/bid/partnerStatus'
 					})
 				} else if(arg.code == 'LESSTIME'){
 					Swal.fire('', '견적제출시간이 아닙니다. 제출시작일시를 확인해주세요.', 'warning');
@@ -370,27 +375,36 @@
 
 		// 첨부파일 다운로드
 		function fnfileDownload(filePath, fileName){
-			$.post(
-				'/api/v1/notice/downloadFile',
-				{
-					fileId : filePath,
-					responseType: "blob"
-				}
-			).done(function(arg) {
-				if (arg.code === "OK") {
-					const url = window.URL.createObjectURL(new Blob([arg.data]));
-					const link = document.createElement("a");
-					link.href = url;
-					link.setAttribute("download", fileName);
+			let params = {
+					fileId : filePath
+			}
+			
+			$.ajax({
+				url: '/api/v1/notice/downloadFile',
+				data: params,
+				type: 'POST',
+				xhrFields: {
+					responseType: "blob",
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					Swal.fire('', '파일 다운로드를 실패했습니다.', 'error');
+				},
+				success: function(data, status, xhr) {
+					var blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+
+					// 링크 생성
+					var link = document.createElement('a');
+					link.href = window.URL.createObjectURL(blob);
+					link.download = fileName;
+
+					// 링크를 클릭하여 다운로드를 실행
 					document.body.appendChild(link);
 					link.click();
+
+					// 링크 제거
 					document.body.removeChild(link);
 				}
-				else{
-					Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
-					return
-				}
-			})
+			});
 		}
 		
 		// 공고문 미리보기 프린트
@@ -658,7 +672,7 @@
 													</td>
 													<td class="text-right">
 														<div class="inputStyle readonly">
-															<span id="submitData_<%= i %>_span" v-text="fnCalcOrderUc(val.esmtUc, val.orderQty)"></span>
+															<span id="submitData_<%= i %>_span"></span>
 														</div>
 													</td>
 													<td class="text-right">

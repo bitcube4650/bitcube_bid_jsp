@@ -50,7 +50,7 @@
 						if(list.length > 0) {
 							for(var i=0;i<list.length;i++) {
 								$("#progressListBody").append(
-									"<tr>" +
+									"<tr>" + 
 										"<td><button onClick=\"onBidProgressDetail('"+ list[i].biNo +"')\" class='textUnderline'>"+ list[i].biNo +"</button></td>" +
 										"<td><button onClick=\"onBidProgressDetail("+ list[i].biNo +")\" class='textUnderline'>"+ list[i].biName +"</button></td>" +
 										"<td><i class='fa-regular fa-timer'></i>"+ list[i].estStartDate +"</td>" +
@@ -78,7 +78,23 @@
 		}
 		
 		function onBidProgressDetail(biNo) {
-			alert(biNo);
+			
+			const form = document.createElement('form');
+		//	form.setAttribute('action', "/bidstatus/moveBidStatusDetail");
+			form.setAttribute('action', "/bidStatus/moveBidProgressDetail");
+			form.setAttribute('method', 'post');
+			
+			// 선택한 회사명
+			const input = document.createElement('input');
+			input.setAttribute('type', 'hidden');
+			input.setAttribute('name', 'biNo');
+			input.setAttribute('value', biNo);
+			
+			// input태그를 form태그의 자식요소로 만듦
+			form.appendChild(input);
+			
+			document.body.appendChild(form) // form태그를 body태그의 자식요소로 만듦
+			form.submit();
 		}
 		
 		function onMoveSave() {

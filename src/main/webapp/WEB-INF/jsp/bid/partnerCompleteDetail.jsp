@@ -47,27 +47,36 @@
 
 		// 첨부파일 다운로드
 		function fnfileDownload(filePath, fileName){
-			$.post(
-				'/api/v1/notice/downloadFile',
-				{
-					fileId : filePath,
-					responseType: "blob"
-				}
-			).done(function(arg) {
-				if (arg.code === "OK") {
-					const url = window.URL.createObjectURL(new Blob([arg.data]));
-					const link = document.createElement("a");
-					link.href = url;
-					link.setAttribute("download", fileName);
+			let params = {
+				fileId : filePath
+			}
+			
+			$.ajax({
+				url: '/api/v1/notice/downloadFile',
+				data: params,
+				type: 'POST',
+				xhrFields: {
+					responseType: "blob",
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					Swal.fire('', '파일 다운로드를 실패했습니다.', 'error');
+				},
+				success: function(data, status, xhr) {
+					var blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+
+					// 링크 생성
+					var link = document.createElement('a');
+					link.href = window.URL.createObjectURL(blob);
+					link.download = fileName;
+
+					// 링크를 클릭하여 다운로드를 실행
 					document.body.appendChild(link);
 					link.click();
+
+					// 링크 제거
 					document.body.removeChild(link);
 				}
-				else{
-					Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
-					return
-				}
-			})
+			});
 		}
 	</script>
 	<div id="wrap">
