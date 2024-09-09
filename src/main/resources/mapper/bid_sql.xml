@@ -868,4 +868,19 @@
 		
 	</delete>
 	
+	<insert id="qryInsertTBiLog">
+		/* bid.qryInsertTBiLog */
+		INSERT	INTO t_bi_log (
+				bi_no
+		,		user_id
+		,		log_text
+		,		create_date
+		) VALUES (
+				#{biNo}
+		,		#{userId}
+		,		#{msg}
+		,		SYSDATE()
+		)
+	</insert>
+	
 </mapper>
