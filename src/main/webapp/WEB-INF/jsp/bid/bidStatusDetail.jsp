@@ -29,6 +29,64 @@
 		});
 		
 		function fnInit() {
+			var loginInfo	= JSON.parse(localStorage.getItem("loginInfo"))
+			var loginId		= loginInfo.userId;
+			
+			var data			= <%= jsonData %>;
+			var openAtt1		= data.openAtt1;
+			var openAtt1Id		= data.openAtt1Id;
+			var openAtt1Sign	= data.openAtt1Sign;
+			var openAtt2		= data.openAtt2;
+			var openAtt2Id		= data.openAtt2Id;
+			var openAtt2Sign	= data.openAtt2Sign;
+			
+			console.log(loginId);
+			console.log(openAtt1Id);
+			console.log(openAtt2Id);
+			
+			var str = '';
+			str += '<div class="flex align-items-center width100">';
+			str += '<div class="formTit flex-shrink0 width170px">입회자1</div>';
+			str += '<div class="width100">' + openAtt1;
+			if(loginId === openAtt1Id) {
+				if("Y" === openAtt1Sign) {
+			str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 확인]</span>';
+			
+				} else {
+			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 미확인]</span>';
+				}
+			}
+			str += '</div>';
+			str += '</div>';
+			str += '<div class="flex align-items-center width100 ml80">';
+			str += '<div class="formTit flex-shrink0 width170px">입회자2</div>';
+			str += '<div class="width100">' + openAtt2;
+			if(loginId === openAtt2Id) {
+				if("Y" === openAtt2Sign) {
+			str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 확인]</span>';
+			
+				} else {
+			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(1, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 미확인]</span>';
+				}
+			}
+			str += '</div>';
+			str += '</div>';
+			
+			$("#attDiv").append(str);
+			
+			
+			//<div class="flex align-items-center width100 ml80">
+			//	<div class="formTit flex-shrink0 width170px">입회자2</div>
+			//	<div class="width100"><%= CommonUtils.getString(data.get("openAtt2")) %> 
+			//		<% if(userId.equals(CommonUtils.getString(data.get("openAtt2Id")))) { %>
+			//			<% if("Y".equals(CommonUtils.getString(data.get("openAtt2Sign")))) { %>
+			//		<span onclick="onOpenAttSignPop('2', '<%= CommonUtils.getString(data.get("openAtt2Id")) %>', '<%= CommonUtils.getString(data.get("openAtt2Sign")) %>')">[서명 확인]</span>
+			//			<% } else { %>
+			//		<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop('2', '<%= CommonUtils.getString(data.get("openAtt2Id")) %>', '<%= CommonUtils.getString(data.get("openAtt2Sign")) %>')">[서명 미확인]</span>
+			//			<% } %>
+			//		<% } %>
+			//	</div>
+			//</div>
 		}
 		
 		function onRejectDetail(value) {
@@ -226,6 +284,25 @@
 			alert(a);
 			alert(b);
 			alert(c);
+			
+			if(signYn === 'N'){
+				let currDate = new Date();
+				let currDateTime = currDate.getTime();
+				let estStartDate = new Date(props.data.estStartDate);
+				let estStartTime = estStartDate.getTime();
+				let estCloseDate = new Date(props.data.estCloseDate);
+				let estCloseTime = estCloseDate.getTime();
+			
+				if(estStartTime > currDateTime || estCloseTime > currDateTime){
+					Swal.fire('', '입회자 서명은 제출마감일시 이후에 가능합니다.', 'error');
+					return false;
+				}
+
+				setWhoAtt(att);
+				setAttSignId(attSignId);
+				setAttPop(true);
+			}
+					
 		}
 		
 	</script>
@@ -396,31 +473,8 @@
 									<div class="width100"><%= CommonUtils.getString(data.get("estBidder")) %></div>
 								</div>
 							</div>
-							<div class="flex align-items-center mt20">
-								<div class="flex align-items-center width100">
-									<div class="formTit flex-shrink0 width170px">입회자1</div>
-									<div class="width100"><%= CommonUtils.getString(data.get("openAtt1")) %> 
-									<%-- 	<% if(userId.equals(CommonUtils.getString(data.get("openAtt1Id")))) { %> --%>
-											<% if("Y".equals(CommonUtils.getString(data.get("openAtt1Sign")))) { %>
-										<span onclick="onOpenAttSignPop('1', '<%= CommonUtils.getString(data.get("openAtt1Id")) %>', '<%= CommonUtils.getString(data.get("openAtt1Sign")) %>')">[서명 확인]</span>
-											<% } else { %>
-										<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop('1', '<%= CommonUtils.getString(data.get("openAtt1Id")) %>', '<%= CommonUtils.getString(data.get("openAtt1Sign")) %>')">[서명 미확인]</span>
-											<% } %>
-									<%-- 	<% } %> --%>
-									</div>
-								</div>
-								<div class="flex align-items-center width100 ml80">
-									<div class="formTit flex-shrink0 width170px">입회자2</div>
-									<div class="width100"><%= CommonUtils.getString(data.get("openAtt2")) %> 
-										<% if(userId.equals(CommonUtils.getString(data.get("openAtt2Id")))) { %>
-											<% if("Y".equals(CommonUtils.getString(data.get("openAtt2Sign")))) { %>
-										<span onclick="onOpenAttSignPop('2', '<%= CommonUtils.getString(data.get("openAtt2Id")) %>', '<%= CommonUtils.getString(data.get("openAtt2Sign")) %>')">[서명 확인]</span>
-											<% } else { %>
-										<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop('2', '<%= CommonUtils.getString(data.get("openAtt2Id")) %>', '<%= CommonUtils.getString(data.get("openAtt2Sign")) %>')">[서명 미확인]</span>
-											<% } %>
-										<% } %>
-									</div>
-								</div>
+							<div id="attDiv" class="flex align-items-center mt20">
+								
 							</div>
 							<div class="flex align-items-center mt20">
 								<div class="flex align-items-center width100">
@@ -584,6 +638,7 @@
 						<div class="text-center mt50">
 							<a class="btnStyle btnOutline" title="목록" onClick="onMovePage()">목록</a>
 								<% if( (CommonUtils.getString(data.get("ingTag")).equals("A1")) && ((boolean) data.get("bidAuth") || (boolean) data.get("openAuth") || CommonUtils.getString(data.get("createUser")).equals(userId))) { %>
+							<a onClick="onOpenBidSaveFailPop()" class="btnStyle btnSecondary" title="유찰">유찰</a>
 								<% } %>
 								<% if( (CommonUtils.getString(data.get("ingTag")).equals("A1")) && ((boolean) data.get("bidAuth")) && (CommonUtils.getString(data.get("estCloseCheck")).equals("1"))) { %>
 							<a onClick="onCheck()" class="btnStyle btnPrimary" title="개찰">개찰</a>
