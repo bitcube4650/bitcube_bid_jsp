@@ -69,10 +69,6 @@
 			onSearch();
 		}
 		
-		// 엑셀 변환
-		function onExcel() {
-		}
-		
 		// 공고문 미리 보기
 		function onBidBiddingPreviewModal() {
 			$("#bidBiddingPreviewPop").modal("show");
@@ -478,7 +474,7 @@
 					
 					<div id="buttonList" class="text-center mt50">
 						<button class="btnStyle btnOutline" title="목록" onclick="onMovePage()">목록</button>
-						<button class="btnStyle btnOutline" title="액셀변환" onclick="onExcel()">액셀변환</button>
+<!--						<button class="btnStyle btnOutline" title="엑셀변환" onclick="onExcel()">엑셀변환</button>-->
 						<button class="btnStyle btnOutline" title="공고문 미리보기" onclick="onBidBiddingPreviewModal()">공고문 미리보기</button>
 					</div>
 				</div>
