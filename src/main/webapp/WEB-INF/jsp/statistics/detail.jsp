@@ -164,8 +164,8 @@
 		 					text += "<tr>";
 		 					text += "	<td class='text-left'>"+result.content[i].biNo+"</td>";
 		 					text += "	<td class='text-left'>"+result.content[i].biName+"</td>";
-		 					text += "	<td class='text-right'>"+parseInt(result.content[i].bdAmt).toLocaleString()+"</td>";
-		 					text += "	<td class='text-right'>"+parseInt(result.content[i].succAmt).toLocaleString()+"</td>";
+		 					text += "	<td class='text-right'>"+(result.content[i].bdAmt ? parseInt(result.content[i].bdAmt).toLocaleString() : '')+"</td>";
+		 					text += "	<td class='text-right'>"+(result.content[i].succAmt ? parseInt(result.content[i].succAmt).toLocaleString() : '')+"</td>";
 		 					text += "	<td>"+result.content[i].custName+"</td>";
 		 					text += "	<td class='textUnderline'>"
 		 					text += "		<a onclick='fnBidJoinCustListPop(\""+result.content[i].biNo+"\");' data-toggle='modal' data-target='#bidJoinCustListPop'>"+result.content[i].joinCustCnt+"</a>"
