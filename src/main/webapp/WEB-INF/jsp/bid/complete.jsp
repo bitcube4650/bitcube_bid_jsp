@@ -1,10 +1,28 @@
+<%@page import="java.util.Map"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
+<%
+	Map<String, Object> params = (Map<String, Object>) request.getAttribute("params");
+	
+	String keyword = "";
+	if (params != null && params.containsKey("keyword")) {
+		keyword = (String) params.get("keyword");
+	}
+%>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
 	<script>
 		$(document).ready(function() {
+			if(<%= "completed".equals(keyword) %>){					// dashboard에서 입찰완료로 조회
+				$("input[name=succBi]").prop("checked",true);
+			} else if(<%= "unsuccessful".equals(keyword) %>){		// dashboard에서 유찰로 조회
+				$("input[name=failBi]").prop("checked",true);
+			} else {
+				$("input[name=succBi]").prop("checked",true);
+				$("input[name=failBi]").prop("checked",true);
+			}
+			
 			// datepicker
 			$("#startDate").datepicker();
 			$("#endDate").datepicker();
@@ -139,8 +157,8 @@
 							</div>
 							<div class="sbTit mr30 ml50 width100px">완료상태</div>
 							<div class="flex align-items-center">
-								<input type="checkbox" id="succBi" class="checkStyle" name="succBi" checked><label for="succBi" class="mr30">입찰완료</label>
-								<input type="checkbox" id="failBi" class="checkStyle" name="failBi" checked><label for="failBi" class="mr30">유찰</label>
+								<input type="checkbox" id="succBi" class="checkStyle" name="succBi"><label for="succBi" class="mr30">입찰완료</label>
+								<input type="checkbox" id="failBi" class="checkStyle" name="failBi"><label for="failBi" class="mr30">유찰</label>
 							</div>
 						</div>
 						<div class="flex align-items-center height50px mt10">

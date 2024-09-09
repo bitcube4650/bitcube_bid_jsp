@@ -621,8 +621,6 @@
 				<jsp:include page="/WEB-INF/jsp/bid/bidResultReport.jsp">
 					<jsp:param name="title" value="입찰결과 보고서" />
 				</jsp:include>
-<!-- 				<report :data="data"/> -->
-		
 				<!-- 입찰이력 -->
 				<jsp:include page="/WEB-INF/jsp/bid/bidSubmitHistoryPop.jsp" />
 				<!--// 입찰이력 끝 -->

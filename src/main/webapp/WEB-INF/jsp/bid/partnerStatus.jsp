@@ -1,10 +1,29 @@
+<%@page import="java.util.Map"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
+<%
+	Map<String, Object> params = (Map<String, Object>) request.getAttribute("params");
+	
+	String keyword = "";
+	if (params != null && params.containsKey("keyword")) {
+		keyword = (String) params.get("keyword");
+	}
+%>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
 	<script>
 		$(document).ready(function() {
+			if(<%= "submitted".equals(keyword) %>){					// dashboard에서 투찰
+				$("#esmtYnY").prop("checked",true);
+			} else if(<%= "noticing".equals(keyword) %>){			// dashboard에서 미투찰
+				$("input[name=esmtYnN]").prop("checked",true);
+				$("#esmtYnN").prop("checked",true);
+			} else {
+				$("#esmtYnY").prop("checked",true);
+				$("#esmtYnN").prop("checked",true);
+			}
+			
 			onSearch(0);
 			
 			$("#srcBidNo").keydown(function(e) {
@@ -164,8 +183,8 @@
 							</div>
 							<div class="sbTit mr30 ml50">투찰상태</div>
 							<div class="flex align-items-center width100">
-								<input type="checkbox" id="esmtYnN" class="checkStyle" checked /><label for="esmtYnN">미투찰(재입찰 포함)</label>
-								<input type="checkbox" id="esmtYnY" class="checkStyle" checked /><label for="esmtYnY" class="ml50">투찰</label>
+								<input type="checkbox" id="esmtYnN" class="checkStyle" /><label for="esmtYnN">미투찰(재입찰 포함)</label>
+								<input type="checkbox" id="esmtYnY" class="checkStyle" /><label for="esmtYnY" class="ml50">투찰</label>
 							</div>
 							<a class="btnStyle btnSearch" onclick="onSearch(0)">검색</a>
 						</div>

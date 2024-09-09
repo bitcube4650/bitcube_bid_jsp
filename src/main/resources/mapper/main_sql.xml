@@ -55,7 +55,8 @@
 			ON	tbim.BI_NO = tbimc.BI_NO
 		WHERE	tbim.ING_TAG IN ('A5', 'A7')
 		AND		tbimc.CUST_CODE = #{custCode}
-		AND		tbimc.SUCC_YN = 'N' 
+		AND		IFNULL(tbimc.SUCC_YN, 'N') = 'N' 
+		AND		tbimc.ESMT_YN IN ('2' , '3') 
 		AND		tbim.UPDATE_DATE >= CURDATE() - INTERVAL 12 MONTH
 	</select>
 	

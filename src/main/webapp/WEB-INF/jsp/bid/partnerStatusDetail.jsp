@@ -407,21 +407,8 @@
 			});
 		}
 		
-		// 공고문 미리보기 프린트
-		function fnPrint(){
-			const printContents = document.querySelector('.printDiv').innerHTML;
-			const html = document.querySelector('html');
-			const printDiv = document.createElement("DIV");
-			printDiv.className = "print-div modalStyle";
-			html.appendChild(printDiv);
-			printDiv.innerHTML = printContents;
-			printDiv.querySelector(".modalFooter").style.display = "none";
-			printDiv.querySelector(".ModalClose").style.display = "none";
-			printDiv.querySelector(".modal-dialog").style.cssText = "width:100%; max-width:700px";
-			document.body.style.display = 'none';
-			window.print();
-			document.body.style.display = 'block';
-			$(".print-div").remove();
+		function fnBidBiddingPreviewModal(){
+			$("#bidBiddingPreviewPop").modal("show");
 		}
 	</script>
 	<div id="wrap">
@@ -772,7 +759,7 @@
 						</div>
 						<div class="text-center mt50">
 							<a href="/bid/partnerStatus" title="목록" class="btnStyle btnOutline"> 목록 </a>
-							<a data-toggle="modal" data-target="#biddingPreview" class="btnStyle btnOutline" title="공고문 미리보기" >공고문 미리보기</a>
+							<a data-toggle="modal" class="btnStyle btnOutline" title="공고문 미리보기" onclick="fnBidBiddingPreviewModal()">공고문 미리보기</a>
 <%
 	if(esmtPossible && "1".equals(biInfo.get("custEsmtYn")) && ("A1".equals(biInfo.get("ingTag")) || ("A2".equals(biInfo.get("ingTag")) && "Y".equals(biInfo.get("data.custRebidYn"))))){
 %>
@@ -788,181 +775,7 @@
 					</div>
 				</div>
 <!-- 				공고문 미리보기 팝업 -->
-				<div class="modal fade modalStyle printDiv" id="biddingPreview" tabindex="-1" role="dialog" aria-hidden="true">
-					<div class="modal-dialog" style="width: 100%; max-width: 800px">
-						<div class="modal-content">
-							<div class="modal-body">
-								<a href="#" class="ModalClose" data-dismiss="modal" title="닫기"><i
-									class="fa-solid fa-xmark"></i></a>
-								<h2 class="modalTitle">입찰공고</h2>
-								<h4 class="h4Tit mt20">가. 입찰에 부치는 사항</h4>
-								<div class="modalBoxSt mt10">
-									<div class="flex align-items-center">
-										<div class="formTit flex-shrink0 width170px">입찰번호</div>
-										<div class="width100"><%= biInfo.get("biNo") %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">입찰명</div>
-										<div style="width: 550px; word-wrap: break-word;"><%= biInfo.get("biName") %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">품명</div>
-										<div class="width100"><%= CommonUtils.getString(biInfo.get("itemName")) %> 품목류</div>
-									</div>
-								</div>
-
-								<h4 class="h4Tit mt20">나. 입찰 및 낙찰자 결정방식</h4>
-								<div class="modalBoxSt mt10">
-									<div class="flex align-items-center">
-										<div class="formTit flex-shrink0 width170px">입찰방식</div>
-										<div class="width100"><%= "A".equals(biInfo.get("biMode")) ? "지명경쟁입찰" : ("B".equals(biInfo.get("biMode")) ? "일반경쟁입찰" : "") %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">낙찰자결정방법</div>
-										<div class="width100"><%= CommonUtils.getString(biInfo.get("succDeciMeth")) %></div>
-									</div>
-								</div>
-
-								<h4 class="h4Tit mt20">다. 입찰참가정보</h4>
-								<div class="modalBoxSt mt10">
-									<div class="flex align-items-center">
-										<div class="formTit flex-shrink0 width170px">입찰참가자격</div>
-										<div style="width: 550px; word-wrap: break-word;"><%= CommonUtils.getString(biInfo.get("bidJoinSpec")) %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">현장설명일시</div>
-										<div style="width: 550px; word-wrap: break-word;"><%= CommonUtils.getString(biInfo.get("spotDate")) %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">현장설명장소</div>
-										<div style="width: 550px; word-wrap: break-word;"><%= CommonUtils.getString(biInfo.get("spotArea")) %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">특수조건</div>
-										<div style="width: 550px; word-wrap: break-word;">
-											<pre style="background-color: white;"><%= CommonUtils.getString(biInfo.get("specialCond")) %></pre>
-										</div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">납품조건</div>
-										<div style="width: 550px; word-wrap: break-word;"><%= CommonUtils.getString(biInfo.get("supplyCond")) %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">금액기준</div>
-										<div class="width100"><%= CommonUtils.getString(biInfo.get("amtBasis")) %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">결제조건</div>
-										<div style="width: 550px; word-wrap: break-word;"><%= CommonUtils.getString(biInfo.get("payCond")) %></div>
-									</div>
-								</div>
-
-								<h4 class="h4Tit mt20">라. 참고사항</h4>
-								<div class="modalBoxSt mt10">
-									<div class="flex align-items-center">
-										<div class="formTit flex-shrink0 width170px">입찰담당자</div>
-										<div class="width100"><%= !"".equals(CommonUtils.getString(biInfo.get("damdangName"))) ? CommonUtils.getString(biInfo.get("damdangName")) : CommonUtils.getString(biInfo.get("cuser")) %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">입찰담당부서</div>
-										<div class="width100"><%= !"".equals(CommonUtils.getString(biInfo.get("deptName"))) ? CommonUtils.getString(biInfo.get("deptName")) : CommonUtils.getString(biInfo.get("cuserDept")) %></div>
-									</div>
-								</div>
-
-								<h4 class="h4Tit mt20">마. 전자입찰 등록서류</h4>
-								<div class="modalBoxSt mt10">
-									<div class="flex align-items-center">
-										<div class="formTit flex-shrink0 width170px">제출시작일시</div>
-										<div class="width100"><%= CommonUtils.getString(biInfo.get("estStartDate")) %></div>
-									</div>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">제출마감일시</div>
-										<div class="width100"><%= CommonUtils.getString(biInfo.get("estCloseDate")) %></div>
-									</div>
-<%
-	if("1".equals(CommonUtils.getString(biInfo.get("insMode")))){
-		List<Map<String, Object>> specFile = (List<Map<String, Object>>) biInfo.get("specFile");
-%>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">세부내역</div>
-										<div class="width100">
-<%
-		for (int i = 0; i < specFile.size(); i++) {
-			if ("K".equals(specFile.get(i).get("fileFlag"))) {
-%>
-											<div onclick="fnfileDownload('<%= specFile.get(i).get("filePath") %>', '<%= specFile.get(i).get("fileNm") %>')">
-												<a class="textUnderline"><%= CommonUtils.getString(specFile.get(i).get("fileNm")) %></a>
-											</div>
-<%
-			}
-		}
-%>
-										</div>
-									</div>
-<%
-	} else if("2".equals(CommonUtils.getString(biInfo.get("insMode")))){
-%>
-
-									<div class="flex mt10">
-										<div class="formTit flex-shrink0 width170px">세부내역</div>
-										<div class="width100">
-											<table class="tblSkin1">
-												<colgroup>
-													<col style="" />
-												</colgroup>
-												<thead>
-													<tr>
-														<th>품목명</th>
-														<th>규격</th>
-														<th>수량</th>
-														<th>단위</th>
-													</tr>
-												</thead>
-												<tbody>
-<%
-		for(int i = 0; i < specInput.size(); i++){
-%>
-													<tr>
-														<td class="text-left"><%= CommonUtils.getString(specInput.get(i).get("name")) %></td>
-														<td class="text-left"><%= CommonUtils.getString(specInput.get(i).get("ssize")) %></td>
-														<td class="text-left"><%= CommonUtils.getString(specInput.get(i).get("unitcode")) %></td>
-														<td class="text-right end"><%= CommonUtils.getFormatNumber(CommonUtils.getString(specInput.get(i).get("orderQty"))) %></td>
-													</tr>
-<%
-		}
-%>
-												</tbody>
-											</table>
-										</div>
-									</div>
-<%
-	}
-%>
-									<div class="flex align-items-center mt10">
-										<div class="formTit flex-shrink0 width170px">첨부파일</div>
-										<div class="width100">
-<%
-	for(int i = 0; i < fileList.size(); i++){
-%>
-											<div class="<%= "1".equals(fileList.get(i).get("fileFlag")) ? "textHighlight" : "" %>">
-												<span class="mr20"><%= fileList.get(i).get("fileFlagStr") %></span>
-												<a class=textUnderline onclick="fnfileDownload('<%= fileList.get(i).get("filePath") %>', '<%= fileList.get(i).get("fileNm") %>')"><%= CommonUtils.getString(fileList.get(i).get("fileNm")) %></a>
-											</div>
-										
-<%
-	}
-%>
-										</div>
-									</div>
-								</div>
-								<div class="modalFooter">
-									<a class="modalBtnClose" data-dismiss="modal" title="닫기">닫기</a>
-									<a class="modalBtnCheck" title="인쇄하기" onclick="fnPrint()">인쇄하기</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<jsp:include page="/WEB-INF/jsp/bid/bidBiddingPreview.jsp" />
 <!-- 				// 공고문 미리보기 팝업 끝-->
 			</div>
 		</div>

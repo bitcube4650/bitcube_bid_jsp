@@ -1,10 +1,28 @@
+<%@page import="java.util.Map"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
+<%
+	Map<String, Object> params = (Map<String, Object>) request.getAttribute("params");
+	
+	String keyword = "";
+	if (params != null && params.containsKey("keyword")) {
+		keyword = (String) params.get("keyword");
+	}
+%>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
 	<script>
 		$(document).ready(function() {
+			if(<%= "awarded".equals(keyword) %>){					// dashboard에서 낙찰
+				$("input[name=succYn_Y]").prop("checked",true);
+			} else if(<%= "unsuccessful".equals(keyword) %>){		// dashboard에서 비선정
+				$("input[name=succYn_N]").prop("checked",true);
+			} else {
+				$("input[name=succYn_Y]").prop("checked",true);
+				$("input[name=succYn_N]").prop("checked",true);
+			}
+			
 			// datepicker
 			$("#startDate").datepicker();
 			$("#endDate").datepicker();
@@ -171,8 +189,8 @@
 							</div>
 							<div class="sbTit mr30 ml50 width100px">완료상태</div>
 							<div class="flex align-items-center">
-								<input type="checkbox" id="succYn_Y" class="checkStyle" name="succYn_Y" checked><label for="succYn_Y" class="mr30">선정(낙찰)</label>
-								<input type="checkbox" id="succYn_N" class="checkStyle" name="succYn_N" checked><label for="succYn_N" class="mr30">비선정(유찰포함)</label>
+								<input type="checkbox" id="succYn_Y" class="checkStyle" name="succYn_Y"><label for="succYn_Y" class="mr30">선정(낙찰)</label>
+								<input type="checkbox" id="succYn_N" class="checkStyle" name="succYn_N"><label for="succYn_N" class="mr30">비선정(유찰포함)</label>
 							</div>
 						</div>
 						<div class="flex align-items-center height50px mt10">
