@@ -158,9 +158,6 @@ public class BidModelAndViewController {
 	public ModelAndView moveBidProgressDetail(
 			@RequestParam(name="biNo",			defaultValue="") String biNo,
 			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
-		
-		System.out.println("asdfasdf " + biNo);
-
 		// 로그인 세션정보
 		HttpSession session	= request.getSession();
 		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
