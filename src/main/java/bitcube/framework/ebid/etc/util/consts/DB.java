@@ -139,6 +139,7 @@ public class DB {
 	
 	//BID_PROGRESS
 	public final static String QRY_SELECT_PROGRESS_LIST= "bid.selectProgressList";
+	public final static String QRY_INSERT_T_BI_LOG = "bid.qryInsertTBiLog";
 	
 	// statistics
 	public final static String QRY_SELECT_BI_INFO_LIST_COUNT = "statistics.selectBiInfoList_count";

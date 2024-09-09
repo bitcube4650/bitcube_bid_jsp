@@ -12,11 +12,15 @@
 <%
 	UserDto							userDto = (UserDto)(request.getSession()).getAttribute(Constances.SESSION_NAME);
 	String							userId = userDto.getLoginId();
+	String							custName = userDto.getCustName();
 	Map<String, Object>				data = (Map<String, Object>) request.getAttribute("biInfo");
 	ArrayList<Map<String, Object>>	custList = new ArrayList<Map<String, Object>>();
 									custList = (ArrayList) data.get("custList");
+	ArrayList<Map<String, Object>>	custUserInfo = new ArrayList<Map<String, Object>>();
+									custUserInfo = (ArrayList) data.get("custUserInfo");
 	ObjectMapper					objectMapper = new ObjectMapper();
 	String							jsonCustList = objectMapper.writeValueAsString(custList);
+	String							jsonCustUserInfo = objectMapper.writeValueAsString(custUserInfo);
 	String							jsonData = objectMapper.writeValueAsString(data);
 %>
 <!DOCTYPE html>
@@ -29,11 +33,40 @@
 		});
 		
 		function fnInit() {
+			var data		= <%= jsonData %>;
+			var createUser	= data.createUser;
+			var gongoId		= data.gongoId;
+			var loginInfo	= JSON.parse(localStorage.getItem("loginInfo"))
+			var loginId		= loginInfo.userId;
+			
+			if(createUser === loginId) {
+				var str = "";
+				str += '<button class="btnStyle btnSecondary" title="삭제" onclick="onBidProgressDelModal()">삭제</button>';
+				str += '<button class="btnStyle btnSecondary" title="수정" onclick="onMoveSave()">수정</button>';
+				$("#buttonList").append(str);
+			}
+			
+			if(createUser === loginId || gongoId === loginId) {
+				var str = "";
+				str += '<button class="btnStyle btnPrimary" title="입찰공고" onclick="onBidNoticeConfirm()">입찰공고</button>';
+				$("#buttonList").append(str);
+			}
 		}
 		
 		// 목록 이동
 		function onMovePage() {
 			location.href="/api/v1/move?viewName=bid/progress";
+		}
+		
+		// 입찰 참가업체 팝업
+		function onOpenCustUserPop(index) {
+			var custList	= <%= jsonCustList %>;
+			var cust		= custList[index];
+			
+			$("#custUserPopCustCode").val(cust.custCode);
+			$("#custUserPopCustName").val(cust.custName);
+			$("#custUserPop").modal('show');
+			onSearch();
 		}
 		
 		// 엑셀 변환
@@ -47,17 +80,76 @@
 		
 		// 삭제
 		function onBidProgressDelModal() {
-			
+			$("#bidProgressDel").modal("show");
 		}
 		
 		// 수정 페이지 이동
-		function onMoveSave{
+		function onMoveSave() {
 			
 		}
 		
-		// 입찰 공고
+		// 입찰 공고 confirm
 		function onBidNoticeConfirm() {
+			Swal.fire({
+				title: '입찰 공고',
+				text: '입찰공고를 하면 입찰 참가업체에게 입찰공고 메일이 발송되고 수정이 불가하게 됩니다.\n 입찰공고 하시겠습니까?',
+				icon: 'question',				// success / error / warning / info / question
+				confirmButtonColor: '#3085d6',	// 기본옵션
+				confirmButtonText: '입찰 공고',	// 기본옵션
+				showCancelButton: true,			// conrifm 으로 하고싶을떄
+				cancelButtonColor: '#d33',		// conrifm 에 나오는 닫기버튼 옵션
+				cancelButtonText: '취소'		// conrifm 에 나오는 닫기버튼 옵션
+			}).then(result => {
+				if (result.isConfirmed) { 
+					onBidNotice();
+				}
+			})
+		}
+		
+		// 입찰 공고
+		function onBidNotice() {
+			var data = <%= jsonData %>;
+			var custList = <%= jsonCustList %>;
+			var custUserInfo = <%= jsonCustUserInfo %>;
+			var custName = "<%= custName %>";
 			
+			var params = {
+				biNo : data.biNo,
+				biName : data.biName,
+				interNm : custName,
+				biModeCode : data.biMode,
+				cuserCode : data.createUser,
+				custCode : {},
+				custUserIds : {},
+			}
+			
+			var custCodeArr = [];
+			var custUserIds = [];
+			
+			if(data.biMode === 'A'){
+				for(var i=0; i<custUserInfo.length; i++) {
+					custCodeArr.push(custUserInfo[i].custCode);
+				}
+				for(var i=0; i<custUserInfo.length; i++) {
+					custUserIds.push(custUserInfo[i].userId);
+				}
+				params.custCode = JSON.stringify(custCodeArr);
+				params.custUserIds = JSON.stringify(custUserIds);
+			}
+			
+			$.post(
+				'/api/v1/bid/bidNotice',
+				params
+			).done(function(arg) {
+				if (arg.code === "OK") {
+					Swal.fire('입찰 공고가 완료되었습니다.', '', 'success');
+					onMovePage();
+				}
+				else{
+					Swal.fire('입찰 공고를 실패하였습니다.', '', 'error');
+					return;
+				}
+			})
 		}
 		
 		// 첨부파일 다운로드
@@ -384,13 +476,10 @@
 						</div>
 					</div>
 					
-					<div class="text-center mt50">
+					<div id="buttonList" class="text-center mt50">
 						<button class="btnStyle btnOutline" title="목록" onclick="onMovePage()">목록</button>
 						<button class="btnStyle btnOutline" title="액셀변환" onclick="onExcel()">액셀변환</button>
 						<button class="btnStyle btnOutline" title="공고문 미리보기" onclick="onBidBiddingPreviewModal()">공고문 미리보기</button>
-						<button class="btnStyle btnSecondary" title="삭제" onclick="onBidProgressDelModal()">삭제 (케이스처리)</button>
-						<button class="btnStyle btnSecondary" title="수정" onclick="onMoveSave()">수정 (케이스처리)</button>
-						<button class="btnStyle btnPrimary" title="입찰공고" onclick="onBidNoticeConfirm()">입찰공고</button>
 					</div>
 				</div>
 			</div>
@@ -400,6 +489,12 @@
 	
 	<!-- 공고문 미리보기 팝업 -->
 	<jsp:include page="/WEB-INF/jsp/bid/bidBiddingPreview.jsp" />
+	
+	<!-- 삭제 팝업 -->
+	<jsp:include page="/WEB-INF/jsp/bid/bidProgressDel.jsp" />
+	
+	<!-- 협력사 사용자 팝업 -->
+	<jsp:include page="/WEB-INF/jsp/bid/custUserPop.jsp" />
 		
 </body>
 </html>
