@@ -11,13 +11,13 @@
         $('#srcOtherCustName').keypress(function(event) {
             if (event.which === 13) {
                 event.preventDefault();
-                onSearch();
+                onSearch(0);
             }
         });
 	});
 
 		
-	function onSearch(){
+	function onSearch(page){
 		const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 			
 		
@@ -25,14 +25,12 @@
 			custCode : loginInfo.custCode,
 			custType : $('#srcOtherCustTypeCode').val(),
 			custName : $('#srcOtherCustName').val().trim(),
-			page : 0,
+			page : page,
 			size : '10'
 		}
 		
 		$.post("/api/v1/cust/otherCustList", params, 
 			function(response) {
-			console.log(response)
-			//const data =
 			if(response.code === 'OK') {
 				const list = response.data.content;
 				updatePagination(response.data);
@@ -68,7 +66,6 @@
 		$.post("/api/v1/cust/otherCustDetail", params, 
 			function(response) {
 			const data = response.data[0]
-			console.log(data)
 				if(response.code === 'OK') {
 					$('#otherCompany').modal('hide')
 					$('#type1Str, #type2Str,#otherCustIdStr').empty()
@@ -147,7 +144,7 @@
 		$("#srcOtherCustTypeNm").val('')
 		$("#srcOtherCustTypeCode").val('')
 		$("#srcOtherCustName").val('')		
-		onSearch()
+		onSearch(0)
 		$('#otherCompany').modal('show')
 	}
 	
@@ -336,14 +333,11 @@
 			return
 		}
 		
-		/*
 		const phoneNumberRegex = /^\d{3}-\d{3,4}-\d{4}$/;
 		if(!phoneNumberRegex.test($('#otherCustUserHp').val())){
 			Swal.fire('', '휴대폰번호 형식에 맞게 입력해주세요.', 'warning')
 		   	return;
 		}
-		
-		*/
 		
 		if(!$('#otherCustUserTel').val().trim()){
 			Swal.fire('', '유선전화를 입력해 주세요', 'warning')
@@ -351,13 +345,11 @@
 			return
 		}
 		
-		/*
 		const telNumberRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
 		if(!telNumberRegex.test($('#otherCustUserTel').val())){
 			Swal.fire('', '유선전화를 형식에 맞게 입력해주세요.', 'warning')
 		   return;
 		}
-		*/
 		
 		$('#joinBtn3').modal('show')
 	}
@@ -438,7 +430,7 @@
 			 
 		 }
 
-		 formData.append('data',JSON.stringify(params))
+		 formData.append('data', new Blob([JSON.stringify(params)], { type: 'application/json' }));
 		 
 	 	const fileInput = document.getElementById('file-input');
 	    const fileInput2 = document.getElementById('file-input2');
@@ -448,8 +440,6 @@
 	    if(fileInput2){
 			formData.append('bFile', fileInput2.files[0]);
 	    }    
-	    
-	    console.log(params)
 	    
 	    $.ajax({
 	        url: '/api/v1/cust/save',
@@ -581,19 +571,19 @@
 								<div class="flex align-items-center mt10">
 									<div class="formTit flex-shrink0 width170px">사업자등록번호 <span class="star">*</span></div>
 									<div class="flex align-items-center width100">
-										<input type="text"  id="otherCustRegnum1" class="inputStyle maxWidth-max-content" maxlength="3" >
+										<input type="text"  id="otherCustRegnum1" class="inputStyle maxWidth-max-content" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 										<span style="margin:0 10px">-</span>
-										<input type="text" id="otherCustRegnum2" class="inputStyle maxWidth-max-content" maxlength="2">
+										<input type="text" id="otherCustRegnum2" class="inputStyle maxWidth-max-content" maxlength="2" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 										<span style="margin:0 10px">-</span>
-										<input type="text" id="otherCustRegnum3" class="inputStyle maxWidth-max-content" maxlength="5">
+										<input type="text" id="otherCustRegnum3" class="inputStyle maxWidth-max-content" maxlength="5" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 									</div>
 								</div>
 								<div class="flex align-items-center mt10">
 									<div class="formTit flex-shrink0 width170px">법인번호 <span class="star">*</span></div>
 									<div class="flex align-items-center width100">
-										<input type="text" id="otherCustPresJuminNo1" class="inputStyle maxWidth-max-content"  maxlength="6">
+										<input type="text" id="otherCustPresJuminNo1" class="inputStyle maxWidth-max-content"  maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 										<span style="margin:0 10px">-</span>
-										<input type="text" id="otherCustPresJuminNo2" class="inputStyle maxWidth-max-content"  maxlength="7">
+										<input type="text" id="otherCustPresJuminNo2" class="inputStyle maxWidth-max-content"  maxlength="7" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 									</div>
 								</div>
 								<div class="flex align-items-center mt10">
@@ -606,20 +596,20 @@
 								<div class="flex align-items-center mt10">
 									<div class="formTit flex-shrink0 width170px">설립년도 <span class="star">*</span></div>
 									<div class="flex align-items-center width100">
-										<input type="text" id="otherCustFoundYear" class="inputStyle maxWidth-max-content" placeholder="ex) 2021" maxlength="4">
+										<input type="text" id="otherCustFoundYear" class="inputStyle maxWidth-max-content" placeholder="ex) 2021" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 										<div class="ml10">년</div>
 									</div>
 								</div>
 								<div class="flex align-items-center mt10">
 									<div class="formTit flex-shrink0 width170px">대표전화 <span class="star">*</span></div>
 									<div class="width100">
-										<input type="text" id="otherCustTel" class="inputStyle maxWidth-max-content" maxlength="13">
+										<input type="text" id="otherCustTel" class="inputStyle maxWidth-max-content" maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 									</div>
 								</div>
 								<div class="flex align-items-center mt10">
 									<div class="formTit flex-shrink0 width170px">팩스</div>
 									<div class="width100">
-										<input type="text" id="otherCustFax" class="inputStyle maxWidth-max-content">
+										<input type="text" id="otherCustFax" class="inputStyle maxWidth-max-content" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 									</div>
 								</div>
 								<div class="flex mt10">
@@ -759,13 +749,13 @@
 								<div class="flex align-items-center mt10">
 									<div class="formTit flex-shrink0 width170px">휴대폰 <span class="star">*</span></div>
 									<div class="width100">
-										<input type="text" id="otherCustUserHp" class="inputStyle maxWidth-max-content" maxlength="13">
+										<input type="text" id="otherCustUserHp" class="inputStyle maxWidth-max-content" maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 									</div>
 								</div>
 								<div class="flex align-items-center mt10">
 									<div class="formTit flex-shrink0 width170px">유선전화 <span class="star">*</span></div>
 									<div class="width100">
-										<input type="text" id="otherCustUserTel" class="inputStyle maxWidth-max-content" maxlength="13">
+										<input type="text" id="otherCustUserTel" class="inputStyle maxWidth-max-content" maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 									</div>
 								</div>
 								<div class="flex align-items-center mt10">
@@ -822,8 +812,7 @@
 							<div class="width150px">
 								<input type="text" id="srcOtherCustName" class="inputStyle">
 							</div>
-							<a onclick="onSearch()" class="btnStyle btnSearch" >검색</a>
-							</div>
+							<a onclick="onSearch(0)" class="btnStyle btnSearch" >검색</a>
 						</div>
 					</div>
 					<table class="tblSkin1 mt30">
@@ -858,7 +847,7 @@
 				</div>				
 			</div>
 		</div>
-
+	</div>
 	<!-- //타계열사 업체조회 -->
 	
 		<!-- 회원가입 신청 -->

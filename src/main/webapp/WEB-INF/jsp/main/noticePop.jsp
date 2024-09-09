@@ -10,11 +10,7 @@ var fnNoticeDetail = async function(bno){
 	await $.post(
 		'/api/v1/notice/noticeList', 
 		{ 
-			'bno': bno, 
-			custType : loginInfo.custType,
-			userAuth : loginInfo.userAuth,
-			custCode : loginInfo.custCode,
-			userId : loginInfo.userId
+			'bno': bno
 		}
 	)
 	.done(function(arg) {

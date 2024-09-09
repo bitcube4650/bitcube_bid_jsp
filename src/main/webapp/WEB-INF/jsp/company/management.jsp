@@ -89,7 +89,7 @@
 					            '</a>' +
 					        '</td>' +
 					        '<td>' + list[i].custType1 + '</td>' +
-					        '<td>' + list[i].regnum + '</td>' +
+					        '<td>' + Ft.onAddDashRegNum(list[i].regnum) + '</td>' +
 					        '<td>' + list[i].presName + '</td>' +
 					        '<td>' + (list[i].certYn === 'Y' ? '정상' : '삭제' ) + '</td>' +
 					        '<td>' + list[i].createDate + '</td>' +

@@ -31,6 +31,60 @@
 		function fnInit() {
 		}
 		
+		// 목록 이동
+		function onMovePage() {
+			location.href="/api/v1/move?viewName=bid/progress";
+		}
+		
+		// 엑셀 변환
+		function onExcel() {
+		}
+		
+		// 공고문 미리 보기
+		function onBidBiddingPreviewModal() {
+			$("#bidBiddingPreviewPop").modal("show");
+		}
+		
+		// 삭제
+		function onBidProgressDelModal() {
+			
+		}
+		
+		// 수정 페이지 이동
+		function onMoveSave{
+			
+		}
+		
+		// 입찰 공고
+		function onBidNoticeConfirm() {
+			
+		}
+		
+		// 첨부파일 다운로드
+		function fnfileDownload(filePath, fileName){
+			$.post(
+				'/api/v1/notice/downloadFile',
+				{
+					fileId : filePath,
+					responseType: "blob"
+				}
+			).done(function(arg) {
+				if (arg.code === "OK") {
+					const url = window.URL.createObjectURL(new Blob([arg.data]));
+					const link = document.createElement("a");
+					link.href = url;
+					link.setAttribute("download", fileName);
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				}
+				else{
+					Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
+					return
+				}
+			})
+		}
+		
 	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
@@ -137,7 +191,7 @@
 							</div>
 						</div>
 						
-						<% if("02".equals(CommonUtils.getString(data.get("interrelateCustCode")))) { %>
+						<% if("02".equals(CommonUtils.getString(data.get("interrelatedCustCode")))) { %>
 						<h3 class="h3Tit mt50">입찰분류</h3>
 						<div class="boxSt mt20" >
 							<div class="flex align-items-center">
@@ -203,13 +257,13 @@
 								<div class="flex align-items-center width100">
 									<div class="formTit flex-shrink0 width170px">입회자1</div>
 									<div class="width100"><%= CommonUtils.getString(data.get("openAtt1")) %> 
-									<%-- 	<% if(userId.equals(CommonUtils.getString(data.get("openAtt1Id")))) { %> --%>
+										<% if(userId.equals(CommonUtils.getString(data.get("openAtt1Id")))) { %>
 											<% if("Y".equals(CommonUtils.getString(data.get("openAtt1Sign")))) { %>
 										<span onclick="onOpenAttSignPop('1', '<%= CommonUtils.getString(data.get("openAtt1Id")) %>', '<%= CommonUtils.getString(data.get("openAtt1Sign")) %>')">[서명 확인]</span>
 											<% } else { %>
 										<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop('1', '<%= CommonUtils.getString(data.get("openAtt1Id")) %>', '<%= CommonUtils.getString(data.get("openAtt1Sign")) %>')">[서명 미확인]</span>
 											<% } %>
-									<%-- 	<% } %> --%>
+										<% } %>
 									</div>
 								</div>
 								<div class="flex align-items-center width100 ml80">
@@ -236,7 +290,7 @@
 								</div>
 							</div>
 							
-							<div class="flex mt20">
+							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">세부내역</div>
 								<div class="width100">
 									<div>
@@ -331,7 +385,7 @@
 					</div>
 					
 					<div class="text-center mt50">
-						<button class="btnStyle btnOutline" title="목록" onclick="onMoveBidProgress()">목록</button>
+						<button class="btnStyle btnOutline" title="목록" onclick="onMovePage()">목록</button>
 						<button class="btnStyle btnOutline" title="액셀변환" onclick="onExcel()">액셀변환</button>
 						<button class="btnStyle btnOutline" title="공고문 미리보기" onclick="onBidBiddingPreviewModal()">공고문 미리보기</button>
 						<button class="btnStyle btnSecondary" title="삭제" onclick="onBidProgressDelModal()">삭제 (케이스처리)</button>
@@ -344,6 +398,8 @@
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>
 	
-	
+	<!-- 공고문 미리보기 팝업 -->
+	<jsp:include page="/WEB-INF/jsp/bid/bidBiddingPreview.jsp" />
+		
 </body>
 </html>

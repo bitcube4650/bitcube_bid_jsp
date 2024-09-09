@@ -334,7 +334,7 @@
 							</div>
 						</div>
 						
-						<% if("02".equals(CommonUtils.getString(data.get("interrelateCustCode")))) { %>
+						<% if("02".equals(CommonUtils.getString(data.get("interrelatedCustCode")))) { %>
 						<h3 class="h3Tit mt50">입찰분류</h3>
 						<div class="boxSt mt20" >
 							<div class="flex align-items-center">
