@@ -215,17 +215,17 @@ function selectCompletedBidCnt() {
 						</div>
 						<div class="mcl_right">
 							<div class="mainConBox">
-								<h2 class="h2Tit">협력업체<a href="api/v1/move?viewName=company/partner/management" title="협력업체 페이지로 이동" class="mainConBoxMore">더보기<i class="fa-solid fa-circle-plus"></i></a></h2>
+								<h2 class="h2Tit">협력업체<a href="api/v1/move?viewName=company/management" title="협력업체 페이지로 이동" class="mainConBoxMore">더보기<i class="fa-solid fa-circle-plus"></i></a></h2>
 								<div class="cooperativ">
-									<a href="/company/partner/approval" title="미승인 업체 페이지로 이동">
+									<a href="/company/approval" title="미승인 업체 페이지로 이동">
 										<span class="cooperativ_tit">미승인 업체</span>
 										<span class="cooperativ_num" id="request">0</span>
 									</a>
-									<a href="/company/partner/management" title="승인 업체 (인증서 제출) 페이지로 이동">
+									<a href="/company/management" title="승인 업체 (인증서 제출) 페이지로 이동">
 										<span class="cooperativ_tit">승인 업체</span>
 										<span class="cooperativ_num" id="approval">0</span>
 									</a>
-									<a href="/company/partner/management?certYn=D" title="삭제 업체 페이지로 이동">
+									<a href="/company/management?certYn=D" title="삭제 업체 페이지로 이동">
 										<span class="cooperativ_tit">삭제 업체</span>
 										<span class="cooperativ_num" id="deletion">0</span>
 									</a>

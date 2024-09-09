@@ -6,14 +6,21 @@
 	<script type="text/javascript">
 	$(document).ready(function() {
 		
+
 		const loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
 		const userAuth = loginInfo.userAuth
 		if(userAuth === '2' || userAuth === '4'){
 			$('#comPanyInsertBtn').css('display','')
 		}
 
+		const certYn = new URLSearchParams(window.location.search).get('certYn')
 
-		$('#srcState').val('Y')
+		if(certYn){
+			$("#srcState").val(certYn)
+		}else{
+			$('#srcState').val('Y')
+		}
+
 		onSearch(0);
 		
         $('#srcCustName').keypress(function(event) {
@@ -66,7 +73,7 @@
 		
 		$.post("/api/v1/cust/approvalList", params, 
 			function(response) {
-			console.log(response)
+
 			if(response.code === 'OK') {
 				const list = response.data.content;
 				updatePagination(response.data);
@@ -117,8 +124,6 @@
 	}
 	
 	function itemSelectCallback(itemCode, itemName) {
-		console.log(itemCode)
-		console.log(itemName)
 		$("#custTypePop").modal('hide')
 		$('#srcCustTypeCode').val(itemCode)
 		$('#srcCustTypeName').val(itemName)
@@ -137,7 +142,6 @@
 			
 		$.post("/api/v1/cust/userListForCust", params, 
 				function(response) {
-				console.log(response)
 				if(response.code === 'OK') {
 					const list = response.data.content;
 
