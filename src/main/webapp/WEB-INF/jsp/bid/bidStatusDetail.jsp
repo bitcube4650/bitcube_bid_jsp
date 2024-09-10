@@ -26,6 +26,10 @@
 	<script>
 		$(document).ready(function() {
 			fnInit();
+			
+			$('#allChk').change(function() {
+				$('input[name="subCheckbox"]').prop('checked', this.checked);
+			});
 		});
 		
 		function fnInit() {
@@ -115,6 +119,58 @@
 		
 		// 선택업체 재입찰
 		function onRebid() {
+			var selectedCount = $('input[name="subCheckbox"]:checked').length;
+			if(selectedCount === 0){
+				Swal.fire('', '업체를 선택해주세요', 'warning');
+				return false;
+			}
+			
+			var checkedBoxes = $('input[name="subCheckbox"]:checked');
+			var str = "";
+			for (var i = 0; i < checkedBoxes.length; i++) {
+				var checkbox = checkedBoxes[i];
+				str += $(checkbox).val();
+				if(!((i+1) == checkedBoxes.length)) {
+					str += ",";
+				}
+			}
+
+			Swal.fire({
+					title: '',
+					text: "선택한 업체로 재입찰을 진행합니다. 재입찰 하시겠습니까?",
+					icon: 'question',
+					confirmButtonColor: '#3085d6',
+					confirmButtonText: '재입찰',
+					showCancelButton: true,
+					cancelButtonColor: '#d33',
+					cancelButtonText: '취소',
+			}).then((result) => {
+				if(result.value){
+					var data		= <%= jsonData %>;
+					
+					const form = document.createElement('form');
+					form.setAttribute('action', "/bidstatus/moveRebid");
+					form.setAttribute('method', 'post');
+					
+					const input = document.createElement('input');
+					input.setAttribute('type', 'hidden');
+					input.setAttribute('name', 'biNo');
+					input.setAttribute('value', data.biNo);
+					
+					const input2 = document.createElement('input');
+					input2.setAttribute('type', 'hidden');
+					input2.setAttribute('name', 'reCustCode');
+					input2.setAttribute('value', str);
+					
+					// input태그를 form태그의 자식요소로 만듦
+					form.appendChild(input);
+					form.appendChild(input2);
+					
+					document.body.appendChild(form) // form태그를 body태그의 자식요소로 만듦
+					form.submit();
+				}
+			});
+			
 			
 		}
 		
@@ -736,7 +792,7 @@
 									%>
 									<tr id="mainTr<%= index %>">
 										<td>
-											<input type="checkbox" id="'<%= index %>'" class="checkStyle checkOnly"/>
+											<input type="checkbox" id="'<%= index %>'" value="<%= CommonUtils.getString(map.get("custCode")) %>" name="subCheckbox" class="checkStyle checkOnly"/>
 											<label for="'<%= index %>'"></label>
 										</td>
 										<td class="text-left">
@@ -823,6 +879,7 @@
 								<% if( ((boolean) data.get("openAuth")) || CommonUtils.getString(data.get("createUser")).equals(userId) ) { %>
 								<a onClick="onRebid()" class="btnStyle btnOutlineRed" title="선택업체 재입찰">선택업체 재입찰하러 가기</a>
 								<% } %>
+								<a onClick="onRebid()" class="btnStyle btnOutlineRed" title="선택업체 재입찰">선택업체 재입찰하러 가기</a>
 							</div>
 						</div>
 						<% } %>

@@ -177,4 +177,34 @@ public class BidModelAndViewController {
 		modelAndView.setViewName("bid/bidProgressDetail");
 		return modelAndView;
 	}
+	
+	/**
+	 * 그룹사 > 입찰계획 상세
+	 * @return
+	 */
+	@PostMapping("/bidstatus/moveRebid")
+	public ModelAndView moveRebid(
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			@RequestParam(name="reCustCode",	defaultValue="") String reCustCode,
+			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		
+		if(user == null) {
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("biNo", biNo);
+		
+		Map<String, Object> detailMap =  bidStatusService.statusDetail(params, user);
+		
+		modelAndView.addObject("biInfo", detailMap);
+		modelAndView.addObject("reCustCode", reCustCode);
+		
+		modelAndView.setViewName("bid/rebid");
+		return modelAndView;
+	}
 }
