@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import bitcube.framework.ebid.core.UserService;
 import bitcube.framework.ebid.dao.GeneralDao;
 import bitcube.framework.ebid.dto.ResultBody;
 import bitcube.framework.ebid.dto.UserDto;
@@ -31,6 +32,9 @@ public class BidStatusService {
 	
 	@Autowired
 	private MessageService messageService;
+	
+	@Autowired
+	private UserService userService;
 
 	/**
 	 * 입찰진행 리스트
@@ -470,4 +474,34 @@ public class BidStatusService {
 		
 		return resultBody;
 	}
+	
+	/**
+	 * 입회자 서명
+	 * @param params
+	 * @return
+	 */
+	@Transactional
+	public ResultBody attSign(Map<String, Object> params) throws Exception{
+		ResultBody resultBody = new ResultBody();
+		
+		String password = CommonUtils.getString(params.get("attPw"));
+		String whoAtt = CommonUtils.getString(params.get("whoAtt"));
+		if(!whoAtt.equals("1") && !whoAtt.equals("2")) {
+			resultBody.setCode("fail");
+			return resultBody;
+		}
+		
+		// 비밀번호 체크 로직 변경
+		UserDto userDto = (UserDto) params.get("userDto");
+		Boolean pwCheck = userService.checkPassword(userDto.getLoginId(), password);
+		
+		if(pwCheck) {
+			generalDao.updateGernal(DB.QRY_UPDATE_OPEN_ATT_SIGN, params);
+		}else {
+			resultBody.setCode("inValid");
+		}
+		
+		return resultBody;
+	}
+	
 }

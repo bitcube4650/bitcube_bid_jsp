@@ -115,4 +115,21 @@ public class BidStatusController {
 		return resultBody;
 	}
 	
+	/**
+	 * 입회자 서명
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/attSign")
+	public ResultBody attSign(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) {
+		ResultBody resultBody = new ResultBody();
+		try {
+			resultBody = bidStatusService.attSign(params); 
+		}catch(Exception e) {
+			log.error("attSign error : {}" , e);
+			resultBody.setCode("fail");
+		}
+		return resultBody;
+	}
+	
 }

@@ -40,9 +40,8 @@
 			var openAtt2Id		= data.openAtt2Id;
 			var openAtt2Sign	= data.openAtt2Sign;
 			
-			console.log(loginId);
-			console.log(openAtt1Id);
-			console.log(openAtt2Id);
+			$("#hiddenAtt1Sign").val(openAtt1Sign);
+			$("#hiddenAtt2Sign").val(openAtt2Sign);
 			
 			var str = '';
 			str += '<div class="flex align-items-center width100">';
@@ -51,9 +50,14 @@
 			if(loginId === openAtt1Id) {
 				if("Y" === openAtt1Sign) {
 			str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 확인]</span>';
-			
 				} else {
 			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 미확인]</span>';
+				}
+			} else {
+				if("Y" === openAtt1Sign) {
+			str += '<span>[서명 확인]</span>';
+				} else {
+			str += '<span style="color: red;">[서명 미확인]</span>';
 				}
 			}
 			str += '</div>';
@@ -66,27 +70,19 @@
 			str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 확인]</span>';
 			
 				} else {
-			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(1, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 미확인]</span>';
+			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(2, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 미확인]</span>';
+				}
+			} else {
+				if("Y" === openAtt1Sign) {
+			str += '<span>[서명 확인]</span>';
+				} else {
+			str += '<span style="color: red;">[서명 미확인]</span>';
 				}
 			}
 			str += '</div>';
 			str += '</div>';
 			
 			$("#attDiv").append(str);
-			
-			
-			//<div class="flex align-items-center width100 ml80">
-			//	<div class="formTit flex-shrink0 width170px">입회자2</div>
-			//	<div class="width100"><%= CommonUtils.getString(data.get("openAtt2")) %> 
-			//		<% if(userId.equals(CommonUtils.getString(data.get("openAtt2Id")))) { %>
-			//			<% if("Y".equals(CommonUtils.getString(data.get("openAtt2Sign")))) { %>
-			//		<span onclick="onOpenAttSignPop('2', '<%= CommonUtils.getString(data.get("openAtt2Id")) %>', '<%= CommonUtils.getString(data.get("openAtt2Sign")) %>')">[서명 확인]</span>
-			//			<% } else { %>
-			//		<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop('2', '<%= CommonUtils.getString(data.get("openAtt2Id")) %>', '<%= CommonUtils.getString(data.get("openAtt2Sign")) %>')">[서명 미확인]</span>
-			//			<% } %>
-			//		<% } %>
-			//	</div>
-			//</div>
 		}
 		
 		function onRejectDetail(value) {
@@ -125,12 +121,12 @@
 		function onCheck() {
 			var data		= <%= jsonData %>;
 			
-			if(!Ft.isEmpty(data.openAtt1Id) && data.openAtt1Sign !== 'Y'){
+			if(!Ft.isEmpty(data.openAtt1Id) && $("#hiddenAtt1Sign").val() !== 'Y'){
 				Swal.fire('', '입회자1의 서명이 필요합니다.', 'warning');
 				return false;
 			}
 
-			if(!Ft.isEmpty(data.openAtt2Id) && data.openAtt2Sign !== 'Y'){
+			if(!Ft.isEmpty(data.openAtt2Id) && $("#hiddenAtt2Sign").val() !== 'Y'){
 				Swal.fire('', '입회자2의 서명이 필요합니다.', 'warning');
 				return false;
 			}
@@ -280,29 +276,91 @@
 			})
 		}
 		
-		function onOpenAttSignPop(a,b,c) {
-			alert(a);
-			alert(b);
-			alert(c);
-			
+		function onOpenAttSignPop(att, attSignId, signYn) {
 			if(signYn === 'N'){
-				let currDate = new Date();
-				let currDateTime = currDate.getTime();
-				let estStartDate = new Date(props.data.estStartDate);
-				let estStartTime = estStartDate.getTime();
-				let estCloseDate = new Date(props.data.estCloseDate);
-				let estCloseTime = estCloseDate.getTime();
+				var data			= <%= jsonData %>;
+				var currDate		= new Date();
+				var currDateTime	= currDate.getTime();
+				var estStartDate	= new Date(data.estStartDate);
+				var estStartTime	= estStartDate.getTime();
+				var estCloseDate	= new Date(data.estCloseDate);
+				var estCloseTime	= estCloseDate.getTime();
 			
 				if(estStartTime > currDateTime || estCloseTime > currDateTime){
 					Swal.fire('', '입회자 서명은 제출마감일시 이후에 가능합니다.', 'error');
 					return false;
 				}
-
-				setWhoAtt(att);
-				setAttSignId(attSignId);
-				setAttPop(true);
+				// 팝업 호출
+				$("#bidAttSignPopAtt").val(att);
+				$("#bidAttSignPopAttSignId").val(attSignId);
+				$("#bidAttSignPopBiNo").val(data.biNo);
+				$("#bidAttSignPop").modal("show");
 			}
-					
+		}
+		
+		function onAttSignUpdate(whoAtt) {
+			if (whoAtt === '1'){
+				$("#hiddenAtt1Sign").val("Y");
+			} else if (whoAtt === '2'){
+				$("#hiddenAtt2Sign").val("Y");
+			}
+			setAttDiv();
+		}
+		
+		function setAttDiv() {
+			var loginInfo	= JSON.parse(localStorage.getItem("loginInfo"))
+			var loginId		= loginInfo.userId;
+			
+			var data			= <%= jsonData %>;
+			var openAtt1		= data.openAtt1;
+			var openAtt1Id		= data.openAtt1Id;
+			var openAtt1Sign	= $("#hiddenAtt1Sign").val();
+			var openAtt2		= data.openAtt2;
+			var openAtt2Id		= data.openAtt2Id;
+			var openAtt2Sign	= $("#hiddenAtt2Sign").val();
+			
+			$("#attDiv").empty();
+			
+			var str = '';
+			str += '<div class="flex align-items-center width100">';
+			str += '<div class="formTit flex-shrink0 width170px">입회자1</div>';
+			str += '<div class="width100">' + openAtt1;
+			if(loginId === openAtt1Id) {
+				if("Y" === openAtt1Sign) {
+			str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 확인]</span>';
+				} else {
+			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 미확인]</span>';
+				}
+			} else {
+				if("Y" === openAtt1Sign) {
+			str += '<span>[서명 확인]</span>';
+				} else {
+			str += '<span style="color: red;">[서명 미확인]</span>';
+				}
+			}
+			str += '</div>';
+			str += '</div>';
+			str += '<div class="flex align-items-center width100 ml80">';
+			str += '<div class="formTit flex-shrink0 width170px">입회자2</div>';
+			str += '<div class="width100">' + openAtt2;
+			if(loginId === openAtt2Id) {
+				if("Y" === openAtt2Sign) {
+			str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 확인]</span>';
+			
+				} else {
+			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(2, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 미확인]</span>';
+				}
+			} else {
+				if("Y" === openAtt1Sign) {
+			str += '<span>[서명 확인]</span>';
+				} else {
+			str += '<span style="color: red;">[서명 미확인]</span>';
+				}
+			}
+			str += '</div>';
+			str += '</div>';
+			
+			$("#attDiv").append(str);
 		}
 		
 	</script>
@@ -474,8 +532,9 @@
 								</div>
 							</div>
 							<div id="attDiv" class="flex align-items-center mt20">
-								
 							</div>
+							<input type="hidden" id="hiddenAtt1Sign" />
+							<input type="hidden" id="hiddenAtt2Sign" />
 							<div class="flex align-items-center mt20">
 								<div class="flex align-items-center width100">
 									<div class="formTit flex-shrink0 width170px">내역방식</div>
@@ -789,8 +848,11 @@
 		<jsp:param name="title" value="입찰결과 보고서" />
 	</jsp:include>
 	
-<!--	협력사 사용자 팝업-->
+	<!-- 협력사 사용자 팝업 -->
 	<jsp:include page="/WEB-INF/jsp/bid/custUserPop.jsp" />
+	
+	<!-- 입회자 서명 -->
+	<jsp:include page="/WEB-INF/jsp/bid/bidAttSignPop.jsp" />
 
 </body>
 </html>
