@@ -65,8 +65,7 @@
 			
 			$("#custUserPopCustCode").val(cust.custCode);
 			$("#custUserPopCustName").val(cust.custName);
-			$("#custUserPop").modal('show');
-			onSearch();
+			custUserPopOnSearch(0);
 		}
 		
 		// 공고문 미리 보기

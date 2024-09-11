@@ -105,8 +105,7 @@
 			
 			$("#custUserPopCustCode").val(cust.custCode);
 			$("#custUserPopCustName").val(cust.custName);
-			$("#custUserPop").modal('show');
-			onSearch();
+			custUserPopOnSearch(0);
 		}
 				
 		// 유찰
@@ -278,58 +277,42 @@
 		//파일 다운로드 파라미터 셋팅
 		function fnCustSpecFileDown(fileNm, filePath){
 			if(!Ft.isEmpty(fileNm) && !Ft.isEmpty(filePath)){
-				downloadFile(fileNm, filePath);
+				fnfileDownload(filePath, fileNm);
 			}
-		}
-		
-		function downloadFile(fileNm,filePath){
-			var params = {
-					fileId : filePath,
-					responseType: "blob"
-			}
-			$.post(
-					"/api/v1/bidComplete/fileDown",
-					params
-					)
-					.done(function(arg) {
-						if (arg.code === "OK") {
-							const url = window.URL.createObjectURL(new Blob([arg.data]));
-							const link = document.createElement("a");
-							link.href = url;
-							link.setAttribute("download", fileNm);
-							document.body.appendChild(link);
-							link.click();
-							document.body.removeChild(link);
-						} else {
-							Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
-							return;
-						}
-					});
 		}
 		
 		// 첨부파일 다운로드
 		function fnfileDownload(filePath, fileName){
-			$.post(
-				'/api/v1/notice/downloadFile',
-				{
-					fileId : filePath,
-					responseType: "blob"
-				}
-			).done(function(arg) {
-				if (arg.code === "OK") {
-					const url = window.URL.createObjectURL(new Blob([arg.data]));
-					const link = document.createElement("a");
-					link.href = url;
-					link.setAttribute("download", fileName);
+			let params = {
+					fileId : filePath
+			}
+			
+			$.ajax({
+				url: '/api/v1/notice/downloadFile',
+				data: params,
+				type: 'POST',
+				xhrFields: {
+					responseType: "blob",
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					Swal.fire('', '파일 다운로드를 실패했습니다.', 'error');
+				},
+				success: function(data, status, xhr) {
+					var blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+
+					// 링크 생성
+					var link = document.createElement('a');
+					link.href = window.URL.createObjectURL(blob);
+					link.download = fileName;
+
+					// 링크를 클릭하여 다운로드를 실행
 					document.body.appendChild(link);
 					link.click();
+
+					// 링크 제거
 					document.body.removeChild(link);
 				}
-				else{
-					Swal.fire('', '파일 다운로드를 실패하였습니다.', 'warning');
-					return
-				}
-			})
+			});
 		}
 		
 		function onOpenAttSignPop(att, attSignId, signYn) {
@@ -611,7 +594,7 @@
 											List<Map<String, Object>> specFile = (List<Map<String, Object>>) data.get("specFile");
 											for(int i = 0; i < specFile.size(); i++){
 									%>
-										<a class=textUnderline onclick="fnfileDownload('<%= (specFile.get(i)).get("filePath") %>', '<%= (specFile.get(i)).get("fileNm") %>')"><%= (specFile.get(i)).get("fileNm") %></a>
+										<a class=textUnderline onclick="fnCustSpecFileDown('<%= (specFile.get(i)).get("fileNm") %>', '<%= (specFile.get(i)).get("filePath") %>')"><%= (specFile.get(i)).get("fileNm") %></a>
 									<%
 											}
 										} else if("2".equals(CommonUtils.getString(data.get("insMode")))){
@@ -668,7 +651,7 @@
 %>
 									<div class="<%= ( "1".equals(fileList.get(i).get("fileFlag")) ? "textHighlight" : "" ) %>">
 										<span class="mr20"> <%= ( "1".equals(fileList.get(i).get("fileFlag")) ? "대내용" : "대외용" ) %> </span>
-										<a class=textUnderline onclick="fnfileDownload('<%= fileList.get(i).get("filePath") %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
+										<a class=textUnderline onclick="fnCustSpecFileDown('<%= (fileList.get(i)).get("fileNm") %>', '<%= (fileList.get(i)).get("filePath") %>')"><%= fileList.get(i).get("fileNm") %></a>
 									</div>
 <%
 	}
@@ -741,7 +724,7 @@
 											</td>
 											<td class="end">
 												<% if(!CommonUtils.getString(map.get("etcPath")).equals("")) { %>
-													<img src='/resources/images/icon_etc.svg' onclick="fnCustSpecFileDown('<%= map.get("etcFile") %>', '<%= map.get("etcPath") %>')" class='iconImg' alt='etc' />
+													<img src='/resources/images/icon_etc.svg' onclick="onRejectDetail('<%= CommonUtils.getString(map.get("esmtYn")) %>')" class='iconImg' alt='etc' />
 												<% } %>
 											</td>
 										</tr>
@@ -802,16 +785,16 @@
 										</td>
 										<td class="text-overflow"><%= CommonUtils.getString(map.get("esmtAmt")) %></td>
 										<td>
-											<% if(CommonUtils.getString(map.get("esmtYn")).equals("2")) { %>
-												<a onClick="onEvent(<%= index %> , event)" class="textUnderline textMainColor"><%= CommonUtils.getString(map.get("esmtYn")) %></a>
-											<% } else { %>
-												<a onClick="onEvent(<%= index %> , event)"><%= CommonUtils.getString(map.get("esmtYn")) %></a>
+											<% if(CommonUtils.getString(map.get("esmtYn")).equals("2") || CommonUtils.getString(map.get("esmtYn")).equals("3")) { %>
+												<a onClick="onEvent(<%= index %> , event)" class="textUnderline textMainColor">상세</a>
+											<% } else if(CommonUtils.getString(map.get("esmtYn")).equals("1")) { %>
+												<a href="javascript:void(0);">공고확인</a>
 											<% } %>
 										</td>
 										<td><%= CommonUtils.getString(map.get("submitDate")) %></td>
 										<td><%= CommonUtils.getString(map.get("damdangName")) %></td>
 										<td>
-											<% if(CommonUtils.getString(map.get("etcPath")).equals("")) { %>
+											<% if(!CommonUtils.getString(map.get("etcPath")).equals("")) { %>
 												<img src='/resources/images/icon_etc.svg' onclick="fnCustSpecFileDown('<%= map.get("etcFile") %>', '<%= map.get("etcPath") %>')" class='iconImg' alt='etc' />
 											<% } %>
 										</td>

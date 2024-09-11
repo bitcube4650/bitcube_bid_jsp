@@ -39,8 +39,8 @@
 			$.post(
 				"/api/v1/bidstatus/statuslist",
 				{
-					biNo		: biNo
-				,	biName		: biName
+					bidNo		: biNo
+				,	bidName		: biName
 				,	rebidYn		: rebidYn
 				,	dateOverYn	: dateOverYn
 				,	openBidYn	: openBidYn

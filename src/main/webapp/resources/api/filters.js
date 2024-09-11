@@ -48,7 +48,7 @@ var Ft = {
             return '';
         } else if (val === '1') {
             return '공고확인';
-        } else if (val === '2') {
+        } else if (val === '2' || val === '3') {
             return '상세';
         }
     },
