@@ -1,10 +1,33 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page import="java.util.Map"%>
+<%
+	Map<String, Object> params = (Map<String, Object>) request.getAttribute("params");
+	
+	String keyword = "";
+	if (params != null && params.containsKey("keyword")) {
+		keyword = (String) params.get("keyword");
+	}
+%>
 <!DOCTYPE html>
 <html>
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
 	<script>
 		$(document).ready(function() {
+			if(<%= "noticing".equals(keyword) %>){					// dashboard에서 입찰완료로 조회
+				$("input[id=rebidYn]").prop("checked",true);
+				$("input[id=dateOverYn]").prop("checked",false);
+				$("input[id=openBidYn]").prop("checked",false);
+			} else if(<%= "beforeOpening".equals(keyword) %>){		// dashboard에서 유찰로 조회
+				$("input[id=rebidYn]").prop("checked",false);
+				$("input[id=dateOverYn]").prop("checked",true);
+				$("input[id=openBidYn]").prop("checked",false);
+			} else if(<%= "opening".equals(keyword) %>){
+				$("input[id=rebidYn]").prop("checked",false);
+				$("input[id=dateOverYn]").prop("checked",false);
+				$("input[id=openBidYn]").prop("checked",true);
+			}
+			
 			fnInit();
 			
 			$("#onSearchBtn").on('click', function(e) {

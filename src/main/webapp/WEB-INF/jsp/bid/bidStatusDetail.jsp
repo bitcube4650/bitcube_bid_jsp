@@ -50,40 +50,45 @@
 			var str = '';
 			str += '<div class="flex align-items-center width100">';
 			str += '<div class="formTit flex-shrink0 width170px">입회자1</div>';
-			str += '<div class="width100">' + openAtt1;
-			if(loginId === openAtt1Id) {
-				if("Y" === openAtt1Sign) {
-			str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 확인]</span>';
+			
+			if(openAtt1 != undefined && openAtt1 != null && openAtt1 != ''){
+				str += '<div class="width100">' + openAtt1;
+				if(loginId === openAtt1Id) {
+					if("Y" === openAtt1Sign) {
+				str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 확인]</span>';
+					} else {
+				str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 미확인]</span>';
+					}
 				} else {
-			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(1, \'' + openAtt1Id + '\', \'' + openAtt1Sign + '\')">[서명 미확인]</span>';
+					if("Y" === openAtt1Sign) {
+				str += '<span>[서명 확인]</span>';
+					} else {
+				str += '<span style="color: red;">[서명 미확인]</span>';
+					}
 				}
-			} else {
-				if("Y" === openAtt1Sign) {
-			str += '<span>[서명 확인]</span>';
-				} else {
-			str += '<span style="color: red;">[서명 미확인]</span>';
-				}
+				str += '</div>';
 			}
-			str += '</div>';
 			str += '</div>';
 			str += '<div class="flex align-items-center width100 ml80">';
 			str += '<div class="formTit flex-shrink0 width170px">입회자2</div>';
-			str += '<div class="width100">' + openAtt2;
-			if(loginId === openAtt2Id) {
-				if("Y" === openAtt2Sign) {
-			str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 확인]</span>';
-			
+			if(openAtt2 != undefined && openAtt2 != null && openAtt2 != ''){
+				str += '<div class="width100">' + openAtt2;
+				if(loginId === openAtt2Id) {
+					if("Y" === openAtt2Sign) {
+				str += '<span onclick="onOpenAttSignPop(1, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 확인]</span>';
+				
+					} else {
+				str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(2, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 미확인]</span>';
+					}
 				} else {
-			str += '<span style="color: red; cursor: pointer; textDecoration: underline;" onclick="onOpenAttSignPop(2, \'' + openAtt2Id + '\', \'' + openAtt2Sign + '\')">[서명 미확인]</span>';
+					if("Y" === openAtt1Sign) {
+				str += '<span>[서명 확인]</span>';
+					} else {
+				str += '<span style="color: red;">[서명 미확인]</span>';
+					}
 				}
-			} else {
-				if("Y" === openAtt1Sign) {
-			str += '<span>[서명 확인]</span>';
-				} else {
-			str += '<span style="color: red;">[서명 미확인]</span>';
-				}
+				str += '</div>';
 			}
-			str += '</div>';
 			str += '</div>';
 			
 			$("#attDiv").append(str);
