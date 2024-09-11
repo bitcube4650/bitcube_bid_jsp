@@ -13,6 +13,8 @@
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
 	<script>
+		var custContent = {};
+		var insFile;
 		$(document).ready(function() {
 			fnInit();
 						
@@ -76,7 +78,7 @@
 		function onChangeBiModeCode(flag) {
 			alert(flag);
 			
-			if(flag === 'A'){
+			if(flag === 'B'){
 				Swal.fire({
 					title: '입찰방식 변경',
 					text: '일반경쟁입찰을 선택하면 입찰 등록되어 있는 \n모든 협력업체를 대상으로 하고 선택된 입찰참가업체가 초기화 됩니다.\n일반경쟁입찰으로 변경하시겠습니까?',  
@@ -106,13 +108,68 @@
 		function onBidPastModal() {
 			$("#bidPast").modal("show");
 		}
+		
+		// 품목 팝업
+		function onItemPopModal() {
+			$("#custTypePop").modal('show');
+		}
+		
+		// 입찰찹가업체 팝업
+		function onBidCustListModal() {
+			$("#bidCustListPop").modal("show");
+			fnInitBidCustListPop();
+		}
+		
+		function itemSelectCallback(itemCode, itemName) {
+			$("#custTypePop").modal('hide')
+			$('#itemCode').val(itemCode)
+			$('#itemName').val(itemName)
+		}
+		
 		function onUserListSelect(str){
-			alert(str);
-			
+			$("#type").val(str);
+			$("#bidUserListPop").modal("show");
+			fnInitBidUserListPop();
+		}
+		
+		function onUserListPopCallback(type, userId, userName) {
+			if(type === '개찰자'){
+				$("#estOpener").val(userName);
+				$("#estOpenerCode").val(userId);
+				$("#estBidder").val(userName);
+				$("#estOpenerCode").val(userId);
+			} else if (type === '입찰공고자'){
+				$("#gongoId").val(userName);
+				$("#gongoIdCode").val(userId);
+			} else if (type === '낙찰자'){
+				$("#estBidder").val(userName);
+				$("#estOpenerCode").val(userId);
+			} else if (type === '입회자1'){
+				$("#openAtt1").val(userName);
+				$("#openAtt1Code").val(userId);
+				$("#att1Span").empty();
+				var str = "";
+				str += "<i onclick=onRemoveOpenAtt('att1') class='fa-regular fa-xmark textHighlight ml5'></i>";
+				$("#att1Span").append(str);
+			} else if (type === '입회자2'){
+				$("#openAtt2").val(userName);
+				$("#openAtt2Code").val(userId);
+				var str = "";
+				str += "<i onclick=onRemoveOpenAtt('att2') class='fa-regular fa-xmark textHighlight ml5'></i>";
+				$("#att2Span").append(str);
+			}
 		}
 		
 		function onRemoveOpenAtt(openAtt) {
-			alert("TEST!!!");
+			if(openAtt === "att1") {
+				$("#openAtt1").val("");
+				$("#openAtt1Code").val("");
+				$("#att1Span").empty();
+			} else if (openAtt === "att2") {
+				$("#openAtt2").val("");
+				$("#openAtt2Code").val("");
+				$("#att2Span").empty();
+			}
 		}
 		
 		function onChangeInsModeCode(num) {
@@ -179,13 +236,11 @@
 			if(num == '1') {
 				str += "<div class='upload-boxWrap'>";
 				str += "<div class='upload-box'>";
-				str += "<input type='file' ref='uploadedFile' id='insFile' />";
+				str += "<input type='file' ref='uploadedFile' id='insFile' onChange='handleFileChange(event)' />";
 				str += "<div class='uploadTxt'>";
 				str += "<i class='fa-regular fa-upload'></i>";
 				str += "<div>클릭 혹은 파일을 이곳에 드롭하세요.(암호화 해제) <br/>파일 최대 10MB (등록 파일 개수 최대 1개)</div>";
 				str += "</div>";
-				str += "</div>";
-				str += "<div class='uploadPreview' id='insFilePreview'></div>";
 				str += "</div>";
 			} else {
 				str += "<table class='tblSkin1'>";
@@ -221,6 +276,50 @@
 			$("#fileTable").append(str);
 			
 		}
+		
+		function handleFileChange(event) {
+			var fileInput = event.target;
+			var file = fileInput.files[0]; // 선택된 첫 번째 파일
+			insFile = fileInput.files[0]; // 선택된 첫 번째 파일
+			
+			if (file) {
+				if(file.size > 10485760) {
+					event.target.value = "";
+					Swal.fire('', '파일 크기는 최대 10MB까지입니다.\n파일 크기를 확인해 주세요.', 'warning');
+					return;
+				}
+				
+				$("#fileTable").empty();
+				var str = "";
+				str += "<div class='upload-boxWrap'>";
+				str += "<div class='uploadPreview'>";
+				str += "<p style='lineHeight:80px;'>" + file.name + "";
+				str += "<button onclick='onRemoveInsFile()' class='file-remove'>삭제</button>";
+				str += "</p>";
+				str += "</div>";
+				str += "</div>";
+				$("#fileTable").append(str);
+			} else {
+			}
+		}
+		
+		function onRemoveInsFile() {
+			// 파일 초기화
+			insFile = "";
+			
+			$("#fileTable").empty();
+			var str = "";
+			str += "<div class='upload-boxWrap'>";
+			str += "<div class='upload-box'>";
+			str += "<input type='file' ref='uploadedFile' id='insFile' onChange='handleFileChange(event)' />";
+			str += "<div class='uploadTxt'>";
+			str += "<i class='fa-regular fa-upload'></i>";
+			str += "<div>클릭 혹은 파일을 이곳에 드롭하세요.(암호화 해제) <br/>파일 최대 10MB (등록 파일 개수 최대 1개)</div>";
+			str += "</div>";
+			str += "</div>";
+			$("#fileTable").append(str);
+		}
+		
 	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
@@ -237,17 +336,15 @@
 				<div class="contents">
 					<div class="formWidth">
 						<h3 class="h3Tit">입찰 기본 정보</h3>
-							<div class="boxSt mt20">
-								<div class="flex align-items-center">
-									<div class="formTit flex-shrink0 width170px">
-										과거입찰
-									</div>
-									<div class="width100">
-										<button class="btnStyle btnOutlineBlue" title="과거입찰 가져오기" style="marginLeft:0px" onclick=onBidPastModal()>과거입찰 가져오기</button>
-									</div>
+						<div class="boxSt mt20">
+							<div class="flex align-items-center">
+								<div class="formTit flex-shrink0 width170px">
+									과거입찰
+								</div>
+								<div class="width100">
+									<button class="btnStyle btnOutlineBlue" title="과거입찰 가져오기" style="marginLeft:0px" onclick=onBidPastModal()>과거입찰 가져오기</button>
 								</div>
 							</div>
-
 							<div class="flex align-items-center mt10">
 								<div class="formTit flex-shrink0 width170px">
 									입찰명 <span class="star">*</span>
@@ -256,17 +353,16 @@
 									<input type="text" class="inputStyle" name="biName" id="biName" maxlength="10">
 								</div>
 							</div>
-
 							<div class="flex align-items-center mt10">
 								<div class="formTit flex-shrink0 width170px">
 									품목 <span class="star">*</span>
 								</div>
 								<div class="flex align-items-center width100">
+									<input type="hidden" id="itemCode">
 									<input type="text" class="inputStyle" name="itemName" id="itemName">
 									<button class="btnStyle btnSecondary ml10" title="조회" onClick=onItemPopModal() >조회</button>
 								</div>
 							</div>
-
 							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">
 									입찰방식 <span class="star">*</span>
@@ -278,7 +374,6 @@
 										<label for="bm1_2">일반경쟁입찰</label>
 								</div>
 							</div>
-
 							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">
 									입찰참가자격 <span class="star">*</span>
@@ -287,7 +382,6 @@
 									<input type="text" class="inputStyle" name="bidJoinSpec" id="bidJoinSpec" maxlength="100" />
 								</div>
 							</div>
-
 							<div class="flex mt20">
 								<div class="formTit flex-shrink0 width170px">특수조건</div>
 								<div class="width100">
@@ -329,7 +423,6 @@
 									</select>
 								</div>
 							</div>
-							
 							<div class="flex align-items-center mt10">
 								<div class="formTit flex-shrink0 width170px">
 									현장설명장소 <span class="star">*</span>
@@ -338,7 +431,6 @@
 									<input type="text" class="inputStyle" name="spotArea" id="spotArea" maxlength="100" />
 								</div>
 							</div>
-
 							<div class="flex align-items-center mt10">
 								<div class="formTit flex-shrink0 width170px">
 									낙찰자결정방법 <span class="star">*</span>
@@ -353,7 +445,6 @@
 									</select>
 								</div>
 							</div>
-							
 							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">
 									입찰참가업체 <span class="star">*</span>
@@ -372,7 +463,6 @@
 									<button class="btnStyle btnSecondary ml10" title="업체선택" onclick="onBidCustListModal()">업체선택</button>
 								</div>
 							</div>
-							
 							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">
 									금액기준 <span class="star">*</span>
@@ -381,7 +471,6 @@
 									<input type="text" class="inputStyle" name="amtBasis" id="amtBasis" maxlength="100" />
 								</div>
 							</div>
-							
 							<div class="flex align-items-center mt10">
 								<div class="formTit flex-shrink0 width170px">결제조건</div>
 								<div class="width100">
@@ -399,52 +488,52 @@
 								<div class="formTit flex-shrink0 width170px">입찰담당자</div>
 								<div class="width100">입찰담당자</div>
 							</div>
+						</div>
 
-							<% if(custCode.equals("02")) { %>
+						<% if(custCode.equals("02")) { %>
 						<h3 class="h3Tit mt50" >입찰분류</h3>
-							<div class="boxSt mt20" >
-								<div class="flex align-items-center">
-									<div class="formTit flex-shrink0 width170px">
-										분류군 <span class="star">*</span>
-									</div>
-									<div class="flex align-items-center width100">
-										<select name="matDept" id="matDept" class="selectStyle">
-										</select>
-										<select name="matProc" id="matProc" class="selectStyle" style="margin:0 10px">
-										</select>
-										<select name="matCls" id="matCls" class="selectStyle" >
-										</select>
-									</div>
+						<div class="boxSt mt20" >
+							<div class="flex align-items-center">
+								<div class="formTit flex-shrink0 width170px">
+									분류군 <span class="star">*</span>
 								</div>
-								
-								<div class="flex align-items-center mt10">
-									<div class="formTit flex-shrink0 width170px">공장동</div>
-									<div class="width100">
-										<input type="text" class="inputStyle" name="matFactory" id="matFactory" maxlength="50" />
-									</div>
+								<div class="flex align-items-center width100">
+									<select name="matDept" id="matDept" class="selectStyle">
+									</select>
+									<select name="matProc" id="matProc" class="selectStyle" style="margin:0 10px">
+									</select>
+									<select name="matCls" id="matCls" class="selectStyle" >
+									</select>
 								</div>
-								
-								<div class="flex align-items-center mt10">
-									<div class="flex align-items-center width100">
-										<div class="formTit flex-shrink0 width170px">라인</div>
-										<div class="width100">
-											<input type="text" class="inputStyle" name="matFactoryLine" id="matFactoryLine" maxlength="25" />
-										</div>
-									</div>
-									
-									<div class="flex align-items-center width100 ml80">
-										<div class="formTit flex-shrink0 width170px">호기</div>
-										<div class="width100">
-											<input type="text" class="inputStyle" name="bidContent" id="bidContent" maxlength="25" />
-										</div>
-									</div>
-								</div>
-								
 							</div>
-							<% } %>
-					</div>
+							
+							<div class="flex align-items-center mt10">
+								<div class="formTit flex-shrink0 width170px">공장동</div>
+								<div class="width100">
+									<input type="text" class="inputStyle" name="matFactory" id="matFactory" maxlength="50" />
+								</div>
+							</div>
+							
+							<div class="flex align-items-center mt10">
+								<div class="flex align-items-center width100">
+									<div class="formTit flex-shrink0 width170px">라인</div>
+									<div class="width100">
+										<input type="text" class="inputStyle" name="matFactoryLine" id="matFactoryLine" maxlength="25" />
+									</div>
+								</div>
+								
+								<div class="flex align-items-center width100 ml80">
+									<div class="formTit flex-shrink0 width170px">호기</div>
+									<div class="width100">
+										<input type="text" class="inputStyle" name="bidContent" id="bidContent" maxlength="25" />
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						<% } %>
 					
-					<h3 class="h3Tit mt50">입찰공고 추가 등록 사항</h3>
+						<h3 class="h3Tit mt50">입찰공고 추가 등록 사항</h3>
 						<div class="boxSt mt20">
 							<div class="flex align-items-center">
 								<div class="flex align-items-center width100">
@@ -523,6 +612,7 @@
 									<div class="formTit flex-shrink0 width170px">개찰자 <span class="star">*</span></div>
 									<div class="flex align-items-center width100">
 										<input type="text" class="inputStyle" id="estOpener" name="estOpener" disabled />
+										<input type="hidden" id="estOpenerCode" />
 										<button class="btnStyle btnSecondary ml10" title="선택" onClick=onUserListSelect('개찰자')>선택</button>
 									</div>
 								</div>
@@ -530,6 +620,7 @@
 									<div class="formTit flex-shrink0 width170px">입찰공고자 <span class="star">*</span></div>
 									<div class="flex align-items-center width100">
 										<input type="text" class="inputStyle" id="gongoId" name="gongoId" disabled />
+										<input type="hidden" id="gongoIdCode" />
 										<button class="btnStyle btnSecondary ml10" title="선택" onClick=onUserListSelect('입찰공고자')>선택</button>
 									</div>
 								</div>
@@ -540,6 +631,7 @@
 									<div class="formTit flex-shrink0 width170px">낙찰자 <span class="star">*</span></div>
 									<div class="flex align-items-center width100">
 										<input type="text" class="inputStyle" id="estBidder" name="estBidder" disabled />
+										<input type="hidden" id="estBidderCode" />
 										<button class="btnStyle btnSecondary ml10" title="선택" onClick=onUserListSelect('낙찰자')>선택</button>
 									</div>
 								</div>
@@ -551,7 +643,8 @@
 									<div class="formTit flex-shrink0 width170px">입회자1</div>
 									<div class="flex align-items-center width100">
 										<input type="text" class="inputStyle" id="openAtt1" name="openAtt1" disabled />
-										<i onClick=onRemoveOpenAtt('openAtt1') class="fa-regular fa-xmark textHighlight ml5"></i>
+										<input type="hidden" id="openAtt1Code" />
+										<span id="att1Span"></span>
 										<button class="btnStyle btnSecondary ml10" title="선택" onClick=onUserListSelect('입회자1')>선택</button>
 									</div>
 								</div>
@@ -559,7 +652,8 @@
 									<div class="formTit flex-shrink0 width170px">입회자2</div>
 									<div class="flex align-items-center width100">
 										<input type="text" class="inputStyle" id="openAtt2" name="openAtt2" disabled />
-										<i onClick=onRemoveOpenAtt('openAtt2') class="fa-regular fa-xmark textHighlight ml5"></i>
+										<input type="hidden" id="openAtt2Code" />
+										<span id="att2Span"></span>
 										<button class="btnStyle btnSecondary ml10" title="선택" onClick=onUserListSelect('입회자2')>선택</button>
 									</div>
 								</div>
@@ -596,16 +690,12 @@
 									</div>
 								</div>
 							</div>
-
-			<!--				        <BidSaveExtraFile/>-->
-			<!--				          {/* 개찰자,입찰공고자,낙찰자,입회자1,입회자2 공통 사용자 조회*/}-->
-			<!--				          <BidUserList isBidUserListModal={isBidUserListModal} setIsBidUserListModal={setIsBidUserListModal} type={userType}/> -->
-			<!--				        </div>-->
 						</div>
 						
-					<div class="text-center mt50">
-						<button title="목록" class="btnStyle btnOutline">목록 </button> 
-						<button class="btnStyle btnPrimary">저장</button></div>
+						<div class="text-center mt50">
+							<button title="목록" class="btnStyle btnOutline">목록 </button> 
+							<button class="btnStyle btnPrimary">저장</button></div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -613,6 +703,15 @@
 		
 		<!-- 과거입찰 가져오기 -->
 		<jsp:include page="/WEB-INF/jsp/bid/bidPast.jsp" />
+		
+		<!-- 품목 조회 -->
+		<jsp:include page="/WEB-INF/jsp/join/custTypePop.jsp" />
+		
+		<!-- 업체 조회 -->
+		<jsp:include page="/WEB-INF/jsp/bid/bidCustList.jsp" />
+		
+		<!-- 개찰자,입찰공고자,낙찰자,입회자1,입회자2 공통 사용자 조회 -->
+		<jsp:include page="/WEB-INF/jsp/bid/bidUserList.jsp" />
 		
 		<jsp:include page="/WEB-INF/jsp/layout/footer.jsp" />
 	</div>

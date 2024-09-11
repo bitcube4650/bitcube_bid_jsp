@@ -228,4 +228,29 @@ public class BidProgressService {
 	public void updateLog(Map<String, String> params) throws Exception {
 		generalDao.insertGernal(DB.QRY_INSERT_T_BI_LOG, params);
 	}
+	
+	public ResultBody custList(Map<String, Object> params) throws Exception {
+		UserDto userDto = (UserDto) params.get("userDto");
+		String interrelatedCode = userDto.getCustCode();
+		params.put("interrelatedCode", interrelatedCode);
+
+		ResultBody resultBody = new ResultBody();
+		Page listPage = generalDao.selectGernalListPage("bid.selectCustList", params);
+		
+		resultBody.setData(listPage);
+		return resultBody;
+	}
+	
+	public ResultBody userList(@RequestBody Map<String, Object> params) throws Exception {
+		UserDto userDto = (UserDto) params.get("userDto");
+		String userId = userDto.getLoginId();
+		params.put("userId", userId);
+
+		ResultBody resultBody = new ResultBody();
+		Page listPage = generalDao.selectGernalListPage("bid.selectUserList", params);
+		resultBody.setData(listPage);
+		
+		return resultBody;
+	}
+	
 }

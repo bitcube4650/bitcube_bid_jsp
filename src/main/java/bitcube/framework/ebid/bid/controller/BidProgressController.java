@@ -93,4 +93,14 @@ public class BidProgressController {
 		return resultBody;
 	}
 	
+	@PostMapping("/custList")
+	public ResultBody custList(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) throws Exception {
+			return bidProgressService.custList(params);
+	}
+	
+	@PostMapping("/userList")
+	public ResultBody selectUserList(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) throws Exception {
+		return bidProgressService.userList(params);
+	}
+	
 }
