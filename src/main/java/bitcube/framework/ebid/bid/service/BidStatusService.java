@@ -504,4 +504,77 @@ public class BidStatusService {
 		return resultBody;
 	}
 	
+	/**
+	 * 재입찰
+	 * @param params
+	 * @return
+	 */
+	@Transactional
+	@SuppressWarnings({ "unchecked" })
+	public ResultBody rebid(Map<String, Object> params) throws Exception {
+
+		ResultBody resultBody = new ResultBody();
+		
+		UserDto userDto = (UserDto) params.get("userDto");
+		String userId = userDto.getLoginId();
+		
+		String biNo = CommonUtils.getString(params.get("biNo"));
+		Map<String, Object> biInfo = this.selectTBiInfoMatInfomation(biNo, "bi_mode");
+		String biMode = CommonUtils.getString(biInfo.get("biMode"));
+		
+		params.put("userId", userId);
+		
+		//입찰 재입찰 상태로 변경
+		generalDao.updateGernal(DB.QRY_UPDATE_REBID_T_BI_INFO_MAT, params);
+
+		//입찰 hist 테이블 insert
+		this.bidHist(biNo);
+		
+		//재입찰 대상 초기화
+		generalDao.updateGernal(DB.QRY_UPDATE_REBID_ATT_N, params);
+		
+		//협력사 상세내역 삭제
+		generalDao.deleteGernal(DB.QRY_DELETE_T_BI_DETAIL_MAT_CUST_CUST_CODE, params);
+		
+		//협력사 재입찰대상만 업데이트
+		generalDao.updateGernal(DB.QRY_UPDATE_REBID_T_BI_INFO_MAT_CUST_CUST_CODE, params);
+		
+		//로그입력
+		this.insertTBiLog("[본사] 재입찰", biNo, userId);
+				
+		//메일, 문자 전송
+		try {
+			List<Object> list = null;
+			params.put("custList", params.get("reCustList"));
+			
+			if(biMode.equals("A")) {
+				list = generalDao.selectGernalList(DB.QRY_SELECT_EBID_BI_MODE_A_SEND_INFO_CUST_LIST, params);
+			}else if(biMode.equals("B")) {
+				list = generalDao.selectGernalList(DB.QRY_SELECT_EBID_BI_MODE_B_SEND_INFO_CUST_LIST, params);
+			}
+			
+			if(list.size() != 0) {
+				Map<String, Object> emailParam = new HashMap<String, Object>();
+				emailParam.put("type", "rebid");
+				emailParam.put("biName", params.get("biName"));
+				emailParam.put("reason", params.get("whyA3"));
+				emailParam.put("sendList", list);
+				emailParam.put("biNo", biNo);
+				
+				bidProgressService.updateEmail(emailParam);
+				
+				//문자
+				for(Object obj : list) {
+					Map<String, Object> map = (Map<String, Object>) obj;
+					messageService.send("일진그룹", CommonUtils.getString(map.get("userHp")), CommonUtils.getString(map.get("userName")), "[일진그룹 전자입찰시스템] 일진씨앤에스에서 재입찰을 공고하였습니다.\r\n확인바랍니다.", biNo);
+				}
+			}
+		}catch(Exception e) {
+			log.error("rebid sendMail error : {}", e);
+		}
+			
+		
+		return resultBody;
+	}
+	
 }

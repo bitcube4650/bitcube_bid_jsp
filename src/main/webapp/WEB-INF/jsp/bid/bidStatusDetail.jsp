@@ -879,7 +879,6 @@
 								<% if( ((boolean) data.get("openAuth")) || CommonUtils.getString(data.get("createUser")).equals(userId) ) { %>
 								<a onClick="onRebid()" class="btnStyle btnOutlineRed" title="선택업체 재입찰">선택업체 재입찰하러 가기</a>
 								<% } %>
-								<a onClick="onRebid()" class="btnStyle btnOutlineRed" title="선택업체 재입찰">선택업체 재입찰하러 가기</a>
 							</div>
 						</div>
 						<% } %>

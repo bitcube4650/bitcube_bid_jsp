@@ -1,5 +1,6 @@
 package bitcube.framework.ebid.bid.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import bitcube.framework.ebid.bid.service.BidStatusService;
 import bitcube.framework.ebid.dto.ResultBody;
+import bitcube.framework.ebid.etc.util.CommonUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -128,6 +135,31 @@ public class BidStatusController {
 		}catch(Exception e) {
 			log.error("attSign error : {}" , e);
 			resultBody.setCode("fail");
+		}
+		return resultBody;
+	}
+	
+	/**
+	 * 재입찰처리
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/rebid")
+	public ResultBody rebid(HttpServletRequest httpServletRequest, @RequestParam Map<String, Object> params) throws Exception {
+		ResultBody resultBody = new ResultBody();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String reCustListStr = CommonUtils.getString(params.get("reCustList"));
+		
+		List<String> reCustList = mapper.readValue(reCustListStr, new TypeReference<List<String>>() {});
+		
+		params.put("reCustList", reCustList);
+		try {
+			resultBody = bidStatusService.rebid(params); 
+		}catch(Exception e) {
+			log.error("rebid error : {}", e);
+			resultBody.setCode("fail");
+			resultBody.setMsg("재입찰 처리 중 오류가 발생했습니다.");	
 		}
 		return resultBody;
 	}

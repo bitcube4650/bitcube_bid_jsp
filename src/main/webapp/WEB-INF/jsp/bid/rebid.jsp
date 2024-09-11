@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="com.fasterxml.jackson.databind.ObjectMapper" %>
+<%@ page import="java.util.Arrays"%>
 <%@ page import="java.util.Map"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
@@ -13,12 +14,15 @@
 	UserDto							userDto = (UserDto)(request.getSession()).getAttribute(Constances.SESSION_NAME);
 	String							userId = userDto.getLoginId();
 	String							reCustCodeStr = CommonUtils.getString(request.getAttribute("reCustCode"));
+	String[]						reCustCodeArr = reCustCodeStr.split(",");
+	List<String>					reCustCode = Arrays.asList(reCustCodeArr);
 	Map<String, Object>				data = (Map<String, Object>) request.getAttribute("biInfo");
 	ArrayList<Map<String, Object>>	custList = new ArrayList<Map<String, Object>>();
 									custList = (ArrayList) data.get("custList");
 	ObjectMapper					objectMapper = new ObjectMapper();
 	String							jsonCustList = objectMapper.writeValueAsString(custList);
 	String							jsonData = objectMapper.writeValueAsString(data);
+	String							jsonReCustList = objectMapper.writeValueAsString(reCustCode);
 	
 	String							spotDate = CommonUtils.getString(data.get("spotDate"));
 	String							estStartDate = CommonUtils.getString(data.get("estStartDate"));
@@ -50,11 +54,80 @@
 		}
 		
 		function onMovePage() {
-			
+			location.href="/api/v1/move?viewName=bid/status";
 		}
 		
 		function onValidation() {
+			var estCloseDate = $("#estCloseDay").val() + " " + $("#estCloseTime").val() + ":00"
+			var setDate = new Date(estCloseDate);
+			var currDate = new Date();
+
+			if(setDate.getTime() <= currDate.getTime()){
+				Swal.fire('', '제출마감일시는 현재 날짜/시간 이후로 설정해주세요.', 'warning');
+				return false;
+			}
+
+			$("#reBidPop").modal("show");
+		}
+		
+		function closeReBidPop() {
+			$("#reBidPop").modal("hide");
+		}
+		
+		function onSave() {
+			var data		= <%= jsonData %>;
+			var reCustList = <%= jsonReCustList %>;
+			var estCloseDate = $("#estCloseDay").val() + " " + $("#estCloseTime").val() + ":00"
+			var whyA3 = $("#whyA3").val();
 			
+			if(Ft.isEmpty(whyA3)){
+				Swal.fire('', '재입찰 사유를 입력해주세요.', 'warning');
+				return false;
+			}
+
+			if(whyA3.length > 200){
+				Swal.fire('', '재입찰 사유를 200자 이내로 입력해주세요.', 'warning');
+				return false;
+			}
+
+			var params = {
+					biNo : data.biNo,
+					whyA3 : whyA3,
+					estCloseDate : estCloseDate,
+					reCustList : JSON.stringify(reCustList),
+					biName : data.biName,
+			}
+			
+			$.post(
+				"/api/v1/bidstatus/rebid",
+				params
+				)
+				.done(function(arg) {
+					if (arg.code === "OK") {
+						Swal.fire({
+							title: '',
+							text: "개찰했습니다.",
+							icon: 'success',
+							confirmButtonText: '확인',
+						}).then((result) => {
+							if (result.isConfirmed) {
+								closeReBidPop();
+								onMovePage();
+							}
+						});
+					} else {
+						Swal.fire({
+							title: '',
+							text: "재입찰 중 오류가 발생했습니다.",
+							icon: 'error',
+							confirmButtonText: '확인',
+						}).then((result) => {
+							if (result.isConfirmed) {
+								closeReBidPop();
+							}
+						});
+					}
+				});
 		}
 		
 	</script>
@@ -134,12 +207,28 @@
 								<div class="formTit flex-shrink0 width170px">입찰참가업체</div>
 								<div class="flex align-items-center width100">
 									<div class="overflow-y-scroll boxStSm width100" style="display: inline" >
+										<% 
+										for(int i=0; i<custList.size(); i++) {
+										%>
 										<div>
+											<% 
+											for(String custStr : reCustCode) {
+											%>
 											<div>
-												<a>참가업체1 , 참가업체 2, 참가업체 3, 작업 해야됨.</a>
+												<% 
+												if(custStr.equals(CommonUtils.getString(custList.get(i).get("custCode")))) {
+												%>
+												<a><%= CommonUtils.getString(custList.get(i).get("custName")) %></a>
+												<% } %>
+												<% 
+												if((i+1) != custList.size()) {
+												%>
 												<span>,</span>
+												<% } %>
 											</div>
+											<% } %>
 										</div>
+										<% } %>
 									</div>
 								</div>
 							</div>
@@ -441,6 +530,33 @@
 						<div class="text-center mt50">
 							<a class="btnStyle btnOutline" title="목록" onclick="onMovePage()">목록</a>
 							<a onclick="onValidation()" class="btnStyle btnPrimary" title="재입찰">재입찰</a>
+						</div>
+					</div>
+				</div>
+				
+				<div class="modal fade modalStyle" id="reBidPop" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog" style="width: 100%; max-width: 800px">
+						<div class="modal-content">
+							<div class="modal-body">
+								<a href="javascript:return false;" class="ModalClose" data-dismiss="modal" title="닫기">
+									<i class="fa-solid fa-xmark"></i>
+								</a>
+								<h2 class="modalTitle">재입찰</h2>
+								<div class="modalTopBox">
+									<ul>
+										<li>
+											<div>
+												재입찰 처리 합니다.<br/>재입찰 시 선택한 참가업체에게 재입찰 메일이 발송됩니다.<br />재입찰 하시겠습니까?
+											</div>
+										</li>
+									</ul>
+								</div>
+								<textarea class="textareaStyle height150px mt20" placeholder="재입찰 사유 필수 입력 (200자 이내)" id="whyA3"></textarea>
+								<div class="modalFooter">
+									<a class="modalBtnClose" onclick="closeReBidPop()" title="취소">취소</a>
+									<a class="modalBtnCheck" data-toggle="modal" title="저장" onclick="onSave()">저장</a>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
