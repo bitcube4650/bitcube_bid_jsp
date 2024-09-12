@@ -19,16 +19,10 @@
 			fnInit();
 						
 			$("#spotDay").datepicker();
+			$("#estStartDay").datepicker();
+			$("#estCloseDay").datepicker();
 			//minDate={bidContent.minDate}
 			
-			$("#spotTime").on('change', function() {
-				alert("DFDSFSDF");
-				//onChangeBasicInfo();
-			});
-			
-			$("#succDeciMethCode").on('change', function() {
-				//onChangeBasicInfo();
-			});
 		});
 		
 		function fnInit() {
@@ -122,8 +116,8 @@
 		
 		function itemSelectCallback(itemCode, itemName) {
 			$("#custTypePop").modal('hide')
-			$('#itemCode').val(itemCode)
-			$('#itemName').val(itemName)
+			$('#progressItemCode').val(itemCode)
+			$('#progressItemName').val(itemName)
 		}
 		
 		function onUserListSelect(str){
@@ -320,6 +314,187 @@
 			$("#fileTable").append(str);
 		}
 		
+		function onMoveBidProgress() {
+			location.href="/api/v1/move?viewName=bid/progress";
+		}
+		
+		function onSaveConfirm () {
+			if(onSaveVali()) {
+				Swal.fire({
+					title: '입찰 계획 저장',
+					text: '작성하신 내용으로 입찰계획을 저장합니다. 저장하시겠습니까?',
+					icon: 'question',
+					confirmButtonColor: '#3085d6',
+					confirmButtonText: '저장',
+					showCancelButton: true,
+					cancelButtonColor: '#d33',
+					cancelButtonText: '취소'
+				}).then(result => {
+					if (result.isConfirmed) { 
+						onSaveBid()
+					}
+				})
+			}
+		}
+		
+		function onSaveVali() {
+			const spotDay		= $("#spotDay").val();
+			const spotTime		= $("#spotTime").val();
+			const estStartDay	= $("#estStartDay").val();
+			const estStartTime	= $("#estStartTime").val();
+			const estCloseDay	= $("#estCloseDay").val();
+			const estCloseTime	= $("#estCloseTime").val();
+			
+			if ("" === $("#biName").val()) {
+				Swal.fire('', '입찰명을 입력해 주세요.', 'warning')
+				return false;
+			}
+			
+			if ("" === $("#progressItemCode").val()) {
+				Swal.fire('', '품목을 선택해 주세요.', 'warning')
+				return false;
+			}
+			
+			if ("" === $("#bidJoinSpec").val()) {
+				Swal.fire('', '입찰참가자격을 입력해 주세요.', 'warning')
+				return false;
+			}
+			
+			if (!spotDay) {
+				Swal.fire('', '현장설명일시 날짜를 선택해 주세요.', 'warning')
+				return false;
+			}
+			
+			if (!spotTime) {
+				Swal.fire('', '현장설명일시 시간을 선택해 주세요.', 'warning')
+				return false;
+			}
+
+			var spotDateTime = new Date(spotDay + "T" + spotTime);
+			var currentTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+			
+			if (currentTime > spotDateTime) {
+				Swal.fire('', '현장설명일시는 현재 시간보다 큰 시간을 선택해야 합니다.', 'warning')
+				return false
+			}
+			
+			if ("" === $("#spotArea").val()) {
+				Swal.fire('', '현장설명장소를 입력해 주세요.', 'warning')
+				return false;
+			}
+			
+			//if($("input[name='biModeCode']").val() === 'A' && custContent.length === 0){
+			//	Swal.fire('', '입찰 참가업체를 선택해 주세요.', 'warning')
+			//	return false;
+			//}
+			
+			if ("" === $("#amtBasis").val()) {
+				Swal.fire('', '금액기준을 입력해 주세요.', 'warning')
+				return false;
+			}
+			
+			if (!estStartDay) {
+				Swal.fire('', '제출시작일시 날짜를 선택해 주세요.', 'warning')
+				return false;
+			}
+			
+			if (!estStartTime) {
+				Swal.fire('', '제출시작일시 시간을 선택해 주세요', 'warning')
+				return false;
+			}
+			
+			if (!estCloseDay) {
+				Swal.fire('', '제출마감일시 날짜를 선택해 주세요.', 'warning')
+				return false;
+			}
+			
+			if (!estCloseTime) {
+				Swal.fire('', '제출마감일시 시간을 선택해 주세요.', 'warning')
+				return false;
+			}
+			
+			var startDateTime = new Date(estStartDay + "T" + estStartTime);
+			var closeDateTime = new Date(estCloseDay + "T" + estCloseTime);
+			
+			if (currentTime > closeDateTime) {
+				Swal.fire('', '제출마감일시는 현재 시간보다 큰 시간을 선택해야 합니다.', 'warning')
+				return false
+			}
+			
+			if (startDateTime > closeDateTime) {
+				Swal.fire('', '제출시작일시가 제출마감일시보다 큽니다.', 'warning')
+				return false;
+			}
+			
+			if ("" === $("#estOpenerCode").val()) {
+				Swal.fire('', '개찰자를 선택해 주세요.', 'warning')
+				return false;
+			}
+		
+			if ("" === $("#gongoIdCode").val() !bidContent.gongoIdCode) {
+				Swal.fire('', '입찰공고자를 선택해 주세요.', 'warning')
+				return false;
+			}
+			
+			if ("" === $("#estBidderCode").val()) {
+				Swal.fire('', '낙찰자를 선택해 주세요.', 'warning')
+				return false;
+			}
+			
+			if ("" === $("#supplyCond").val()) {
+				Swal.fire('', '납품조건을 입력해 주세요.', 'warning')
+				return false;
+			}
+			
+			//세부내역 파일등록 경우
+			if ($("input[name='insModeCode']").val() === '1') {
+				if (!insFile) {
+					Swal.fire('', '세부내역파일을 업로드해 주세요.', 'warning')
+					return false;
+				}
+			} else {
+			//	// 세부내역이 직접 입력인 경우
+			//	if(tableContent.length === 0){
+			//		Swal.fire('', '세부내역을 추가해 주세요.', 'warning')
+			//		return false;
+			//	} else {
+			//	//내역직접등록에서 입력하지 않은 값이 있는지 확인
+			//		var nameCheck = tableContent.filter(item => !item.name.trim())
+			//		var ssizeCheck = tableContent.filter(item => !item.ssize.trim())
+			//		var unitcodeCheck = tableContent.filter(item => !item.unitcode.trim())
+			//		var orderUcCheck = tableContent.filter(item => !item.orderUc.trim())
+			//		var orderQtyCheck = tableContent.filter(item => !item.orderQty.trim())
+			//		
+			//		if(nameCheck.length > 0){
+			//			Swal.fire('', '세부내역 품목명을 입력해 주세요.', 'warning')
+			//			return false;
+			//		}
+			//		if(ssizeCheck.length > 0){
+			//			Swal.fire('', '세부내역 규격명을 입력해 주세요.', 'warning')
+			//			return false;
+			//		}
+			//		if(unitcodeCheck.length > 0){
+			//			Swal.fire('', '세부내역 단위를 입력해 주세요.', 'warning')
+			//			return false;
+			//		}
+			//		if(orderUcCheck.length > 0){
+			//			Swal.fire('', '세부내역 예정단가를 입력해 주세요.', 'warning')
+			//			return false;
+			//		}
+			//		if(orderQtyCheck.length > 0){
+			//			Swal.fire('', '세부내역 수량을 입력해 주세요.', 'warning')
+			//			return false;
+			//		}
+			//	}
+			}
+			return true;
+		}
+		
+		function onSaveBid() {
+			
+			
+		}
+		
 	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
@@ -358,8 +533,8 @@
 									품목 <span class="star">*</span>
 								</div>
 								<div class="flex align-items-center width100">
-									<input type="hidden" id="itemCode">
-									<input type="text" class="inputStyle" name="itemName" id="itemName">
+									<input type="hidden" id="progressItemCode">
+									<input type="text" class="inputStyle" name="progressItemName" id="progressItemName">
 									<button class="btnStyle btnSecondary ml10" title="조회" onClick=onItemPopModal() >조회</button>
 								</div>
 							</div>
@@ -693,8 +868,8 @@
 						</div>
 						
 						<div class="text-center mt50">
-							<button title="목록" class="btnStyle btnOutline">목록 </button> 
-							<button class="btnStyle btnPrimary">저장</button></div>
+							<button title="목록" class="btnStyle btnOutline" onclick="onMoveBidProgress()">목록 </button> 
+							<button class="btnStyle btnPrimary" onclick="onSaveConfirm()">저장</button></div>
 						</div>
 					</div>
 				</div>
