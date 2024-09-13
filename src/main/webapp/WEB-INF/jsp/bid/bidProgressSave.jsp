@@ -13,7 +13,7 @@
 <jsp:include page="/WEB-INF/jsp/common.jsp" />
 <body>
 	<script>
-		var custContent = {};
+		var custContent = [];
 		var insFile;
 		$(document).ready(function() {
 			fnInit();
@@ -66,13 +66,14 @@
 			}
 			// 세부내역 case처리
 			fnSetInsModeHtml('1');
+			
+			// 입찰참가내역 case처리
+			fnSetbiModeHtml('A');
 		}
 		
 		// 입찰방식 변경 이벤트
-		function onChangeBiModeCode(flag) {
-			alert(flag);
-			
-			if(flag === 'B'){
+		function onChangeBiModeCode(code) {
+			if(code === 'B'){
 				Swal.fire({
 					title: '입찰방식 변경',
 					text: '일반경쟁입찰을 선택하면 입찰 등록되어 있는 \n모든 협력업체를 대상으로 하고 선택된 입찰참가업체가 초기화 됩니다.\n일반경쟁입찰으로 변경하시겠습니까?',  
@@ -85,16 +86,17 @@
 				}).then(result => {
 					if (result.isConfirmed) {	// 만약 모달창에서 confirm 버튼을 눌렀다면
 						//지명경쟁입찰에서 일반경쟁입찰로 변경 시 입찰참가업체 정보 초기화
+						fnSetbiModeHtml('B');
 					} else {
-						if(num === '1'){
-							$("#bm2_2").prop("checked", true);
+						if(code === 'A'){
+							$("#bm1_2").prop("checked", true);
 						} else {
-							$("#bm2_1").prop("checked", true);
+							$("#bm1_1").prop("checked", true);
 						}
 					}
 				});
 			} else {
-				
+				fnSetbiModeHtml('A');
 			}
 		}
 		
@@ -220,6 +222,24 @@
 			fnSetDetailSet(num);
 		}
 		
+		function fnSetbiModeHtml(code) {
+			$("#joinCustList").empty();
+			var str = "";
+			if(code === "A") {
+				str += "<div id='joinCustDetail' class='overflow-y-scroll boxStSm width100' style='display:inline'>";
+				str += "<button>선택된 참가업체 없음</button>";
+				str += "</div>";
+				str += "<button class='btnStyle btnSecondary ml10' title='업체선택' onclick='onBidCustListModal()'>업체선택</button>";
+			} else if (code === "B") {
+				// 입찰참가업체 초기화
+				custContent = {}; 
+				str += "<div id='joinCustDetail' class='overflow-y-scroll boxStSm width100' style='display:inline'>";
+				str += "<button>가입회원사 전체</button>";
+				str += "<div>";
+			}
+			$("#joinCustList").append(str);
+		}
+		
 		function onAddRow() {
 			alert("TEST!!!!");
 		}
@@ -338,12 +358,12 @@
 		}
 		
 		function onSaveVali() {
-			const spotDay		= $("#spotDay").val();
-			const spotTime		= $("#spotTime").val();
-			const estStartDay	= $("#estStartDay").val();
-			const estStartTime	= $("#estStartTime").val();
-			const estCloseDay	= $("#estCloseDay").val();
-			const estCloseTime	= $("#estCloseTime").val();
+			var spotDay		= $("#spotDay").val();
+			var spotTime		= $("#spotTime").val();
+			var estStartDay	= $("#estStartDay").val();
+			var estStartTime	= $("#estStartTime").val();
+			var estCloseDay	= $("#estCloseDay").val();
+			var estCloseTime	= $("#estCloseTime").val();
 			
 			if ("" === $("#biName").val()) {
 				Swal.fire('', '입찰명을 입력해 주세요.', 'warning')
@@ -431,7 +451,7 @@
 				return false;
 			}
 		
-			if ("" === $("#gongoIdCode").val() !bidContent.gongoIdCode) {
+			if ("" === $("#gongoIdCode").val()) {
 				Swal.fire('', '입찰공고자를 선택해 주세요.', 'warning')
 				return false;
 			}
@@ -491,7 +511,90 @@
 		}
 		
 		function onSaveBid() {
+			var custUserInfoData = {}
+
+			if ($("input[name='biModeCode']").val() === 'A') {
+				//등록되는 입찰 bino로 set
+		//		var custUserInfoFilter: CustUserInfoFilter = {};
+		//		custUserInfo.forEach(info => {
+		//			if (!custUserInfoFilter[info.custCode]) {
+		//				custUserInfoFilter[info.custCode] = '';
+		//			} else {
+		//				custUserInfoFilter[info.custCode] += ',';
+		//			}
+		//			custUserInfoFilter[info.custCode] += info.userId;
+		//		});
+
+		//		custUserInfoData = Object.keys(custUserInfoFilter).map(custCode => ({
+		//			custCode: custCode,
+		//			usemailId: custUserInfoFilter[custCode]
+		//		}));
+			}
+
+
+			var fd = new FormData()
 			
+			var tableContentData = [];
+
+			if($("input[name='insModeCode']").val() === "1"){
+				fd.append("insFile", insFile)
+			} else {
+			//	tableContentData = tableContent.map((item, idx) => {
+			//		return { ...item, seq: idx + 1, orderQty : Number(item.orderQty.replace(/,/g, '')),orderUc: Number(item.orderUc.replace(/,/g, ''))}
+			//	});
+			}
+
+			//     const type = sessionViewType === '등록' ? 'insert' : 'update'
+			//     let insFileCheck :string = ''
+			//     let delInnerFiles : string[] = []
+			//     let delOuterFiles : string[] = []
+            //
+			//     const updatedBidContent = {
+			//       ...bidContent,
+			//       custUserInfo: custUserInfoData,
+			//       userId: loginInfo.userId,
+			//       bdAmt : bidContent.bdAmt.replace(/[^\d-]/g, ''),
+			//       type : type,
+			//       insFileCheck : '',
+			//       delInnerFiles : [] as string[],
+			//       delInnerFilesAll : '',
+			//       delOuterFiles : [] as string[],
+			//       delOuterFilesAll : '',
+			//     };
+            //
+			//       if(innerFiles.length > 0){
+			//         innerFiles.forEach(file => {
+			//           fd.append("innerFiles", file)
+			//         })
+			//       }
+			//       if(outerFiles.length > 0){
+			//         outerFiles.forEach(file => {
+			//           fd.append("outerFiles", file)
+			//         })
+			//       }
+			//     
+			//     const params = {
+			//       bidContent : updatedBidContent,
+			//       custContent : custContent,
+			//       tableContent : tableContentData
+			//     }
+			//     fd.append("bidContent", JSON.stringify(params))
+			//     
+			//     
+			//     try {
+			//       const response : MapType = await axios.post(`/api/v1/bid/${type}Bid`, fd);
+			//       if(response.data.code === 'OK'){
+			//         Swal.fire('입찰계획이 저장되었습니다.', '', 'success');
+			//         onMoveBidProgress()
+			//       }else{
+			//         Swal.fire(response.msg, '', 'error');
+			//         console.log(response.msg);
+			//       }
+			//       
+			//     } catch (error) {
+			//         Swal.fire('입찰계획 저장을 실패하였습니다.', '', 'error');
+			//         console.log(error);
+			//     }
 			
 		}
 		
@@ -625,17 +728,6 @@
 									입찰참가업체 <span class="star">*</span>
 								</div>
 								<div id="joinCustList" class="flex align-items-center width100">
-									<div class="overflow-y-scroll boxStSm width100" style="display:inline">
-										<button>선택된 참가업체 없음</button>
-										<div>
-											<div>
-												<button onclick="onCustuserDetail()" class="textUnderline"></button>
-												<span>userName</span>
-												<i class="fa-regular fa-xmark textHighlight ml5" onclick="onRemoveCust()"></i>
-											</div>
-										</div>
-									</div>
-									<button class="btnStyle btnSecondary ml10" title="업체선택" onclick="onBidCustListModal()">업체선택</button>
 								</div>
 							</div>
 							<div class="flex align-items-center mt20">
@@ -661,7 +753,7 @@
 							</div>
 							<div class="flex align-items-center mt20">
 								<div class="formTit flex-shrink0 width170px">입찰담당자</div>
-								<div class="width100">입찰담당자</div>
+								<div class="width100"></div>
 							</div>
 						</div>
 
