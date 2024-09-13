@@ -49,12 +49,47 @@ public class BidPartnerStatusService {
 	}
 	
 	/**
+	 * 협력사 공고확인 처리
+	 * @param params
+	 * @param user
+	 * @return
+	 */
+	@Transactional
+	public ResultBody checkBid(@RequestBody Map<String, Object> params) throws Exception{
+		ResultBody resultBody = new ResultBody();
+		
+		int chk = generalDao.insertGernal(DB.QRY_UPDATE_EBID_T_BI_INFO_MAT_CUST_CONFIRM, params);
+		
+		if(chk == 1) {
+			//로그
+			Map<String, String> logParams = new HashMap<>();
+			logParams.put("msg", "[업체]공고확인");
+			logParams.put("biNo", CommonUtils.getString(params.get("biNo")));
+			logParams.put("userId", CommonUtils.getString(params.get("userId")));
+			generalDao.insertGernal(DB.QRY_BID_STATUS_INSERT_T_BI_LOG, logParams);
+		}
+		
+		return resultBody;
+	}
+	
+	/**
 	 * 입찰진행 상세
 	 * @param param
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public Map<String, Object> bidStatusDetail(Map<String, Object> params,UserDto user) throws Exception {
+		
+		try {
+			Map<String, Object> chkBidMap = new HashMap<String, Object>();
+			chkBidMap.put("biNo", params.get("biNo"));
+			chkBidMap.put("userId", user.getLoginId());
+			chkBidMap.put("custCode", user.getCustCode());
+			this.checkBid(chkBidMap);
+		}catch(Exception e) {
+			log.error("협력사 공고확인 오류 : " + e.getMessage());
+		}
+		
 		params.put("custCode", user.getCustCode());
 		
 		Map<String, Object> detailMap = (Map<String, Object>) generalDao.selectGernalObject(DB.QRY_SELECT_PARTNER_EBID_STATUS_DETAIL, params);

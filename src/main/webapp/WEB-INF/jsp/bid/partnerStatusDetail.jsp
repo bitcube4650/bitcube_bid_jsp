@@ -761,11 +761,11 @@
 							<a href="/bid/partnerStatus" title="목록" class="btnStyle btnOutline"> 목록 </a>
 							<a data-toggle="modal" class="btnStyle btnOutline" title="공고문 미리보기" onclick="fnBidBiddingPreviewModal()">공고문 미리보기</a>
 <%
-	if(esmtPossible && "1".equals(biInfo.get("custEsmtYn")) && ("A1".equals(biInfo.get("ingTag")) || ("A2".equals(biInfo.get("ingTag")) && "Y".equals(biInfo.get("data.custRebidYn"))))){
+	if(esmtPossible && "1".equals(biInfo.get("custEsmtYn")) && ("A1".equals(biInfo.get("ingTag")) || ("A3".equals(biInfo.get("ingTag")) && "Y".equals(biInfo.get("custRebidYn"))))){
 %>
 							<a onclick="fnCheck()" class="btnStyle btnPrimary" title="견적서 제출">견적서 제출</a>
 <%
-	} else if(esmtPossible && "1".equals(biInfo.get("data.custEsmtYn")) && "A3".equals(biInfo.get("ingTag")) && "N".equals(biInfo.get("custRebidYn")) ){
+	} else if(esmtPossible && "1".equals(biInfo.get("custEsmtYn")) && "A3".equals(biInfo.get("ingTag")) && "N".equals(biInfo.get("custRebidYn")) ){
 %>
 							<a onclick="fnAlert()" class="btnStyle btnPrimary" style="opacity: 0.5; cursor: not-allowed;" title="견적서 제출">견적서 제출</a>
 <%
