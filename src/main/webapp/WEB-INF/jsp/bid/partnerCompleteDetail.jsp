@@ -291,13 +291,13 @@
 							<div class="flex mt20">
 								<div class="formTit flex-shrink0 width170px">견적내역파일</div>
 								<div class="width100">
-									<a class="textUnderline" onclick="fnfileDownload('<%= CommonUtils.getString(custList.get(0).get("filePath")) %>', '<%= CommonUtils.getString(custList.get(0).get("fileNm")) %>')"><%= CommonUtils.getString(custList.get(0).get("fileNm")) %></a>
+									<a class="textUnderline" onclick="fnfileDownload('<%= custList.get(0).get("filePath") %>', '<%= CommonUtils.getString(custList.get(0).get("fileNm")) %>')"><%= CommonUtils.getString(custList.get(0).get("fileNm")) %></a>
 								</div>
 							</div>
 							<div class="flex mt20">
 								<div class="formTit flex-shrink0 width170px">기타첨부</div>
 								<div class="width100">
-									<a class="textUnderline" onclick="fnfileDownload('<%= CommonUtils.getString(custList.get(0).get("etcPath")) %>', '<%= CommonUtils.getString(custList.get(0).get("etcFile")) %>')"><%= CommonUtils.getString(custList.get(0).get("etcFile")) %></a>
+									<a class="textUnderline" onclick="fnfileDownload('<%= custList.get(0).get("etcPath") %>', '<%= CommonUtils.getString(custList.get(0).get("etcFile")) %>')"><%= CommonUtils.getString(custList.get(0).get("etcFile")) %></a>
 								</div>
 							</div>
 <%

@@ -22,8 +22,8 @@ var fnNoticeDetail = async function(bno){
 			$("#notiPop_RegDt").text(data.bdate);
 			$("#notiPop_Count").text(data.bcount);
 			$("#notiPop_Content").text(data.bcontent);
-			$("#notiPop_File").text(data.bfile);
-			$("#notiPop_FilePath").val(data.bfilePath);
+			$("#notiPop_File").text(data.bfile === undefined || data.bfile === null ? '' : data.bfile);
+			$("#notiPop_FilePath").val(data.bfilePath === undefined || data.bfilePath === null ? '' : data.bfilePath);
 			
 			
 			$("#notiModal").modal('show');
