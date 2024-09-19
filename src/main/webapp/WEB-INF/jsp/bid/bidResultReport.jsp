@@ -42,7 +42,7 @@
 		}
 	</script>
 		<!-- 입찰결과 보고서 -->
-	<div class="modal fade modalStyle printDiv" id="resultsReport" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal fade modalStyle printDiv" id="resultsReport" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog" style="width:100%; max-width:800px">
 			<div class="modal-content">
 				<div class="modal-body">

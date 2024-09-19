@@ -104,9 +104,10 @@
 						showCancelButton: false,
 						confirmButtonText: 'OK',
 					}).then((result) => {
-						if (result.isConfirmed) {
+						//if (result.isConfirmed) {
 							$("#realAmtSave").modal('hide');
-						}
+							$("#realAmtText").text(" ( 실제 계약금액 : " + realAmt + " 원) ");
+						//}
 					})
 				} else {
 					Swal.fire('', arg.msg, 'error');
@@ -146,6 +147,11 @@
 					document.body.removeChild(link);
 				}
 			});
+		}
+		
+		function onSubmitHistoryPopInit(biNo, custCode, custName, damdangName){
+			$("#submitHistPop").modal('show');
+			submitHistoryPopInit(biNo, custCode, custName, damdangName);
 		}
 	</script>
 	<div id="wrap">
@@ -247,7 +253,7 @@
 <%
 	if("A5".equals(biInfo.get("ingTag")) && !"".equals(CommonUtils.getString(biInfo.get("realAmt"))) && (user.getLoginId().equals(biInfo.get("createUser")) || user.getLoginId().equals(biInfo.get("gongoId")))){
 %>
-									<span> ( 실제 계약금액 : <%= CommonUtils.getFormatNumber(CommonUtils.getString(biInfo.get("realAmt"))) %> 원) </span>
+									<span id="realAmtText"> ( 실제 계약금액 : <%= CommonUtils.getFormatNumber(CommonUtils.getString(biInfo.get("realAmt"))) %> 원) </span>
 <%
 	}
 %>
@@ -433,7 +439,7 @@
 %>
 									<tr>
 										<td class='text-left'>
-											<a onclick="submitHistoryPopInit('<%= biInfo.get("biNo") %>', '<%= cust.get("custCode") %>', '<%= cust.get("custName") %>', '<%= cust.get("damdangName") %>')" class='textUnderline' data-toggle='modal' data-target='#submitHistPop'><%= cust.get("custName") %></a>
+											<a onclick="onSubmitHistoryPopInit('<%= biInfo.get("biNo") %>', '<%= cust.get("custCode") %>', '<%= cust.get("custName") %>', '<%= cust.get("damdangName") %>')" class='textUnderline'><%= cust.get("custName") %></a>
 										</td>
 										<td class='text-overflow'><%= CommonUtils.getString(cust.get("esmtCurr")) %> <%= CommonUtils.getFormatNumber(CommonUtils.getString(cust.get("esmtAmt"))) %></td>
 										<td>
@@ -507,7 +513,7 @@
 							<a href="/bid/complete" class="btnStyle btnOutline" title="목록">목록</a>
 							<a data-toggle="modal" data-target="#resultsReport" class="btnStyle btnSecondary" title="입찰결과 보고서">입찰결과 보고서</a>
 <%
-	if("A5".equals(biInfo.get("ingTag")) && user.getLoginId().equals(biInfo.get("data.createUser"))){
+	if("A5".equals(biInfo.get("ingTag")) && user.getLoginId().equals(biInfo.get("createUser"))){
 %>
 							<a data-toggle="modal" data-target="#realAmtSave" class="btnStyle btnPrimary" title="실제 계약금액">실제 계약금액
 								<i class="fas fa-question-circle toolTipSt ml5">
@@ -529,7 +535,7 @@
 				<!-- //contents -->
 		
 				<!-- 실제 계약금액 -->
-				<div class="modal fade modalStyle" id="realAmtSave" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal fade modalStyle" id="realAmtSave" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
 					<div class="modal-dialog" style="width: 100%; max-width: 550px">
 						<div class="modal-content">
 							<div class="modal-body">
