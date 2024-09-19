@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <script>
+	var userList;
 	$(document).ready(function() {
 		$('#allChk').change(function() {
 			$('input[name="userDetail"]').prop('checked', this.checked);
@@ -47,8 +48,8 @@
 							str += "";
 							str += "</td>";
 							str += "</tr>";
-							
 							$("#bidCustUserListPopTable").append(str);
+							userList = list;
 						}
 					} else {
 						$("#bidCustUserListPopTable").append(
@@ -67,7 +68,32 @@
 	
 	// 저장
 	function onSaveCustUser() {
+		var selectUserList = [];
 		
+		var selectedCheckboxes = $('input[name="userDetail"]:checked');
+		var ids = selectedCheckboxes.map(function() {
+			return this.id;
+		}).get(); 
+		
+		if(ids.length>0) {
+			for(var i=0; i<ids.length; i++) {
+				selectUserList.push(userList[ids[i]]);
+			}
+			var custCodeUserName = selectUserList.map(item => item.userName).join(', ');
+			var custMap = {
+				custCode : $("#bidCustUserListCustCode").val(),
+				custName : $("#bidCustUserListCustName").val(),
+				userName : custCodeUserName
+			}
+			selectCustUserCallback(custMap);
+			onBidCustListModalHide();
+		} else {
+			Swal.fire('공고 시 메일과 문자를 수신할 사용자를 선택해 주세요.', '', 'error');
+		}
+	}
+	
+	function onBidCustListModalHide() {
+		$("#bidCustUserListPop").modal("hide");
 	}
 	
 	function bidCustUserListUpdatePagination(data) {

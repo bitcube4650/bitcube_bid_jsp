@@ -14,6 +14,7 @@
 <body>
 	<script>
 		var custContent = [];
+		var sebuDetailCnt = 1;
 		var insFile;
 		$(document).ready(function() {
 			fnInit();
@@ -21,8 +22,6 @@
 			$("#spotDay").datepicker();
 			$("#estStartDay").datepicker();
 			$("#estCloseDay").datepicker();
-			//minDate={bidContent.minDate}
-			
 		});
 		
 		function fnInit() {
@@ -232,7 +231,7 @@
 				str += "<button class='btnStyle btnSecondary ml10' title='업체선택' onclick='onBidCustListModal()'>업체선택</button>";
 			} else if (code === "B") {
 				// 입찰참가업체 초기화
-				custContent = {}; 
+				custContent = []; 
 				str += "<div id='joinCustDetail' class='overflow-y-scroll boxStSm width100' style='display:inline'>";
 				str += "<button>가입회원사 전체</button>";
 				str += "<div>";
@@ -241,7 +240,63 @@
 		}
 		
 		function onAddRow() {
-			alert("TEST!!!!");
+			var str = "";
+			str += "<tr>";
+			str += "<td><input type='text' id='name" + sebuDetailCnt + "' name='name' class='inputStyle inputSm' maxlength='100' /></td>";
+			str += "<td><input type='text' id='ssize" + sebuDetailCnt + "' name='ssize' class='inputStyle inputSm' maxlength='25' /></td>";
+			str += "<td><input type='text' id='unitcode" + sebuDetailCnt + "' name='unitcode' class='inputStyle inputSm' maxlength='25' /></td>";
+			str += "<td><input type='text' id='orderUc" + sebuDetailCnt + "' name='orderUc' class='inputStyle inputSm' maxlength='15' /></td>";
+			str += "<td><input type='text' id='orderQty" + sebuDetailCnt + "' name='orderQty' class='inputStyle inputSm' maxlength='15' /></td>";
+			str += "<td class='text-right' id='total" + sebuDetailCnt + "' >0</td>";
+			str += "<td class='text-right end'><button class='btnStyle btnSecondary btnSm deleteBtn' onclick='deleteSebuRow(" + sebuDetailCnt + ")'>삭제</button></td>";
+			str += "</tr>";
+			$("#sebuDetailBody").append(str);
+			sebuDetailCnt++;
+		}
+		
+		function deleteSebuRow(row) {
+			sebuDetailCnt--;
+			var str = "";
+			var sebuList = [];
+			for(var i=0; i<sebuDetailCnt; i++) {
+				if(i<row) {
+					var obj = {
+						name : $("#name"+i).val(),
+						ssize : $("#ssize"+i).val(),
+						unitcode : $("#unitcode"+i).val(),
+						orderUc : $("#orderUc"+i).val(),
+						orderQty : $("#orderQty"+i).val(),
+						total : $("#orderUc"+i).val() * $("#orderQty"+i).val()
+					}
+					sebuList.push(obj);
+				} else if(i>=row) {
+					var j = i+1;
+					var obj = {
+						name : $("#name"+j).val(),
+						ssize : $("#ssize"+j).val(),
+						unitcode : $("#unitcode"+j).val(),
+						orderUc : $("#orderUc"+j).val(),
+						orderQty : $("#orderQty"+j).val(),
+						total : $("#orderUc"+j).val() * $("#orderQty"+j).val()
+					}
+					sebuList.push(obj);
+				}
+			}
+				
+			$("#sebuDetailBody").empty();
+			for(var i=0; i<sebuList.length; i++) {
+				str += "<tr>";
+				str += "<td><input type='text' value='"+ sebuList[i].name + "' id='name" + i + "' name='name' class='inputStyle inputSm' maxlength='100' /></td>";
+				str += "<td><input type='text' value='"+ sebuList[i].ssize + "' id='ssize" + i + "' name='ssize' class='inputStyle inputSm' maxlength='25' /></td>";
+				str += "<td><input type='text' value='"+ sebuList[i].unitcode + "' id='unitcode" + i + "' name='unitcode' class='inputStyle inputSm' maxlength='25' /></td>";
+				str += "<td><input type='text' value='"+ sebuList[i].orderUc + "' id='orderUc" + i + "' name='orderUc' class='inputStyle inputSm' maxlength='15' /></td>";
+				str += "<td><input type='text' value='"+ sebuList[i].orderQty + "' id='orderQty" + i + "' name='orderQty' class='inputStyle inputSm' maxlength='15' /></td>";
+				str += "<td class='text-right' id='total" + i + "' >"+ sebuList[i].total +"</td>";
+				str += "<td class='text-right end'><button class='btnStyle btnSecondary btnSm deleteBtn' onclick='deleteSebuRow(" + i + ")'>삭제</button></td>";
+				str += "</tr>";
+			}
+			
+			$("#sebuDetailBody").append(str);
 		}
 		
 		function fnSetDetailSet(num) {
@@ -272,16 +327,18 @@
 				str += "<th class='end''>삭제</th>";
 				str += "</tr>";
 				str += "</thead>";
-				str += "<tbody>";
-				str += "<tr>";
-				str += "<td><input type='text' name='name' class='inputStyle inputSm' maxlength='100' /></td>";
-				str += "<td><input type='text' name='ssize' class='inputStyle inputSm' maxlength='25' /></td>";
-				str += "<td><input type='text' name='unitcode' class='inputStyle inputSm' maxlength='25' /></td>";
-				str += "<td><input type='text' name='orderUc' class='inputStyle inputSm' maxlength='15' /></td>";
-				str += "<td><input type='text' name='orderQty' class='inputStyle inputSm' maxlength='15' /></td>";
-				str += "<td class='text-right'>0</td>";
-				str += "<td class='text-right end'><button class='btnStyle btnSecondary btnSm deleteBtn'>삭제</button></td>";
-				str += "</tr>";
+				str += "<tbody id='sebuDetailBody'>";
+				for(var i=0; i<sebuDetailCnt; i++) {
+					str += "<tr>";
+					str += "<td><input type='text' id='name" + i + "' name='name' class='inputStyle inputSm' maxlength='100' /></td>";
+					str += "<td><input type='text' id='ssize" + i + "' name='ssize' class='inputStyle inputSm' maxlength='25' /></td>";
+					str += "<td><input type='text' id='unitcode" + i + "' name='unitcode' class='inputStyle inputSm' maxlength='25' /></td>";
+					str += "<td><input type='text' id='orderUc" + i + "' name='orderUc' class='inputStyle inputSm' maxlength='15' /></td>";
+					str += "<td><input type='text' id='orderQty" + i + "' name='orderQty' class='inputStyle inputSm' maxlength='15' /></td>";
+					str += "<td class='text-right' id='total" + i + "' >0</td>";
+					str += "<td class='text-right end'><button class='btnStyle btnSecondary btnSm deleteBtn' onclick='deleteSebuRow(" + i + ")'>삭제</button></td>";
+					str += "</tr>";
+				}
 				str += "</tbody>";
 				str += "</table>";
 				str += "<p class='mt10' style='textAlign: right'><strong>총합계 : 0</strong></p>";
@@ -403,10 +460,10 @@
 				return false;
 			}
 			
-			//if($("input[name='biModeCode']").val() === 'A' && custContent.length === 0){
-			//	Swal.fire('', '입찰 참가업체를 선택해 주세요.', 'warning')
-			//	return false;
-			//}
+			if($("input[name='biModeCode']").val() === 'A' && custContent.length === 0){
+				Swal.fire('', '입찰 참가업체를 선택해 주세요.', 'warning')
+				return false;
+			}
 			
 			if ("" === $("#amtBasis").val()) {
 				Swal.fire('', '금액기준을 입력해 주세요.', 'warning')
@@ -473,39 +530,35 @@
 					return false;
 				}
 			} else {
-			//	// 세부내역이 직접 입력인 경우
-			//	if(tableContent.length === 0){
-			//		Swal.fire('', '세부내역을 추가해 주세요.', 'warning')
-			//		return false;
-			//	} else {
-			//	//내역직접등록에서 입력하지 않은 값이 있는지 확인
-			//		var nameCheck = tableContent.filter(item => !item.name.trim())
-			//		var ssizeCheck = tableContent.filter(item => !item.ssize.trim())
-			//		var unitcodeCheck = tableContent.filter(item => !item.unitcode.trim())
-			//		var orderUcCheck = tableContent.filter(item => !item.orderUc.trim())
-			//		var orderQtyCheck = tableContent.filter(item => !item.orderQty.trim())
-			//		
-			//		if(nameCheck.length > 0){
-			//			Swal.fire('', '세부내역 품목명을 입력해 주세요.', 'warning')
-			//			return false;
-			//		}
-			//		if(ssizeCheck.length > 0){
-			//			Swal.fire('', '세부내역 규격명을 입력해 주세요.', 'warning')
-			//			return false;
-			//		}
-			//		if(unitcodeCheck.length > 0){
-			//			Swal.fire('', '세부내역 단위를 입력해 주세요.', 'warning')
-			//			return false;
-			//		}
-			//		if(orderUcCheck.length > 0){
-			//			Swal.fire('', '세부내역 예정단가를 입력해 주세요.', 'warning')
-			//			return false;
-			//		}
-			//		if(orderQtyCheck.length > 0){
-			//			Swal.fire('', '세부내역 수량을 입력해 주세요.', 'warning')
-			//			return false;
-			//		}
-			//	}
+				// 세부내역이 직접 입력인 경우
+				if(sebuDetailCnt === 0){
+					Swal.fire('', '세부내역을 추가해 주세요.', 'warning')
+					return false;
+				} else {
+				//내역직접등록에서 입력하지 않은 값이 있는지 확인
+					for(var i=0; i<sebuDetailCnt; i++) {
+						if($("#name"+i).val().trim() === "") {
+							Swal.fire('', '세부내역 품목명을 입력해 주세요.', 'warning');
+							return false;
+						}
+						if($("#ssize"+i).val().trim() === "") {
+							Swal.fire('', '세부내역 규격명을 입력해 주세요.', 'warning');
+							return false;
+						}
+						if($("#unitcode"+i).val().trim() === "") {
+							Swal.fire('', '세부내역 단위를 입력해 주세요.', 'warning');
+							return false;
+						}
+						if($("#orderUc"+i).val().trim() === "") {
+							Swal.fire('', '세부내역 예정단가를 입력해 주세요.', 'warning');
+							return false;
+						}
+						if($("#orderQty"+i).val().trim() === "") {
+							Swal.fire('', '세부내역 수량을 입력해 주세요.', 'warning');
+							return false;
+						}
+					}
+				}
 			}
 			return true;
 		}
@@ -596,6 +649,49 @@
 			//         console.log(error);
 			//     }
 			
+		}
+		
+		function selectCustUserCallback(custMap) {
+			custContent.push(custMap);
+			
+			$("#joinCustList").empty();
+			var str = "";
+				str += "<div id='joinCustDetail' class='overflow-y-scroll boxStSm width100' style='display:inline'>";
+				
+				for(var i=0; i<custContent.length; i++) {
+					str += "<div>";
+					str += "<button class='textUnderline' onclick='onCustUserDetail(" + custContent[i].custCode +")'>"+ custContent[i].custName +"</button>";
+					str += "<span>"+ custContent[i].userName +"</span>";
+					str += "<i class='fa-regular fa-xmark textHighlight ml5' onclick='onRemoveCust("+ custContent[i].custCode +")'></i>";
+					str += "</div>";
+				}
+				str += "</div>";
+				str += "<button class='btnStyle btnSecondary ml10' title='업체선택' onclick='onBidCustListModal()'>업체선택</button>";
+			$("#joinCustList").append(str);
+		}
+		
+		function onRemoveCust(custCode) {
+			custContent = custContent.filter(item => item.custCode != custCode);
+			var str = "";
+			$("#joinCustList").empty();
+			if(custContent > 0) {
+				str += "<div id='joinCustDetail' class='overflow-y-scroll boxStSm width100' style='display:inline'>";
+				str += "<button>선택된 참가업체 없음</button>";
+				str += "</div>";
+				str += "<button class='btnStyle btnSecondary ml10' title='업체선택' onclick='onBidCustListModal()'>업체선택</button>";
+			} else {
+				str += "<div id='joinCustDetail' class='overflow-y-scroll boxStSm width100' style='display:inline'>";
+				for(var i=0; i<custContent.length; i++) {
+					str += "<div>";
+					str += "<button class='textUnderline' onclick='onCustUserDetail(" + custContent[i].custCode +")'>"+ custContent[i].custName +"</button>";
+					str += "<span>"+ custContent[i].userName +"</span>";
+					str += "<i class='fa-regular fa-xmark textHighlight ml5' onclick='onRemoveCust("+ custContent[i].custCode +")'></i>";
+					str += "</div>";
+				}
+				str += "</div>";
+				str += "<button class='btnStyle btnSecondary ml10' title='업체선택' onclick='onBidCustListModal()'>업체선택</button>";
+			}
+			$("#joinCustList").append(str);
 		}
 		
 	</script>
