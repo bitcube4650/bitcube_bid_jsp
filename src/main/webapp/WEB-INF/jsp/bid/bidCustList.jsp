@@ -83,8 +83,7 @@
 		onSearchBidCustUserList(0);
 	}
 	
-	// 닫기
-	function onBidCustListModalHide() {
+	function onBidCustListClose() {
 		$("#bidCustListPop").modal("hide");
 	}
 	
@@ -185,7 +184,7 @@
 					</div>
 				</div>
 				<div class="modalFooter">
-					<button class="modalBtnClose" title="닫기" onClick="onBidCustListModalHide()">닫기</button>
+					<button class="modalBtnClose" title="닫기" onclick="onBidCustListClose()">닫기</button>
 				</div>
 			</div>
 		</div>

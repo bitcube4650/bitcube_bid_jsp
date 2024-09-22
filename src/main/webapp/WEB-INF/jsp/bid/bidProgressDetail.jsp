@@ -80,7 +80,22 @@
 		
 		// 수정 페이지 이동
 		function onMoveSave() {
+			var data = <%= jsonData %>;
+			var biNo = data.biNo;
+							
+			const form = document.createElement('form');
+			form.setAttribute('action', "/bid/moveBidProgressMod");
+			form.setAttribute('method', 'post');
 			
+			const input = document.createElement('input');
+			input.setAttribute('type', 'hidden');
+			input.setAttribute('name', 'biNo');
+			input.setAttribute('value', biNo);
+			
+			form.appendChild(input);
+			
+			document.body.appendChild(form)
+			form.submit();
 		}
 		
 		// 입찰 공고 confirm

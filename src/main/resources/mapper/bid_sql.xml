@@ -242,9 +242,11 @@
 	
 	<select id="selectProgressDetaiCustUserList" resultType="camel">
 		/* bid.selectProgressDetaiCustUserList*/
-	   select 	CAST(cust_code AS CHAR) AS CUST_CODE
-	   , 		USER_ID,USER_NAME 
+	   select 	CAST(tccm.cust_code AS CHAR) AS CUST_CODE
+	   , 		USER_ID,USER_NAME,CUST_NAME
 	   from t_co_cust_user tccu
+	   left outer join t_co_cust_master tccm
+	   on tccu.cust_code = tccm.cust_code
        where user_id in(
        <foreach item="usemailId" collection="usemailIds" separator=",">
 			#{usemailId}
@@ -431,82 +433,83 @@
 	
 	<insert id="insertTBiInfoMat">
 		/*bid.insertTBiInfoMat*/
-		INSERT into t_bi_info_mat 
-		  (		bi_no
-		  ,		bi_name
-		  , 	bi_mode
-		  , 	ins_mode
-		  , 	bid_join_spec
-		  ,	 	special_cond
-		  , 	supply_cond
-		  , 	spot_date
-		  , 	spot_area
-		  , 	succ_deci_meth
-		  ,		bid_open_date
-		  , 	amt_basis
-		  ,		bd_amt
-		  , 	est_start_date
-		  ,		est_close_date
-		  ,		est_opener
-		  , 	est_bidder
-		  , 	open_att1
-		  , 	open_att2
-		  , 	ing_tag
-		  ,		create_user
-		  , 	create_date
-		  , 	update_user
-		  , 	update_date
-		  , 	item_code
-		  ,		gongo_id
-		  ,		pay_cond
-		  , 	bi_open
-		  , 	interrelated_cust_code
-		  , 	mat_dept
-		  ,  	mat_proc
-		  , 	mat_cls
-		  , 	mat_factory
-		  , 	mat_factory_line
-		  ,		mat_factory_cnt
-		  ,		open_att1_sign, open_att2_sign) 
-	      values(
-	       		#{biNo}
-	       , 	#{biName}
-	       , 	#{biModeCode}
-	       , 	#{insModeCode}
-	       , 	#{bidJoinSpec}
-	       ,    #{specialCond}
-	       , 	#{supplyCond}
-	       , 	STR_TO_DATE(#{spotDate}, '%Y-%m-%d %H:%i')
-	       , 	#{spotArea}
-	       , 	#{succDeciMethCode}
-	       ,	sysdate()
-	       , 	#{amtBasis}
-	       , 	#{bdAmt}
-	       , 	STR_TO_DATE(#{estStartDate}, '%Y-%m-%d %H:%i')
-	       , 	STR_TO_DATE(#{estCloseDate}, '%Y-%m-%d %H:%i')
-	       ,    #{estOpenerCode}
-	       , 	#{estBidderCode}
-	       , 	#{openAtt1Code}
-	       , 	#{openAtt2Code}
-	       , 	'A0'
-	       ,    #{userId}
-	       ,    sysdate()
-	       , 	#{userId}
-	       , 	sysdate()
-	       , 	#{itemCode}
-	       ,    #{gongoIdCode}
-	       , 	#{payCond}
-	       , 	'N'
-	       , 	#{interrelatedCustCode}
-	       , 	#{matDept}
-	       ,	#{matProc}
-	       , 	#{matCls}
-	       , 	#{matFactory}
-	       ,	#{matFactoryLine}
-	       , 	#{matFactoryCnt}
-	       ,   'N'
-	       ,   'N'
-	       )
+		INSERT INTO T_BI_INFO_MAT (
+				BI_NO
+		,		BI_NAME
+		,		BI_MODE
+		,		INS_MODE
+		,		BID_JOIN_SPEC
+		,		SPECIAL_COND
+		,		SUPPLY_COND
+		,		SPOT_DATE
+		,		SPOT_AREA
+		,		SUCC_DECI_METH
+		,		BID_OPEN_DATE
+		,		AMT_BASIS
+		,		BD_AMT
+		,		EST_START_DATE
+		,		EST_CLOSE_DATE
+		,		EST_OPENER
+		,		EST_BIDDER
+		,		OPEN_ATT1
+		,		OPEN_ATT2
+		,		ING_TAG
+		,		CREATE_USER
+		,		CREATE_DATE
+		,		UPDATE_USER
+		,		UPDATE_DATE
+		,		ITEM_CODE
+		,		GONGO_ID
+		,		PAY_COND
+		,		BI_OPEN
+		,		INTERRELATED_CUST_CODE
+		,		MAT_DEPT
+		,		MAT_PROC
+		,		MAT_CLS
+		,		MAT_FACTORY
+		,		MAT_FACTORY_LINE
+		,		MAT_FACTORY_CNT
+		,		OPEN_ATT1_SIGN
+		,		OPEN_ATT2_SIGN
+		) VALUES (
+				#{biNo}
+		,		#{biName}
+		,		#{biModeCode}
+		,		#{insModeCode}
+		,		#{bidJoinSpec}
+		,		#{specialCond}
+		,		#{supplyCond}
+		,		STR_TO_DATE(#{spotDate}, '%Y-%m-%d %H:%i')
+		,		#{spotArea}
+		,		#{succDeciMethCode}
+		,		sysdate()
+		,		#{amtBasis}
+		,		#{bdAmt}
+		,		STR_TO_DATE(#{estStartDate}, '%Y-%m-%d %H:%i')
+		,		STR_TO_DATE(#{estCloseDate}, '%Y-%m-%d %H:%i')
+		,		#{estOpenerCode}
+		,		#{estBidderCode}
+		,		#{openAtt1Code}
+		,		#{openAtt2Code}
+		,		'A0'
+		,		#{userId}
+		,		sysdate()
+		,		#{userId}
+		,		sysdate()
+		,		#{itemCode}
+		,		#{gongoIdCode}
+		,		#{payCond}
+		,		'N'
+		,		#{interrelatedCustCode}
+		,		#{matDept}
+		,		#{matProc}
+		,		#{matCls}
+		,		#{matFactory}
+		,		#{matFactoryLine}
+		,		#{matFactoryCnt}
+		,		'N'
+		,		'N'
+		)
 	</insert>
 	
 	<insert id="insertTBiInfoMatHist">
@@ -882,5 +885,12 @@
 		,		SYSDATE()
 		)
 	</insert>
+	
+	<select id="selectBinoList" resultType="String">
+		/* bid.selectBinoList */
+		SELECT	CONCAT(MAX(CAST(SUBSTRING(bi_no, LENGTH(bi_no) - 2) AS UNSIGNED) + 1))
+		FROM	t_bi_info_mat
+		WHERE	bi_no LIKE CONCAT(#{combinedBiNo},'%')
+	</select>
 	
 </mapper>

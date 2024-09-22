@@ -85,7 +85,7 @@
 				custName : $("#bidCustUserListCustName").val(),
 				userName : custCodeUserName
 			}
-			selectCustUserCallback(custMap);
+			selectCustUserCallback(selectUserList, custMap);
 			onBidCustListModalHide();
 		} else {
 			Swal.fire('공고 시 메일과 문자를 수신할 사용자를 선택해 주세요.', '', 'error');

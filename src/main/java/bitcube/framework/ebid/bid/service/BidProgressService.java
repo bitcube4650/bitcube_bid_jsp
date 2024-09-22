@@ -1,20 +1,27 @@
 package bitcube.framework.ebid.bid.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import bitcube.framework.ebid.dao.GeneralDao;
 import bitcube.framework.ebid.dto.ResultBody;
 import bitcube.framework.ebid.dto.UserDto;
 import bitcube.framework.ebid.etc.util.CommonUtils;
+import bitcube.framework.ebid.etc.util.FileService;
 import bitcube.framework.ebid.etc.util.consts.DB;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +31,9 @@ public class BidProgressService {
 	
 	@Autowired
 	private GeneralDao generalDao;
+	
+	@Autowired
+	private FileService fileService;
 	
 	public ResultBody progressList(@RequestBody Map<String, Object> params) throws Exception {
 		ResultBody resultBody = new ResultBody();
@@ -253,4 +263,470 @@ public class BidProgressService {
 		return resultBody;
 	}
 	
+	/**
+	 * @param bidContent	입찰정보
+	 * @param custContent	지명경쟁 협력사 리스트
+	 * @param updateEmail	지명경쟁 협력사의 모든 대상자 이메일
+	 * @param tableContent	내역직접등록
+	 * @param insFile		파일직접등록
+	 * @param innerFile		대내용
+	 * @param outerFile		대외용
+	 * @return
+	 * @throws Exception 
+	 */
+	@Transactional
+	public ResultBody insertBid(Map<String, Object> params,
+			MultipartFile insFile, 
+			List<MultipartFile> innerFiles, 
+			List<MultipartFile> outerFiles) throws Exception {
+		// 세션 가져오기
+		UserDto userDto = (UserDto) params.get("userDto");
+		String userId = userDto.getLoginId();
+		String interrelatedCustCode = userDto.getCustCode();
+		
+		Map<String, Object> bidContent = (Map<String, Object>) params.get("bidContent");
+		
+		ResultBody resultBody = new ResultBody();
+		
+		// 입찰번호 생성
+		String biNo = this.newBiNo(params); 
+		params.put("biNo", biNo);
+		// 예산금액...?
+		String bdAmtStr = (String) bidContent.get("bdAmt");
+
+		BigDecimal bdAmt = null;
+		if (!bdAmtStr.isEmpty()) {
+			bdAmt = new BigDecimal(bdAmtStr);
+		}
+		bidContent.put("biNo", biNo);
+		bidContent.put("bdAmt", bdAmt);
+		bidContent.put("userId", userId);
+		bidContent.put("interrelatedCustCode", interrelatedCustCode);
+		bidContent.put("type", "insert");
+		//입찰정보 insert
+		generalDao.insertGernal("bid.insertTBiInfoMat", bidContent);
+		
+		//입찰 히스토리 insert
+		generalDao.insertGernal("bid.insertTBiInfoMatHist", bidContent);
+		
+		// 지명경쟁 협력사 등록
+
+		if( "A".equals(CommonUtils.getString(bidContent.get("biModeCode"))) ) {
+			Map<String, Object> custMap = new HashMap<String, Object>();
+			List<Map<String, Object >> custContent = (List<Map<String, Object>>) params.get("custContent");
+			List<Map<String, Object >> custUserInfo = (List<Map<String, Object>>) bidContent.get("custUserInfo");
+			custMap.put("biNo", biNo);
+			custMap.put("userId", userId);
+			for (Map<String, Object> data : custContent) {
+				String custCode = (String) data.get("custCode");
+				
+				Optional<Map<String, Object>> userInfoOptional = custUserInfo.stream()
+					.filter(userInfo -> custCode.equals(userInfo.get("custCode")))
+					.findFirst();
+				
+				Map<String, Object> userInfo = userInfoOptional.get();
+				String usemailId = (String) userInfo.get("usemailId");
+				
+				custMap.put("custCode",custCode);
+				custMap.put("usemailId", usemailId);
+				
+				//지명경쟁 협력사 insert
+				generalDao.insertGernal("bid.insertTBiInfoMatCust", custMap);
+			}
+		}
+
+		Map<String, Object> emailMap = new HashMap<String, Object>();
+		emailMap.put("userId", userId);
+		emailMap.put("gongoIdCode", (String) bidContent.get("gongoIdCode"));
+
+		List<Object> sendList = generalDao.selectGernalList("bid.selectGongoEmailList", emailMap);
+
+		if(sendList.size() > 0) {
+			// 계열사명 가져오기
+			String interNm = (String) generalDao.selectGernalObject("bid.selectInterrelatedNm", emailMap);
+			
+			emailMap.put("type", "insert"); // 입찰 이벤트 타입
+			emailMap.put("biName", (String) bidContent.get("biName")); //입찰 이름
+			emailMap.put("interNm", interNm); // 계열사명
+			emailMap.put("reason", "");	// 입찰계획은 사유 없음
+			emailMap.put("sendList", sendList);	// 수신자 리스트
+			emailMap.put("biNo", biNo);	// 수신자 리스트
+			
+			this.updateEmail(emailMap);
+		}
+
+		//첨부파일 대내용
+		if(innerFiles != null) {
+			int innerFilesSize = innerFiles.size();
+			if( innerFilesSize > 0) {
+				for(MultipartFile innerFile : innerFiles ) {
+					this.saveFileBid(innerFile, biNo, "0", "0");
+				}
+			}
+		}
+		// 첨부파일 대외용
+		if(outerFiles != null) {
+			int outerFilesSize = outerFiles.size();
+			if(outerFilesSize > 0) {
+				for(MultipartFile outerFile : outerFiles ) {
+					this.saveFileBid(outerFile, biNo, "0", "1");
+				}
+			}
+		}
+		
+		// 내역방식 - 파일등록
+		if( "1".equals(CommonUtils.getString(bidContent.get("insModeCode")))){
+			// 파일직접입력 
+			this.saveFileBid(insFile, biNo, "0", "K");
+		} else if( "2".equals(CommonUtils.getString(bidContent.get("insModeCode"))) ) {
+			// 내역방식 - 내역직접등록
+			int orderUc = 0;
+			int orderQty = 0;
+
+			List<Map<String, Object>> tableContent = (List<Map<String, Object>>)params.get("tableContent");
+			Map<String,Object> tableContentMap = new HashMap<>();
+			tableContentMap.put("biNo", biNo);
+			tableContentMap.put("userId", userId);
+			
+			for (Map<String, Object> data : tableContent) {
+				// orderUc 값이 null이거나 비어 있는 경우 0으로 초기화
+				orderUc = !StringUtils.isEmpty(data.get("orderUc")) ? Integer.parseInt(data.get("orderUc").toString()) : 0;
+				// orderQty 값이 null이거나 비어 있는 경우 0으로 초기화
+				orderQty = !StringUtils.isEmpty(data.get("orderQty")) ? Integer.parseInt(data.get("orderQty").toString()) : 0;
+				
+				tableContentMap.put("seq", data.get("seq"));
+				tableContentMap.put("name", (String) data.get("name"));
+				tableContentMap.put("ssize", (String) data.get("ssize"));
+				tableContentMap.put("unitcode", (String) data.get("unitcode"));
+				tableContentMap.put("orderUc", orderUc);
+				tableContentMap.put("orderQty", orderQty);
+				
+				generalDao.insertGernal("bid.insertTBiSpectMat", tableContentMap);
+			}
+		}
+		return resultBody;
+	}
+	
+	@Transactional
+	public ResultBody updateBid(Map<String, Object> params, MultipartFile insFile, List<MultipartFile> innerFiles, List<MultipartFile> outerFiles) throws Exception {
+		UserDto userDto = (UserDto) params.get("userDto");
+		String userId = userDto.getLoginId();
+		
+		Map<String, Object> bidContent = (Map<String, Object>) params.get("bidContent");
+		String biNo = (String) bidContent.get("biNo");
+		String bdAmtStr = (String) bidContent.get("bdAmt");
+
+		BigDecimal bdAmt = null;
+		if (!bdAmtStr.isEmpty()) {
+			bdAmt = new BigDecimal(bdAmtStr);
+		}
+
+		//입찰 업데이트
+		bidContent.put("bdAmt", bdAmt);
+		bidContent.put("userId", userId);
+		generalDao.updateGernal("bid.updateTBiInfoMat", bidContent);
+		
+
+		//입찰 히스토리 insert
+		bidContent.put("type", "update");
+		generalDao.insertGernal("bid.insertTBiInfoMatHist", bidContent);
+		
+		//재 insert로 인해 미리 delete 
+		generalDao.deleteGernal("bid.deleteTBiInfoMatCust", bidContent);
+		
+		// 지명경쟁 협력사 등록
+		if( "A".equals(CommonUtils.getString(bidContent.get("biModeCode"))) ) {
+			Map<String, Object> custMap = new HashMap<String, Object>();
+			List<Map<String, Object >> custContent = (List<Map<String, Object>>) params.get("custContent");
+			List<Map<String, Object >> custUserInfo = (List<Map<String, Object>>) bidContent.get("custUserInfo");
+			custMap.put("biNo", biNo);
+			custMap.put("userId", userId);
+			for (Map<String, Object> data : custContent) {
+				String custCode = data.get("custCode").toString();
+				Optional<Map<String, Object>> userInfoOptional = custUserInfo.stream()
+					.filter(userInfo -> custCode.equals(userInfo.get("custCode")))
+					.findFirst();
+		
+				Map<String, Object> userInfo = userInfoOptional.get();
+				String usemailId = (String) userInfo.get("usemailId");
+		
+				custMap.put("custCode",custCode);
+				custMap.put("usemailId", usemailId);
+		
+				//지명경쟁 협력사 insert
+				generalDao.insertGernal("bid.insertTBiInfoMatCust", custMap);
+			}
+		
+		}
+			
+		Map<String, Object> emailMap = new HashMap<String, Object>();
+		emailMap.put("userId", userId);
+		emailMap.put("gongoIdCode", (String) bidContent.get("gongoIdCode"));
+		
+		//공고자 Email정도 조회
+		List<Object> sendList = generalDao.selectGernalList("bid.selectGongoEmailList", emailMap);
+		
+		if(sendList.size() > 0) {
+			// 계열사명 가져오기
+			String interNm = (String) generalDao.selectGernalObject("bid.selectInterrelatedNm", emailMap);
+				
+			emailMap.put("type", "update");
+			emailMap.put("biName", (String) bidContent.get("biName"));
+			emailMap.put("interNm", interNm); // 계열사명
+			emailMap.put("reason", "");	// 입찰계획은 사유 없음
+			emailMap.put("sendList", sendList);	// 수신자 리스트
+			emailMap.put("biNo", biNo);	// 수신자 리스트
+			
+			this.updateEmail(emailMap);
+			}
+
+		Map<String,Object> changeFileCheck = (Map<String, Object>) bidContent.get("changeFileCheck");
+		Map<String,Object> fileMap = new HashMap<>();
+		fileMap.put("biNo", biNo);
+		// 첨부파일 오류로 주석처리 후 커밋
+		/*		
+		
+		int innerFilesSize = innerFiles.size();
+		int outerFilesSize = outerFiles.size();
+		
+		// 첨부파일 대내용
+		if("Y".equals(bidContent.get("delInnerFilesAll").toString())){
+			
+			fileMap.put("fileFlag", "0");
+			generalDao.deleteGernal("bid.deleteTBiUpload", fileMap);
+		} else {
+			if(innerFilesSize > 0) {
+				for(MultipartFile innerFile : innerFiles) {
+					this.saveFileBid(innerFile, biNo, "0", "0");
+				}
+			}
+			
+			List<Object> delInnerFiles = (List<Object>) bidContent.get("delInnerFiles");
+			
+			if(delInnerFiles.size() > 0) {
+				fileMap.put("fileFlag", "0");
+				fileMap.put("delInnerFiles", delInnerFiles);
+				generalDao.deleteGernal("bid.deleteTBiUpload", fileMap);
+			}
+		}
+		
+		// 첨부파일 대외용
+		if("Y".equals(bidContent.get("delOuterFilesAll").toString()) ){
+			fileMap.put("fileFlag", "1");
+			generalDao.deleteGernal("bid.deleteTBiUpload", fileMap);
+			
+		} else {
+			if(outerFilesSize > 0) {
+				for(MultipartFile outerFile : outerFiles) {
+					this.saveFileBid(outerFile, biNo, "0", "1");
+				}
+			}
+			List<Object> delOuterFiles = (List<Object>) bidContent.get("delOuterFiles");
+			
+			if(delOuterFiles.size() > 0) {
+				fileMap.put("fileFlag", "1");
+				fileMap.put("delOuterFiles", delOuterFiles);
+				generalDao.deleteGernal("bid.deleteTBiUpload", fileMap);
+			}
+		}
+		*/
+
+		// 내역방식 - 파일등록
+		if( "1".equals(CommonUtils.getString(bidContent.get("insModeCode")))){
+
+			// 파일 등록 로직 오류로 주석 처리
+			// 파일 등록 시 내역직접등록 내역은 삭제
+		//	generalDao.deleteGernal("bid.deleteTBiSpecMat", fileMap);
+
+		//	String insFileCheck = bidContent.get("insFileCheck").toString();
+
+			// Y는 기존에 있는 파일 그대로 저장되는 거라 따로 수정할 필요 없어서 Y 아닌 경우만 처리
+		//	if(!"Y".equals(insFileCheck)){
+		//		fileMap.put("fileFlag", "K");
+		//		generalDao.deleteGernal("bid.deleteTBiUpload", fileMap);
+
+		//		if("C".equals(insFileCheck)) {
+		//			this.saveFileBid(insFile, biNo, "0", "K");
+		//		}
+		//	}
+
+		} else if( "2".equals(CommonUtils.getString(bidContent.get("insModeCode"))) ) {
+			// 내역방식 - 내역직접등록
+			//내역직접등록 시 파일직접등록입력 시 등록된 파일 삭제
+			fileMap.put("fileFlag", "K");
+			generalDao.deleteGernal("bid.deleteTBiUpload", fileMap);
+
+			int orderUc = 0;
+			int orderQty = 0;
+
+			generalDao.deleteGernal("bid.deleteTBiSpecMat", fileMap);
+
+			List<Map<String, Object>> tableContent = (List<Map<String, Object>>)params.get("tableContent");
+			Map<String,Object> tableContentMap = new HashMap<>();
+			tableContentMap.put("biNo", biNo);
+			tableContentMap.put("userId", userId);
+			for (Map<String, Object> data : tableContent) {
+				// orderUc 값이 null이거나 비어 있는 경우 0으로 초기화
+				orderUc = !StringUtils.isEmpty(data.get("orderUc")) ? Integer.parseInt(data.get("orderUc").toString()) : 0;
+				// orderQty 값이 null이거나 비어 있는 경우 0으로 초기화
+				orderQty = !StringUtils.isEmpty(data.get("orderQty")) ? Integer.parseInt(data.get("orderQty").toString()) : 0;
+
+				tableContentMap.put("seq", data.get("seq"));
+				tableContentMap.put("name", (String) data.get("name"));
+				tableContentMap.put("ssize", (String) data.get("ssize"));
+				tableContentMap.put("unitcode", (String) data.get("unitcode"));
+				tableContentMap.put("orderUc", orderUc);
+				tableContentMap.put("orderQty", orderQty);
+				
+				generalDao.insertGernal("bid.insertTBiSpectMat", tableContentMap);
+			}
+		}
+		ResultBody resultBody = new ResultBody();
+		return resultBody;
+	}
+	
+	
+	public String newBiNo(Map<String, Object> params) throws Exception {
+		UserDto userDto = (UserDto) params.get("userDto");
+		String interrelatedCode = userDto.getCustCode();
+		String biNoHeader = "";
+
+		switch (interrelatedCode) {
+			case "01":
+				biNoHeader = "E";
+				break;
+			case "02":
+				biNoHeader = "C";
+				break;
+			case "03":
+				biNoHeader = "D";
+				break;
+			case "04":
+				biNoHeader = "A";
+				break;
+			case "05":
+				biNoHeader = "M";
+				break;
+			case "06":
+				biNoHeader = "S";
+				break;
+			case "07":
+				biNoHeader = "J";
+				break;
+			case "08":
+				biNoHeader = "P";
+				break;
+			case "09":
+				biNoHeader = "G";
+				break;
+			case "10":
+				biNoHeader = "L";
+				break;
+			case "11":
+				biNoHeader = "Z";
+				break;
+			case "12":
+				biNoHeader = "T";
+				break;
+			case "13":
+				biNoHeader = "K";
+				break;
+			case "14":
+				biNoHeader = "N";
+		}
+
+		LocalDate currentDate = LocalDate.now();
+		String biNoYear = currentDate.format(DateTimeFormatter.ofPattern("yyyy"));
+		String biNoMonth = currentDate.format(DateTimeFormatter.ofPattern("MM"));
+
+		String combinedBiNo = biNoHeader + biNoYear + biNoMonth;
+		
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("combinedBiNo", combinedBiNo);
+		
+		String seq = CommonUtils.getString(generalDao.selectGernalObject(DB.QRY_SELECT_BINO_LIST, paramMap));
+
+		if ("".equals(seq)) {
+			seq = "001";
+		} else {
+			// 3자리로 포맷팅
+			seq = String.format("%03d", Integer.parseInt(seq));
+		}
+		String biNo = combinedBiNo + seq;
+		return biNo;
+	}
+	
+	private void saveFileBid( MultipartFile file, String biNo, String fCustCode, String fileFlag ) throws Exception {
+		String filePath = null;
+		String fileNm = null;
+		Map<String,Object> fileMap = new HashMap<>();
+		if (file != null) {
+			// 첨부파일 등록
+			filePath = fileService.uploadEncryptedFile(file);
+			
+			// 원래 파일명
+			fileNm = file.getOriginalFilename();
+
+			fileMap.put("biNo", biNo);
+			fileMap.put("fileFlag", fileFlag);
+			fileMap.put("fCustCode", fCustCode);
+			fileMap.put("fileNm", fileNm);
+			fileMap.put("filePath", filePath);
+			
+			generalDao.insertGernal("bid.insertTBiUpload", fileMap);
+		}
+	}
+	
+	public ResultBody pastBidList(@RequestBody Map<String, Object> params) throws Exception {
+		UserDto userDto = (UserDto) params.get("userDto");
+		String userId = userDto.getLoginId();
+		String interrelatedCustCode = userDto.getCustCode();
+		
+		params.put("interrelatedCode", interrelatedCustCode);
+		params.put("userId", userId);
+		
+		ResultBody resultBody = new ResultBody();
+		Page listPage = generalDao.selectGernalListPage("bid.selectPastBidList", params);
+		
+		resultBody.setData(listPage);
+
+		return resultBody;
+	}
+	
+	public ResultBody progresslistDetail(Map<String,Object> params) throws Exception {
+		Map<String,Object> paramMap = new HashMap<>();
+		paramMap.put("biNo", params.get("biNo"));
+		List<Object> selectProgressDetailList = generalDao.selectGernalList("bid.selectProgressDetailList", paramMap);
+		List<Object> selectProgressDetailTableList = generalDao.selectGernalList("bid.selectProgressDetailTableList", paramMap);
+		List<Object> selectProgressDetaiFileList = generalDao.selectGernalList("bid.selectProgressDetaiFileList", paramMap);
+		List<Object> selectProgressDetaiCustList = generalDao.selectGernalList("bid.selectProgressDetaiCustList", paramMap);
+
+		List<Object> result = new ArrayList<>();
+		result.add(selectProgressDetailList);
+		result.add(selectProgressDetailTableList);
+		result.add(selectProgressDetaiFileList);
+		result.add(selectProgressDetaiCustList);
+
+		int selectProgressDetaiCustListSize = selectProgressDetaiCustList.size(); 
+
+		if(selectProgressDetaiCustListSize >0) {
+			String usemailIdFilter = "";
+			for (int i = 0; i < selectProgressDetaiCustListSize; i++) {
+				Map<String,Object> selectProgressDetaiCustListMap = (Map<String, Object>) selectProgressDetaiCustList.get(i);
+				if (i < selectProgressDetaiCustListSize - 1) {
+					usemailIdFilter +=(selectProgressDetaiCustListMap.get("usemailId").toString()+ ",");
+				}else {
+					usemailIdFilter += (selectProgressDetaiCustListMap.get("usemailId").toString());
+				}
+			}
+			paramMap.put("usemailIds", usemailIdFilter.split(","));
+			List<Object> selectProgressDetaiCustUserList = generalDao.selectGernalList("bid.selectProgressDetaiCustUserList", paramMap);
+			result.add(selectProgressDetaiCustUserList);
+		}
+
+		ResultBody resultBody = new ResultBody();
+		resultBody.setData(result);
+		return resultBody;
+	}
+
 }

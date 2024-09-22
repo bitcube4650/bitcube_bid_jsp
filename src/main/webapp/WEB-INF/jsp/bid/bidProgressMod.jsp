@@ -7,6 +7,7 @@
 <%
 	UserDto userDto = (UserDto)(request.getSession()).getAttribute(Constances.SESSION_NAME);
 	String custCode = userDto.getCustCode();
+	String biNo = CommonUtils.getString(request.getAttribute("biNo"));
 %>
 <!DOCTYPE html>
 <html>
@@ -22,7 +23,6 @@
 		
 		$(document).ready(function() {
 			fnInit();
-						
 			$("#spotDay").datepicker();
 			$("#estStartDay").datepicker();
 			$("#estCloseDay").datepicker();
@@ -63,58 +63,22 @@
 							$("#matDept").append(deptStr);
 							$("#matProc").append(procStr);
 							$("#matCls").append(matStr);
+							
+							bidProgressModDetail();	
 						} else {
 							
 						}
 					},
 					"json"
 				);
-			}
-			// 세부내역 case처리
-			fnSetInsModeHtml('1');
-			
-			// 입찰참가내역 case처리
-			fnSetbiModeHtml('A');
-		}
-		
-		// 입찰방식 변경 이벤트
-		function onChangeBiModeCode(code) {
-			if(code === 'B'){
-				Swal.fire({
-					title: '입찰방식 변경',
-					text: '일반경쟁입찰을 선택하면 입찰 등록되어 있는 \n모든 협력업체를 대상으로 하고 선택된 입찰참가업체가 초기화 됩니다.\n일반경쟁입찰으로 변경하시겠습니까?',  
-					icon: 'question',
-					confirmButtonColor: '#3085d6',
-					confirmButtonText: '변경',
-					showCancelButton: true,
-					cancelButtonColor: '#d33',
-					cancelButtonText: '취소'
-				}).then(result => {
-					if (result.isConfirmed) {	// 만약 모달창에서 confirm 버튼을 눌렀다면
-						//지명경쟁입찰에서 일반경쟁입찰로 변경 시 입찰참가업체 정보 초기화
-						$("#bm1_2").prop("checked", true);
-						fnSetbiModeHtml('B');
-					} else {
-						if(code === 'A'){
-							$("#bm1_2").prop("checked", true);
-						} else {
-							$("#bm1_1").prop("checked", true);
-						}
-					}
-				});
 			} else {
-				fnSetbiModeHtml('A');
+				bidProgressModDetail();
 			}
 		}
 		
-		// 과거입찰 가져오기 팝업
-		function onBidPastModal() {
-			bidPastInit();
-			$("#bidPast").modal("show");
-		}
-		
-		// 과거입찰 가져오기 콜백
-		function onselectBidPastCallback(biNo) {
+		// 입찰상세 가져오기 콜백
+		function bidProgressModDetail() {
+			var biNo = "<%= biNo%>";
 			var custCode = "<%= custCode%>";
 			$.post(
 				"/api/v1/bid/progresslistDetail",
@@ -125,6 +89,7 @@
 					if(response.code === 'OK') {
 						var bidContent = response.data[0][0];
 						// 기본정보 세팅
+						$("#divBiNo").html(biNo);
 						$("#biName").val(bidContent.biName);
 						$("#progressItemCode").val(bidContent.itemCode);
 						$("#progressItemName").val(bidContent.itemName);
@@ -165,6 +130,17 @@
 						$("#matFactory").val('');
 						$("#matFactoryLine").val('');
 						$("#matFactoryCnt").val('');
+						
+						var spotDateArr = bidContent.spotDate.split(' ');
+						var estStartDateArr = bidContent.estStartDate.split(' ');
+						var estCloseDateArr = bidContent.estCloseDate.split(' ');
+							
+						$("#spotDay").val(spotDateArr[0]);
+						$("#spotTime").val(spotDateArr[1]);
+						$("#estStartDay").val(estStartDateArr[0]);
+						$("#estStartTime").val(estStartDateArr[1]);
+						$("#estCloseDay").val(estCloseDateArr[0]);
+						$("#estCloseTime").val(estCloseDateArr[1]);
 						
 						if(custCode == '02') {
 							$("#matDept").val(bidContent.matDept);
@@ -234,6 +210,36 @@
 						}
 					}
 			});
+		}
+		
+		// 입찰방식 변경 이벤트
+		function onChangeBiModeCode(code) {
+			if(code === 'B'){
+				Swal.fire({
+					title: '입찰방식 변경',
+					text: '일반경쟁입찰을 선택하면 입찰 등록되어 있는 \n모든 협력업체를 대상으로 하고 선택된 입찰참가업체가 초기화 됩니다.\n일반경쟁입찰으로 변경하시겠습니까?',  
+					icon: 'question',
+					confirmButtonColor: '#3085d6',
+					confirmButtonText: '변경',
+					showCancelButton: true,
+					cancelButtonColor: '#d33',
+					cancelButtonText: '취소'
+				}).then(result => {
+					if (result.isConfirmed) {	// 만약 모달창에서 confirm 버튼을 눌렀다면
+						//지명경쟁입찰에서 일반경쟁입찰로 변경 시 입찰참가업체 정보 초기화
+						$("#bm1_2").prop("checked", true);
+						fnSetbiModeHtml('B');
+					} else {
+						if(code === 'A'){
+							$("#bm1_2").prop("checked", true);
+						} else {
+							$("#bm1_1").prop("checked", true);
+						}
+					}
+				});
+			} else {
+				fnSetbiModeHtml('A');
+			}
 		}
 		
 		// 품목 팝업
@@ -774,6 +780,7 @@
 		}
 		
 		function onSaveBid() {
+			var biNo = "<%= biNo %>";
 			var custUserInfoData = {}
 
 			if ($("input[name='biModeCode']:checked").val() === 'A') {
@@ -828,6 +835,7 @@
 			var updatedBidContent = {
 				custUserInfo		: custUserInfo,
 				type				: "insert",
+				biNo				: biNo,
 				biName				: $("#biName").val(),
 				itemCode			: $("#progressItemCode").val(),
 				itemName			: $("#progressItemName").val(),
@@ -878,7 +886,7 @@
 			
 			
 			$.ajax({
-				url: "/api/v1/bid/insertBid",
+				url: "/api/v1/bid/updateBid",
 				type: "POST",
 				data: fd,
 				processData: false,  // FormData를 처리하지 않음
@@ -969,7 +977,7 @@
 				<div class="conHeader">
 					<ul class="conHeaderCate">
 						<li>전자입찰</li>
-						<li>입찰계획 등록 </li>
+						<li>입찰계획 수정 </li>
 					</ul>
 				</div>
 				
@@ -979,10 +987,9 @@
 						<div class="boxSt mt20">
 							<div class="flex align-items-center">
 								<div class="formTit flex-shrink0 width170px">
-									과거입찰
+									입찰번호
 								</div>
-								<div class="width100">
-									<button class="btnStyle btnOutlineBlue" title="과거입찰 가져오기" style="marginLeft:0px" onclick=onBidPastModal()>과거입찰 가져오기</button>
+								<div id="divBiNo">
 								</div>
 							</div>
 							<div class="flex align-items-center mt10">

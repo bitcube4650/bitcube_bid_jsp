@@ -207,4 +207,30 @@ public class BidModelAndViewController {
 		modelAndView.setViewName("bid/rebid");
 		return modelAndView;
 	}
+	
+	/**
+	 * 그룹사 > 입찰계획 수정 상세
+	 * @param params
+	 * @return
+	 * @throws Exception 
+	 */
+	@PostMapping("/bid/moveBidProgressMod")
+	public ModelAndView moveBidProgressMod(
+			@RequestParam(name="biNo",			defaultValue="") String biNo,
+			HttpServletRequest request, ModelAndView modelAndView) throws Exception {
+
+		// 로그인 세션정보
+		HttpSession session	= request.getSession();
+		UserDto user		= (UserDto) session.getAttribute(Constances.SESSION_NAME);
+		if(user == null) {
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
+		
+		// 입찰정보 setting
+		modelAndView.addObject("biNo", biNo);
+		
+		modelAndView.setViewName("bid/bidProgressMod");
+		return modelAndView;
+	}
 }
