@@ -218,7 +218,7 @@
 				{'header' : "예산금액",	'column' : "bdAmt"},
 				{'header' : "낙찰금액",	'column' : "succAmt"},
 				{'header' : "낙찰사",		'column' : "custName"},
-				{'header' : "참여업체수",	'column' : "custCnt"},
+				{'header' : "참여업체수",	'column' : "joinCustCnt"},
 				{'header' : "제출시작일",	'column' : "estStartDate"},
 				{'header' : "제출마감일",	'column' : "estCloseDate"},
 				{'header' : "입찰담당자",	'column' : "userName"}
