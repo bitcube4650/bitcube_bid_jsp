@@ -29,6 +29,8 @@
 		var targetId = "";
 		var menuClickBoolean = false;
 		
+		$('#sideUserName').text(loginInfo.userName);
+		
 		/* 
 		function fetchData() {
 			var url = userCustType === 'inter' ? "/api/v1/main/selectBidCnt" : "/api/v1/main/selectPartnerBidCnt";
@@ -97,7 +99,7 @@
 	<div class="conLeftWrap">
 		<div class="profileDropWrap2">
 			
-			<a class="profileDrop2">테스트 님<i class="fa-solid fa-sort-down"></i></a>
+			<a class="profileDrop2"><span id="sideUserName"></span> 님<i class="fa-solid fa-sort-down"></i></a>
 			<div class="profileDropMenu2">
 				<a href="javascript:changeInfoLink()" id="changeStatusInfo" title="개인정보 수정"><i class="fa-light fa-gear"></i>개인정보 수정</a>
 				<a href="javascript:changePwdLink()" id="changeStatusPwd" title="비밀번호 변경"><i class="fa-light fa-lock-keyhole"></i>비밀번호 변경</a>
