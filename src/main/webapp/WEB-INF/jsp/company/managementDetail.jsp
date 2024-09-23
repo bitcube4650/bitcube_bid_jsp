@@ -356,11 +356,13 @@
 		
 		const otherCustPresJuminNo1 = $('#otherCustPresJuminNo1').val().trim() 
 		const otherCustPresJuminNo2 = $('#otherCustPresJuminNo2').val().trim() 
-		 
+		
+		/*
 		if(!otherCustPresJuminNo1 || !otherCustPresJuminNo2){
 			Swal.fire('', '법인번호를 입력해 주세요', 'warning')
 			return
 		}
+		*/
 		
 		if(!$('#otherCustCapital').val().trim()){
 			Swal.fire('', '자본금을 입력해 주세요', 'warning')

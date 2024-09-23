@@ -246,10 +246,12 @@
 		const otherCustPresJuminNo1 = $('#otherCustPresJuminNo1').val().trim() 
 		const otherCustPresJuminNo2 = $('#otherCustPresJuminNo2').val().trim() 
 		 
+		/*
 		if(!otherCustPresJuminNo1 || !otherCustPresJuminNo2){
 			Swal.fire('', '법인번호를 입력해 주세요', 'warning')
 			return
 		}
+		*/
 		
 		if(!$('#otherCustCapital').val().trim()){
 			Swal.fire('', '자본금을 입력해 주세요', 'warning')
@@ -333,11 +335,13 @@
 			return
 		}
 		
+		/*
 		const phoneNumberRegex = /^\d{3}-\d{3,4}-\d{4}$/;
 		if(!phoneNumberRegex.test($('#otherCustUserHp').val())){
 			Swal.fire('', '휴대폰번호 형식에 맞게 입력해주세요.', 'warning')
 		   	return;
 		}
+		*/
 		
 		if(!$('#otherCustUserTel').val().trim()){
 			Swal.fire('', '유선전화를 입력해 주세요', 'warning')
@@ -345,11 +349,13 @@
 			return
 		}
 		
+		/*
 		const telNumberRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
 		if(!telNumberRegex.test($('#otherCustUserTel').val())){
 			Swal.fire('', '유선전화를 형식에 맞게 입력해주세요.', 'warning')
 		   return;
 		}
+		*/
 		
 		$('#joinBtn3').modal('show')
 	}
@@ -579,7 +585,7 @@
 									</div>
 								</div>
 								<div class="flex align-items-center mt10">
-									<div class="formTit flex-shrink0 width170px">법인번호 <span class="star">*</span></div>
+									<div class="formTit flex-shrink0 width170px">법인번호</div>
 									<div class="flex align-items-center width100">
 										<input type="text" id="otherCustPresJuminNo1" class="inputStyle maxWidth-max-content"  maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 										<span style="margin:0 10px">-</span>
