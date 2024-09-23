@@ -313,6 +313,7 @@ function save() {
 	,	userTel				: $("#userTel").val()
 	,	userPosition		: $("#userPosition").val()
 	,	userBuseo			: $("#userBuseo").val()
+	,	otherCustSaveYn		: 'N'
 	}
 	var formData = new FormData();
 
