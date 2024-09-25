@@ -29,8 +29,9 @@
 				OR	A.OPEN_ATT2 = #{userId}
 				OR	A.GONGO_ID = #{userId}
 				OR	A.EST_BIDDER = #{userId}
-				OR	A.EST_OPENER = #{userId})
-				OR	A.INTERRELATED_CUST_CODE IN (
+				OR	A.EST_OPENER = #{userId}
+				)
+		AND			A.INTERRELATED_CUST_CODE IN (
 				<foreach item="item" collection="custCodes" separator=",">
 					#{item}
 				</foreach>
@@ -79,8 +80,9 @@
 				OR	A.OPEN_ATT2 = #{userId}
 				OR	A.GONGO_ID = #{userId}
 				OR	A.EST_BIDDER = #{userId}
-				OR	A.EST_OPENER = #{userId})
-				OR	A.INTERRELATED_CUST_CODE IN (
+				OR	A.EST_OPENER = #{userId}
+		)
+		AND		A.INTERRELATED_CUST_CODE IN (
 					<foreach item="item" collection="custCodes" separator=",">
 						#{item}
 					</foreach>

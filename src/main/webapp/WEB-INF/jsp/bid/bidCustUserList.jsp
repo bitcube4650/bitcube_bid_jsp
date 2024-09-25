@@ -120,27 +120,27 @@
 		var paginationHtml = "";
 	
 		// 첫 페이지로 이동
-		paginationHtml += '<a onClick="custOnPage(' + firstPage + ')" title="첫 페이지로 이동"><i class="fa-light fa-chevrons-left"></i></a>';
+		paginationHtml += '<a onClick="bidCustUserListOnPage(' + firstPage + ')" title="첫 페이지로 이동"><i class="fa-light fa-chevrons-left"></i></a>';
 	
 		// 이전 페이지로 이동
-		paginationHtml += '<a onClick="custOnPage(' + beforePage + ')" title="이전 페이지로 이동"><i class="fa-light fa-chevron-left"></i></a>';
+		paginationHtml += '<a onClick="bidCustUserListOnPage(' + beforePage + ')" title="이전 페이지로 이동"><i class="fa-light fa-chevron-left"></i></a>';
 	
 		// 페이지 번호 링크 생성
 		for (var i of pageList) {
-			paginationHtml += '<a onClick="custOnPage(' + (i - 1) + ')" title="' + i + '페이지로 이동" class="' + (data.number + 1 === i ? 'number active' : 'number') + '">' + i + '</a>';
+			paginationHtml += '<a onClick="bidCustUserListOnPage(' + (i - 1) + ')" title="' + i + '페이지로 이동" class="' + (data.number + 1 === i ? 'number active' : 'number') + '">' + i + '</a>';
 		}
 	
 		// 다음 페이지로 이동
-		paginationHtml += '<a onClick="custOnPage(' + afterPage + ')" title="다음 페이지로 이동"><i class="fa-light fa-chevron-right"></i></a>';
+		paginationHtml += '<a onClick="bidCustUserListOnPage(' + afterPage + ')" title="다음 페이지로 이동"><i class="fa-light fa-chevron-right"></i></a>';
 	
 		// 마지막 페이지로 이동
-		paginationHtml += '<a onClick="custOnPage(' + lastPage + ')" title="마지막 페이지로 이동"><i class="fa-light fa-chevrons-right"></i></a>';
+		paginationHtml += '<a onClick="bidCustUserListOnPage(' + lastPage + ')" title="마지막 페이지로 이동"><i class="fa-light fa-chevrons-right"></i></a>';
 	
 		$("#bidCustUserListPageNumbers").html(paginationHtml);
 	}
 
 	
-	function custOnPage(page){
+	function bidCustUserListOnPage(page){
 		onSearchBidCustUserList(page);
 	}
 </script>
