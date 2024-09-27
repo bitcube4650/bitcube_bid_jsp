@@ -323,8 +323,12 @@
 		List<Map<String, Object>> specFile = (List<Map<String, Object>>) biInfo.get("specFile");
 		
 		for(int i = 0; i < specFile.size(); i++){
+			String filePath = CommonUtils.getString((specFile.get(i)).get("filePath"));
+			if(filePath.indexOf("\\") > -1){
+				filePath = filePath.replaceAll("\\\\", "\\\\\\\\");
+			}
 %>
-										<a class=textUnderline onclick="fnfileDownload('<%= (specFile.get(i)).get("filePath") %>', '<%= (specFile.get(i)).get("fileNm") %>')"><%= (specFile.get(i)).get("fileNm") %></a>
+										<a class='textUnderline' onclick="fnfileDownload('<%= filePath %>', '<%= (specFile.get(i)).get("fileNm") %>')"><%= (specFile.get(i)).get("fileNm") %></a>
 <%
 		}
 	} else if("2".equals(CommonUtils.getString(biInfo.get("insMode")))){
@@ -379,10 +383,14 @@
 <%
 	List<Map<String, Object>> fileList = (List<Map<String, Object>>) biInfo.get("fileList");
 	for(int i = 0; i < fileList.size(); i++){
+		String filePath = CommonUtils.getString((fileList.get(i)).get("filePath"));
+		if(filePath.indexOf("\\") > -1){
+			filePath = filePath.replaceAll("\\\\", "\\\\\\\\");
+		}
 %>
 									<div class="<%= ( "1".equals(fileList.get(i).get("fileFlag")) ? "textHighlight" : "" ) %>">
 										<span class="mr20"> <%= ( "1".equals(fileList.get(i).get("fileFlag")) ? "대내용" : "대외용" ) %> </span>
-										<a class=textUnderline onclick="fnfileDownload('<%= fileList.get(i).get("filePath") %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
+										<a class='textUnderline' onclick="fnfileDownload('<%= filePath %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
 									</div>
 <%
 	}
@@ -436,6 +444,10 @@
 <%
 	for(int i = 0; i < custList.size(); i++){
 		Map<String, Object> cust = custList.get(i);
+		String filePath = CommonUtils.getString(cust.get("etcPath"));
+		if(filePath.indexOf("\\") > -1){
+			filePath = filePath.replaceAll("\\\\", "\\\\\\\\");
+		}
 %>
 									<tr>
 										<td class='text-left'>
@@ -448,7 +460,7 @@
 										</td>
 										<td><%= CommonUtils.getString(cust.get("submitDate")) %></td>
 										<td><%= CommonUtils.getString(cust.get("presName")) %></td>
-										<td><img src='/resources/images/icon_etc.svg' onclick="fnfileDownload('<%= cust.get("etcPath") %>', '<%= cust.get("etcFile") %>')" class='iconImg' alt='etc' style='<%= "".equals(CommonUtils.getString(cust.get("etcPath"))) ? "display:none" : "" %>'></td>
+										<td><img src='/resources/images/icon_etc.svg' onclick="fnfileDownload('<%= filePath %>', '<%= cust.get("etcFile") %>')" class='iconImg' alt='etc' style='<%= "".equals(CommonUtils.getString(cust.get("etcPath"))) ? "display:none" : "" %>'></td>
 										<td class='textHighlight'><%= ("Y".equals(CommonUtils.getString(cust.get("succYn"))) ? "낙찰" : "") %></td>
 										<td class='end'><%= CommonUtils.getString(cust.get("updateDate")) %></td>
 									</tr>

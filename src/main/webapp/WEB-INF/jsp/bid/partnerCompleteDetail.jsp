@@ -203,8 +203,12 @@
 		List<Map<String, Object>> specFile = (List<Map<String, Object>>) biInfo.get("specFile");
 		
 		for(int i = 0; i < specFile.size(); i++){
+			String filePath = CommonUtils.getString((specFile.get(i)).get("filePath"));
+			if(filePath.indexOf("\\") > -1){
+				filePath = filePath.replaceAll("\\\\", "\\\\\\\\");
+			}
 %>
-										<a class="textUnderline" onclick="fnfileDownload('<%= specFile.get(i).get("filePath") %>', '<%= specFile.get(i).get("fileNm") %>')"><%= specFile.get(i).get("fileNm") %></a>
+										<a class="textUnderline" onclick="fnfileDownload('<%= filePath %>', '<%= specFile.get(i).get("fileNm") %>')"><%= specFile.get(i).get("fileNm") %></a>
 <%
 		}
 	} else if("2".equals(CommonUtils.getString(biInfo.get("insMode")))){
@@ -250,8 +254,12 @@
 <%
 	List<Map<String, Object>> fileList = (List<Map<String, Object>>) biInfo.get("fileList");
 	for(int i = 0; i < fileList.size(); i++){
+		String filePath = CommonUtils.getString((fileList.get(i)).get("filePath"));
+		if(filePath.indexOf("\\") > -1){
+			filePath = filePath.replaceAll("\\\\", "\\\\\\\\");
+		}
 %>
-											<a class="textUnderline" onclick="fnfileDownload('<%= fileList.get(i).get("filePath") %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
+											<a class="textUnderline" onclick="fnfileDownload('<%= filePath %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
 <%
 	}
 %>
@@ -275,6 +283,14 @@
 	// 낙찰
 	if("A5".equals(biInfo.get("ingTag"))){
 		if("1".equals(CommonUtils.getString(biInfo.get("insMode")))){
+			String filePath = CommonUtils.getString(custList.get(0).get("filePath"));
+			if(filePath.indexOf("\\") > -1){
+				filePath = filePath.replaceAll("\\\\", "\\\\\\\\");
+			}
+			String etcPath = CommonUtils.getString(custList.get(0).get("etcPath"));
+			if(etcPath.indexOf("\\") > -1){
+				etcPath = etcPath.replaceAll("\\\\", "\\\\\\\\");
+			}
 %>
 						<div class="boxSt mt20">
 							<div class="flex align-items-center width100">
@@ -291,13 +307,13 @@
 							<div class="flex mt20">
 								<div class="formTit flex-shrink0 width170px">견적내역파일</div>
 								<div class="width100">
-									<a class="textUnderline" onclick="fnfileDownload('<%= custList.get(0).get("filePath") %>', '<%= CommonUtils.getString(custList.get(0).get("fileNm")) %>')"><%= CommonUtils.getString(custList.get(0).get("fileNm")) %></a>
+									<a class="textUnderline" onclick="fnfileDownload('<%= filePath %>', '<%= CommonUtils.getString(custList.get(0).get("fileNm")) %>')"><%= CommonUtils.getString(custList.get(0).get("fileNm")) %></a>
 								</div>
 							</div>
 							<div class="flex mt20">
 								<div class="formTit flex-shrink0 width170px">기타첨부</div>
 								<div class="width100">
-									<a class="textUnderline" onclick="fnfileDownload('<%= custList.get(0).get("etcPath") %>', '<%= CommonUtils.getString(custList.get(0).get("etcFile")) %>')"><%= CommonUtils.getString(custList.get(0).get("etcFile")) %></a>
+									<a class="textUnderline" onclick="fnfileDownload('<%= etcPath %>', '<%= CommonUtils.getString(custList.get(0).get("etcFile")) %>')"><%= CommonUtils.getString(custList.get(0).get("etcFile")) %></a>
 								</div>
 							</div>
 <%
