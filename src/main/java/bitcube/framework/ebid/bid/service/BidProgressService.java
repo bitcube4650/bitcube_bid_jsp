@@ -710,17 +710,19 @@ public class BidProgressService {
 		int selectProgressDetaiCustListSize = selectProgressDetaiCustList.size(); 
 
 		if(selectProgressDetaiCustListSize >0) {
-			String usemailIdFilter = "";
+			Map<String,Object> custMap = new HashMap<>();
+			ArrayList<String> usemailIdArr = new ArrayList<>();
 			for (int i = 0; i < selectProgressDetaiCustListSize; i++) {
 				Map<String,Object> selectProgressDetaiCustListMap = (Map<String, Object>) selectProgressDetaiCustList.get(i);
-				if (i < selectProgressDetaiCustListSize - 1) {
-					usemailIdFilter +=(selectProgressDetaiCustListMap.get("usemailId").toString()+ ",");
-				}else {
-					usemailIdFilter += (selectProgressDetaiCustListMap.get("usemailId").toString());
+				
+				if(!CommonUtils.getString(selectProgressDetaiCustListMap.get("usemailId")).equals("")) {
+					usemailIdArr.add(CommonUtils.getString(selectProgressDetaiCustListMap.get("usemailId")));
 				}
+				
 			}
-			paramMap.put("usemailIds", usemailIdFilter.split(","));
-			List<Object> selectProgressDetaiCustUserList = generalDao.selectGernalList("bid.selectProgressDetaiCustUserList", paramMap);
+			
+			custMap.put("usemailIds", usemailIdArr);
+			List<Object> selectProgressDetaiCustUserList = generalDao.selectGernalList("bid.selectProgressDetaiCustUserList", custMap);
 			result.add(selectProgressDetaiCustUserList);
 		}
 

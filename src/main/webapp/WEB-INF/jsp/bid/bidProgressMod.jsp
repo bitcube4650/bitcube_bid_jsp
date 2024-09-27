@@ -28,6 +28,20 @@
 			$("#estCloseDay").datepicker();
 			
 			$('body').on('keyup', 'input[name="orderUc"]', function() {
+				var replaceVal = Ft.fnComma($(this).val());
+				$(this).val(replaceVal);
+				onSetTableHtml();
+			});
+			
+			$('body').on('keyup', 'input[name="orderQty"]', function() {
+				var replaceVal = Ft.fnComma($(this).val());
+				$(this).val(replaceVal);
+				onSetTableHtml();
+			});
+			
+			$('#bdAmt').on('keyup', function() {
+				var value = $(this).val();
+				$(this).val(Ft.fnComma(value));
 			});
 		});
 		
@@ -197,16 +211,18 @@
 						if(bidContent.insModeCode === '1'){
 							fnSetInsModeHtml(bidContent.insModeCode);
 						} else {
-							fnSetInsModeHtml(bidContent.insModeCode);
 							var tableContent = response.data[1];
 							sebuDetailCnt = tableContent.length;
+							fnSetInsModeHtml(bidContent.insModeCode);
 							for(var i=0; i<sebuDetailCnt; i++) {
 								$("#name"+i).val(tableContent[i].name);
 								$("#ssize"+i).val(tableContent[i].ssize);
 								$("#unitcode"+i).val(tableContent[i].unitcode);
-								$("#orderUc"+i).val(tableContent[i].orderUc);
-								$("#orderQty"+i).val(tableContent[i].orderQty);
+								$("#orderUc"+i).val(Ft.fnComma(tableContent[i].orderUc.toString()));
+								$("#orderQty"+i).val(Ft.fnComma(tableContent[i].orderQty.toString()));
 							}
+							// 총합계 세팅
+							onSetTableHtml();
 						}
 					}
 			});
@@ -255,8 +271,8 @@
 		
 		function itemSelectCallback(itemCode, itemName) {
 			$("#custTypePop").modal('hide')
-			$('#progressItemCode').val(itemCode)
-			$('#progressItemName').val(itemName)
+			$("#progressItemCode").val(itemCode)
+			$("#progressItemName").val(itemName)
 		}
 		
 		function onUserListSelect(str){
@@ -381,6 +397,7 @@
 		function onAddRow() {
 			var str = "";
 			str += "<tr>";
+			str += "<input type='hidden' id='seq" + sebuDetailCnt + "' value='"+ (sebuDetailCnt+1) +"'>";
 			str += "<td><input type='text' id='name" + sebuDetailCnt + "' name='name' class='inputStyle inputSm' maxlength='100' /></td>";
 			str += "<td><input type='text' id='ssize" + sebuDetailCnt + "' name='ssize' class='inputStyle inputSm' maxlength='25' /></td>";
 			str += "<td><input type='text' id='unitcode" + sebuDetailCnt + "' name='unitcode' class='inputStyle inputSm' maxlength='25' /></td>";
@@ -400,6 +417,7 @@
 			for(var i=0; i<sebuDetailCnt; i++) {
 				if(i<row) {
 					var obj = {
+						seq : $("#seq"+i).val(),
 						name : $("#name"+i).val(),
 						ssize : $("#ssize"+i).val(),
 						unitcode : $("#unitcode"+i).val(),
@@ -411,6 +429,7 @@
 				} else if(i>=row) {
 					var j = i+1;
 					var obj = {
+						seq : $("#seq"+j).val(),
 						name : $("#name"+j).val(),
 						ssize : $("#ssize"+j).val(),
 						unitcode : $("#unitcode"+j).val(),
@@ -425,6 +444,7 @@
 			$("#sebuDetailBody").empty();
 			for(var i=0; i<sebuList.length; i++) {
 				str += "<tr>";
+				str += "<input type='hidden' id='seq"+ i +"' value='"+ (i+1) +"'>";
 				str += "<td><input type='text' value='"+ sebuList[i].name + "' id='name" + i + "' name='name' class='inputStyle inputSm' maxlength='100' /></td>";
 				str += "<td><input type='text' value='"+ sebuList[i].ssize + "' id='ssize" + i + "' name='ssize' class='inputStyle inputSm' maxlength='25' /></td>";
 				str += "<td><input type='text' value='"+ sebuList[i].unitcode + "' id='unitcode" + i + "' name='unitcode' class='inputStyle inputSm' maxlength='25' /></td>";
@@ -469,6 +489,7 @@
 				str += "<tbody id='sebuDetailBody'>";
 				for(var i=0; i<sebuDetailCnt; i++) {
 					str += "<tr>";
+					str += "<input type='hidden' id='seq"+ i +"' value='"+ (i+1) +"'>";
 					str += "<td><input type='text' id='name" + i + "' name='name' class='inputStyle inputSm' maxlength='100' /></td>";
 					str += "<td><input type='text' id='ssize" + i + "' name='ssize' class='inputStyle inputSm' maxlength='25' /></td>";
 					str += "<td><input type='text' id='unitcode" + i + "' name='unitcode' class='inputStyle inputSm' maxlength='25' /></td>";
@@ -480,7 +501,7 @@
 				}
 				str += "</tbody>";
 				str += "</table>";
-				str += "<p class='mt10' style='textAlign: right'><strong>총합계 : 0</strong></p>";
+				str += "<p class='mt10' style='text-align: right'><strong id='totalCount'>총합계 : 0</strong></p>";
 				
 			}
 			$("#fileTable").append(str);
@@ -810,12 +831,14 @@
 			} else {
 				for(var i=0; i<sebuDetailCnt; i++) {
 					var map = {
+						seq : "",
 						name : "",
 						ssize : "",
 						unitcode : "",
 						orderUc : "",
 						orderQty : ""
 					}
+					map.seq = $("#seq"+i).val();
 					map.name = $("#name"+i).val();
 					map.ssize = $("#ssize"+i).val();
 					map.unitcode = $("#unitcode"+i).val();
@@ -831,6 +854,7 @@
 			var estStartTime	= $("#estStartTime").val();
 			var estCloseDay		= $("#estCloseDay").val();
 			var estCloseTime	= $("#estCloseTime").val();
+			var itemCode = $("#progressItemCode").val();
 
 			var updatedBidContent = {
 				custUserInfo		: custUserInfo,
@@ -855,7 +879,6 @@
 				estBidderCode		: $("#estBidderCode").val(),
 				openAtt1Code		: $("#openAtt1Code").val(),
 				openAtt2Code		: $("#openAtt2Code").val(),
-				itemCode			: $("#itemCode").val(),
 				gongoIdCode			: $("#gongoIdCode").val(),
 				payCond				: $("#payCond").val(),
 				matDept				: $("#matDept").val(),
@@ -968,6 +991,21 @@
 			$("#outerFilesInput").click();
 		}
 		
+		function onSetTableHtml() {
+			var spec = [];
+			for(var i=0; i<sebuDetailCnt; i++) {
+				var orderUc = $("#orderUc"+i).val() === "" ? 0 : $("#orderUc"+i).val().replace(/,/g, '');
+				var orderQty = $("#orderQty"+i).val() === "" ? 0 : $("#orderQty"+i).val().replace(/,/g, '');
+				$("#total"+i).html(Ft.fnComma((orderUc * orderQty).toString()));
+				
+				spec[i] = spec[i] || {};
+				spec[i].orderUc = orderUc;
+				spec[i].orderQty = orderQty;
+			}
+			var totalCount = Ft.ftAllSum(spec);
+			$("#totalCount").html(totalCount);
+		}
+		
 	</script>
 	<div id="wrap">
 		<jsp:include page="/WEB-INF/jsp/layout/header.jsp" />
@@ -1006,7 +1044,7 @@
 								</div>
 								<div class="flex align-items-center width100">
 									<input type="hidden" id="progressItemCode">
-									<input type="text" class="inputStyle" name="progressItemName" id="progressItemName">
+									<input type="text" class="inputStyle" name="progressItemName" id="progressItemName" disabled>
 									<button class="btnStyle btnSecondary ml10" title="조회" onClick=onItemPopModal() >조회</button>
 								</div>
 							</div>

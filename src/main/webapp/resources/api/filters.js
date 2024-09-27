@@ -228,5 +228,12 @@ var Ft = {
 		tmp += val.substring(6, val.length);
 		
 		return tmp;
+	},
+	
+	fnComma : function (val) {
+		val = val.replace(/[^0-9]/g, '');
+		// 입력된 숫자를 3자리마다 쉼표로 구분하는 부분
+		val = val.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		return val;
 	}
 };
