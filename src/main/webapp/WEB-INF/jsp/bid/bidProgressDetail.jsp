@@ -400,8 +400,12 @@
 										if("1".equals(CommonUtils.getString(data.get("insMode")))){
 											List<Map<String, Object>> specFile = (List<Map<String, Object>>) data.get("specFile");
 											for(int i = 0; i < specFile.size(); i++){
+												String filePath = CommonUtils.getString((specFile.get(i)).get("filePath"));
+												if(filePath.indexOf("\\") > -1){
+													filePath = filePath.replaceAll("\\\\", "\\\\\\\\");
+												}
 									%>
-										<a class=textUnderline onclick="fnfileDownload('<%= (specFile.get(i)).get("filePath") %>', '<%= (specFile.get(i)).get("fileNm") %>')"><%= (specFile.get(i)).get("fileNm") %></a>
+										<a class=textUnderline onclick="fnfileDownload('<%= filePath %>', '<%= (specFile.get(i)).get("fileNm") %>')"><%= (specFile.get(i)).get("fileNm") %></a>
 									<%
 											}
 										} else if("2".equals(CommonUtils.getString(data.get("insMode")))){
@@ -455,10 +459,14 @@
 <%
 	List<Map<String, Object>> fileList = (List<Map<String, Object>>) data.get("fileList");
 	for(int i = 0; i < fileList.size(); i++){
+		String filePath = CommonUtils.getString(fileList.get(i).get("filePath"));
+		if(filePath.indexOf("\\") > -1){
+			filePath = filePath.replaceAll("\\\\", "\\\\\\\\");
+		}
 %>
 									<div class="<%= ( "1".equals(fileList.get(i).get("fileFlag")) ? "textHighlight" : "" ) %>">
 										<span class="mr20"> <%= ( "1".equals(fileList.get(i).get("fileFlag")) ? "대내용" : "대외용" ) %> </span>
-										<a class=textUnderline onclick="fnfileDownload('<%= fileList.get(i).get("filePath") %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
+										<a class=textUnderline onclick="fnfileDownload('<%= filePath %>', '<%= (fileList.get(i)).get("fileNm") %>')"><%= fileList.get(i).get("fileNm") %></a>
 									</div>
 <%
 	}
